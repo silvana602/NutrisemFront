@@ -13,24 +13,18 @@ import type {
   Antecedent,
 } from "@/types";
 
-//
-// ---------------------------------------------------------------------
-//   IN-MEMORY STORE (actualizado: sin roles ni profiles)
-// ---------------------------------------------------------------------
-//
-
 type Store = {
-  users: User[]; // ahora contiene datos personales (antes profile) + role
-  Healthcares: Healthcare[]; // referencia a userId
-  patients: Patient[]; // referencia a userId
-  patientTutor: PatientTutor[]; // relaciones paciente <-> tutor
-  patientHealthcare: PatientHealthcare[]; // relaciones paciente <-> Healthcare
+  users: User[];
+  Healthcares: Healthcare[];
+  patients: Patient[];
+  patientTutor: PatientTutor[];
+  patientHealthcare: PatientHealthcare[];
   consultations: Consultation[];
   anthropometricData: AnthropometricData[];
   clinicalData: ClinicalData[];
   antecedents: Antecedent[];
 
-  passwords: Map<string, string>; // almacena contraseñas por userId o tutorId
+  passwords: Map<string, string>;
 };
 
 const G = globalThis as any;
@@ -47,7 +41,7 @@ function initDb(): Store {
       anthropometricData: [],
       clinicalData: [],
       antecedents: [],
-      passwords: new Map<string, string>(),
+      passwords: new Map(),
     } satisfies Store;
   }
   return G.__NUTRISEM_DB__;
@@ -55,30 +49,15 @@ function initDb(): Store {
 
 export const db = initDb();
 
-//
-// ---------------------------------------------------------------------
-//   UTILITIES (actualizados)
-// ---------------------------------------------------------------------
-//
-
 export function getUserById(id: string) {
   return db.users.find((u) => u.userId === id) ?? null;
 }
 
-/**
- * Busca usuario por número de documento (CI).
- * Ahora los datos de identidad están dentro de db.users.
- */
 export function getUserByCI(ci: string) {
   return db.users.find((u) => u.identityCard === ci) ?? null;
 }
 
-export function getPatientById(id: string) {
-  return db.patients.find((p) => p.patientId === id) ?? null;
-}
-
 export function hardResetDb() {
-  initDb();
   db.users.length = 0;
   db.Healthcares.length = 0;
   db.patients.length = 0;
@@ -92,65 +71,53 @@ export function hardResetDb() {
   G.__NUTRISEM_MOCKS_SEEDED__ = false;
 }
 
-//
-// ---------------------------------------------------------------------
-//   SEED (actualizado a la nueva estructura)
-// ---------------------------------------------------------------------
-//
-
 export function seedOnce() {
   if (G.__NUTRISEM_MOCKS_SEEDED__) return;
   G.__NUTRISEM_MOCKS_SEEDED__ = true;
 
-  //
-  // ---- USERS (admin, Healthcare, patient) ----
-  //
   const userAdmin: User = {
     userId: uid("usr"),
-    role: "admin", // ahora role es atributo directo
-    password: "admin", // mantenemos el campo por compatibilidad con tipos previos
+    role: "admin",
     firstName: "Admin",
     lastName: "System",
     identityCard: "0000",
     phone: "000000",
     address: "Main Office",
+    password: "admin",
   };
 
   const userHealthcare: User = {
     userId: uid("usr"),
     role: "healthcare",
-    password: "123456",
     firstName: "Juan",
     lastName: "Mendez",
     identityCard: "1234567",
     phone: "7777777",
     address: "La Paz",
+    password: "healthcare",
   };
 
   const userPatient: User = {
     userId: uid("usr"),
-    role: "patient", // paciente también es un usuario
-    password: "patient", // si no quieres password para pacientes, quítalo
+    role: "patient",
     firstName: "Maria",
     lastName: "Flores",
     identityCard: "9988776",
     phone: "68000000",
     address: "El Alto",
+    password: "patient",
   };
 
   db.users.push(userAdmin, userHealthcare, userPatient);
 
-  // Guardar contraseñas en el mapa (simulación)
-  db.passwords.set(userAdmin.userId, userAdmin.password ?? "");
-  db.passwords.set(userHealthcare.userId, userHealthcare.password ?? "");
-  db.passwords.set(userPatient.userId, userPatient.password ?? "");
+  // passwords centralizadas
+  db.passwords.set(userAdmin.userId, "admin");
+  db.passwords.set(userHealthcare.userId, "healthcare");
+  db.passwords.set(userPatient.userId, "patient");
 
-  //
-  // ---- Healthcare (referencia a userId) ----
-  //
-  const Healthcare1: Healthcare = {
+  const healthcare1: Healthcare = {
     healthcareId: uid("mon"),
-    userId: userHealthcare.userId, // ahora vinculado por userId
+    userId: userHealthcare.userId,
     professionalId: "MP-001",
     profession: "Nutritionist",
     specialty: "Pediatrics",
@@ -158,24 +125,18 @@ export function seedOnce() {
     institution: "Children's Hospital",
   };
 
-  db.Healthcares.push(Healthcare1);
+  db.Healthcares.push(healthcare1);
 
-  //
-  // ---- PATIENT (referencia a userId) ----
-  //
   const patient1: Patient = {
     patientId: uid("pat"),
-    userId: userPatient!.userId, // ! asegura que TypeScript sepa que no es undefined
+    userId: userPatient.userId,
     birthDate: "2018-05-12",
     gender: "female",
-    tutors: [], // inicialmente vacío, luego puedes agregar tutores
+    tutors: [],
   };
 
   db.patients.push(patient1);
 
-  //
-  // ---- TUTORES DEL PACIENTE ----
-  //
   const tutor1: PatientTutor = {
     patientTutorId: uid("pt"),
     patientId: patient1.patientId,
@@ -189,31 +150,22 @@ export function seedOnce() {
 
   patient1.tutors.push(tutor1);
 
-  //
-  // ---- RELACIÓN PACIENTE - Healthcare ----
-  //
   db.patientHealthcare.push({
     patientHealthcareId: uid("pm"),
     patientId: patient1.patientId,
-    healthcareId: Healthcare1.healthcareId,
+    healthcareId: healthcare1.healthcareId,
   });
 
-  //
-  // ---- CONSULTATION ----
-  //
   const consultation1: Consultation = {
     consultationId: uid("con"),
     patientId: patient1.patientId,
-    healthcareId: Healthcare1.healthcareId,
+    healthcareId: healthcare1.healthcareId,
     date: "2025-01-15",
     time: "09:00",
   };
 
   db.consultations.push(consultation1);
 
-  //
-  // ---- ANTHROPOMETRIC DATA ----
-  //
   db.anthropometricData.push({
     anthropometricDataId: uid("ad"),
     consultationId: consultation1.consultationId,
@@ -223,9 +175,6 @@ export function seedOnce() {
     headCircumference: 49,
   });
 
-  //
-  // ---- CLINICAL DATA ----
-  //
   db.clinicalData.push({
     clinicalDataId: uid("cd"),
     consultationId: consultation1.consultationId,
@@ -245,9 +194,6 @@ export function seedOnce() {
     observations: "No issues found",
   });
 
-  //
-  // ---- ANTECEDENT ----
-  //
   db.antecedents.push({
     antecedentId: uid("ant"),
     consultationId: consultation1.consultationId,

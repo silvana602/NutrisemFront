@@ -82,7 +82,7 @@ export const Navbar = () => {
             <>
               <Link
                 href={`/login${nextQuery}`}
-                className="text-sm rounded-xl border border-brand-700 px-3 py-1 hover:bg-brand-50"
+                className="text-sm px-3 py-1 border border-nutri-primary text-primary font-semibold rounded-xl hover:bg-nutri-primary hover:text-nutri-off-white transition"
               >
                 Iniciar sesión
               </Link>

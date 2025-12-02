@@ -23,6 +23,8 @@ type AuthState = {
   /** Cerrar sesión */
   clearSession: () => void;
 
+  setUser: (u: any) => void;
+
   /** Helpers */
   isAdmin: () => boolean;
   ishealthcare: () => boolean;
@@ -51,6 +53,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       user: null,
       healthcare: null,
     }),
+
+  setUser: (u) => set({ user: u }),
+
+  logout: () => set({ user: null }),
 
   // Helpers
   isAdmin: () => get().user?.role === "admin",
