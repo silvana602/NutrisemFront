@@ -28,7 +28,7 @@ export default function AppSessionBootstrap() {
           setSession({
             accessToken: response.accessToken,
             user: response.user,
-            healthcare: response.Healthcare, // ⚠ ojo: property name lowercase en store
+            clinician: response.clinician, // ⚠ ojo: property name lowercase en store
           });
         } else {
           clearSession();

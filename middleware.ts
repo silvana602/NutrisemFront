@@ -29,8 +29,8 @@ const ROLE_ROUTES: Record<string, string[]> = {
     "/dashboard/reportes",
   ],
 
-  medico: [
-    "/dashboard/inicio-medico",
+  clinician: [
+    "/dashboard/inicio-clinician",
     "/dashboard/mis-pacientes",
     "/dashboard/nueva-consulta",
     "/dashboard/diagnosticos",
@@ -38,7 +38,7 @@ const ROLE_ROUTES: Record<string, string[]> = {
     "/dashboard/reportes",
   ],
 
-  tutor: [
+  patient: [
     "/dashboard/tutor",
     "/dashboard/tutor/progreso",
     "/dashboard/tutor/diagnosticos",

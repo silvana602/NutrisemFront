@@ -24,10 +24,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Credenciales inválidas" }, { status: 401 });
   }
 
-  // Si el usuario es healthcare, agregar su info de healthcare
-  let healthcareData: AuthResponse["Healthcare"] = undefined;
-  if (user.role === "healthcare") {
-    healthcareData = db.Healthcares.find((h) => h.userId === user.userId);
+  // Si el usuario es clinician, agregar su info de clinician
+  let clinicianData: AuthResponse["clinician"] = undefined;
+  if (user.role === "clinician") {
+    clinicianData = db.clinicians.find((h) => h.userId === user.userId);
   }
 
   const accessToken = `mock-access-${user.userId}-${Date.now()}`;
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   const res = NextResponse.json<AuthResponse>({
     accessToken,
     user,
-    Healthcare: healthcareData,
+    clinician: clinicianData,
   });
 
   res.cookies.set("refreshToken", `mock-refresh-${user.userId}`, {

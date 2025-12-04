@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSidebarStore } from "@/store/useSidebarStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useMenuByRole } from "@/hooks/useMenuByRol";
 import { Role } from "@/types/user";
+import Avatar from "../ui/Avatar";
 
-import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+import { colors } from "@/lib/colors";
 
 interface SidebarProps {
   role: Role;
@@ -15,67 +17,73 @@ interface SidebarProps {
 
 export default function Sidebar({ role }: SidebarProps) {
   const pathname = usePathname();
-  const { isOpen, toggle, close } = useSidebarStore();
+  const user = useAuthStore((s) => s.user);
 
   const menuItems = useMenuByRole(role);
 
+  if (!user) return null;
+
   return (
     <>
-      {/* Top bar para mobile */}
-      <div className="lg:hidden flex items-center justify-between p-4 bg-white shadow-md sticky top-0 z-50">
-        <h1 className="text-lg font-semibold">NUTRISEM</h1>
-        <button onClick={toggle} aria-label="menu">
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
-      </div>
-
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 h-full w-64 bg-white shadow-lg border-r transition-transform duration-300 z-40",
-          "lg:translate-x-0",
-          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          // Oculto en móvil
+          "hidden",
+
+          // Desktop: fijo, pegado al borde izquierdo, sin espacios
+          "hidden lg:flex lg:flex-col lg:w-72 lg:min-h-screen lg:border-r",
+          "bg-[var(--lightGrey)]"
         )}
+        style={{
+          backgroundColor: colors.white,
+          borderColor: colors.lightGrey,
+        }}
       >
-        {/* Logo */}
-        <div className="px-6 py-4 border-b">
-          <h2 className="text-2xl font-bold">NUTRISEM</h2>
-          <p className="text-sm text-gray-500">Panel {role.toLowerCase()}</p>
+        {/* User */}
+        <div className="flex flex-col items-center text-center py-6">
+          <h2
+            className="text-2xl font-bold mb-3"
+            style={{ color: colors.black }}
+          >
+            <Avatar name={user.firstName + " " + user.lastName} size={100} />
+          </h2>
+          <p
+            className="truncate text-sm font-semibold"
+            style={{ color: colors.darkGrey }}
+          >
+            {user.firstName} {user.lastName}
+          </p>
         </div>
 
         {/* Menu */}
         <nav className="mt-4">
           {menuItems.map((item) => {
-            const Icon = item.icon; // <-- componente
+            const Icon = item.icon;
             const active = pathname.startsWith(item.href);
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => close()}
                 className={cn(
-                  "flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition",
-                  active && "bg-teal-600 text-white hover:bg-teal-700"
+                  "flex items-center gap-3 px-6 py-3 mx-3 my-1 rounded-md transition-all",
+                  active
+                    ? "text-white shadow-sm"
+                    : "text-gray-700 hover:shadow-sm"
                 )}
+                style={{
+                  backgroundColor: active ? colors.primary : "transparent",
+                  color: active ? "#fff" : colors.darkGrey,
+                }}
               >
-                <span className="w-5 h-5">
-                  <Icon size={18} /> {/* <-- renderizamos el componente */}
-                </span>
-                <span>{item.label}</span>
+                <Icon size={18} />
+                <span className="font-medium">{item.label}</span>
               </Link>
             );
           })}
         </nav>
       </aside>
-
-      {/* Overlay móvil */}
-      {isOpen && (
-        <div
-          onClick={close}
-          className="fixed inset-0 bg-black/40 lg:hidden z-30"
-        />
-      )}
     </>
   );
 }

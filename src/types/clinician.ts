@@ -1,6 +1,6 @@
-// Tipo de Healthcare
-export type Healthcare = {
-    healthcareId: string;
+// Tipo de clinician
+export type Clinician = {
+    clinicianId: string;
     userId: string;          // Relación directa al usuario
     professionalId: string;  // matrícula profesional
     profession: string;      

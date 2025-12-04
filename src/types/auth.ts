@@ -1,12 +1,12 @@
 // Importamos tus tipos reales
 import type { User } from "./user";
-import type { Healthcare } from "./healthcare";
+import type { Clinician } from "./clinician";
 
 // Respuesta estándar de autenticación en Nutrisem
 export interface AuthResponse {
     accessToken: string | null;
-    user: User;        // Usuario del sistema (admin o Healthcare)
-    Healthcare?: Healthcare; // Solo si el rol es Healthcare
+    user: User;        // Usuario del sistema (admin o clinician)
+    clinician?: Clinician; // Solo si el rol es clinician
 }
 
 // DTO para login
@@ -15,11 +15,11 @@ export interface LoginDto {
     password: string;  // contraseña
 }
 
-// DTO para registro SOLO DE HealthcareES
-export interface RegisterHealthcareDto {
+// DTO para registro SOLO DE clinicianES
+export interface RegisterclinicianDto {
     // Datos de User
     password: string;      // contraseña
-    roleId: string;        // rol asignado (Healthcare)
+    roleId: string;        // rol asignado (clinician)
 
     // Datos de Profile
     firstName: string;     // nombres
@@ -28,7 +28,7 @@ export interface RegisterHealthcareDto {
     phone: string;         // teléfono
     address: string;       // dirección
 
-    // Datos de Healthcare
+    // Datos de clinician
     professionalId: string; // matrícula profesional
     profession: string;     // profesión
     specialty: string;      // especialidad

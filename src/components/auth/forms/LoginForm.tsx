@@ -5,7 +5,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { colors } from "@/lib/colors";
 
 export function LoginForm() {
-  const setUser = useAuthStore((s) => s.setUser);
+  const { setSession } = useAuthStore(); // ⬅ Usamos setSession, no setUser
 
   const [ci, setCi] = useState("");
   const [password, setPassword] = useState("");
@@ -20,10 +20,8 @@ export function LoginForm() {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
         method: "POST",
-        credentials: "include", // ⬅ MUY IMPORTANTE (activa cookies HttpOnly)
-        headers: {
-          "Content-Type": "application/json",
-        },
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ci, password }),
       });
 
@@ -33,10 +31,16 @@ export function LoginForm() {
 
       const data = await res.json();
 
-      // Guardar datos del usuario en Zustand
-      setUser(data.user);
+      const sessionData = {
+        accessToken: data.accessToken || "mock-token",
+        user: data.user,
+        clinician: data.clinician || null,
+      };
 
-      // Redirigir al dashboard
+      setSession(sessionData);
+
+      localStorage.setItem("session", JSON.stringify(sessionData));
+
       window.location.href = "/dashboard";
 
     } catch (err: any) {
@@ -47,10 +51,7 @@ export function LoginForm() {
   }
 
   return (
-    <form 
-      onSubmit={handleSubmit} 
-      className="space-y-4"
-    >
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700">CI</label>
         <input
@@ -75,9 +76,7 @@ export function LoginForm() {
         />
       </div>
 
-      {error && (
-        <p className="text-red-500 text-sm">{error}</p>
-      )}
+      {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <button
         type="submit"

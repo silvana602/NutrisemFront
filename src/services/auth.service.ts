@@ -1,8 +1,8 @@
 import { db } from "@/mocks/db";
 import { uid } from "@/mocks/utils";
-import type { AuthResponse, LoginDto, RegisterHealthcareDto } from "@/types/auth";
+import type { AuthResponse, LoginDto, RegisterclinicianDto } from "@/types/auth";
 import type { User } from "@/types/user";
-import type { Healthcare } from "@/types/healthcare";
+import type { Clinician } from "@/types/clinician";
 
 export const AuthService = {
   /**
@@ -16,10 +16,10 @@ export const AuthService = {
     // Validar contraseña
     if (user.password !== dto.password) return null;
 
-    // Si el usuario es Healthcare, obtener Healthcare asociado
-    const Healthcare =
-      user.role === "healthcare"
-        ? db.Healthcares.find((m) => m.userId === user.userId) ?? undefined
+    // Si el usuario es clinician, obtener clinician asociado
+    const clinician =
+      user.role === "clinician"
+        ? db.clinicians.find((m) => m.userId === user.userId) ?? undefined
         : undefined;
 
     // Generar token simulado
@@ -28,7 +28,7 @@ export const AuthService = {
     return {
       accessToken,
       user,
-      Healthcare,
+      clinician,
     };
   },
 
@@ -41,15 +41,15 @@ export const AuthService = {
     const anyUser = db.users[0];
     if (!anyUser) return null;
 
-    const Healthcare =
-      anyUser.role === "healthcare"
-        ? db.Healthcares.find((m) => m.userId === anyUser.userId) ?? undefined
+    const clinician =
+      anyUser.role === "clinician"
+        ? db.clinicians.find((m) => m.userId === anyUser.userId) ?? undefined
         : undefined;
 
     return {
       accessToken: token,
       user: anyUser,
-      Healthcare,
+      clinician,
     };
   },
 
@@ -61,9 +61,9 @@ export const AuthService = {
   },
 
   /**
-   * Registro de Healthcare
+   * Registro de clinician
    */
-  registerHealthcare: (dto: RegisterHealthcareDto): AuthResponse | null => {
+  registerclinician: (dto: RegisterclinicianDto): AuthResponse | null => {
     if (dto.password !== dto.confirmPassword) {
       throw new Error("Las contraseñas no coinciden");
     }
@@ -82,14 +82,14 @@ export const AuthService = {
       identityCard: dto.identityCard,
       phone: dto.phone,
       address: dto.address,
-      role: "healthcare",
+      role: "clinician",
       password: dto.password,
     };
     db.users.push(user);
 
-    // Crear Healthcare
-    const Healthcare: Healthcare = {
-      healthcareId: uid("mon"),
+    // Crear clinician
+    const clinician: Clinician = {
+      clinicianId: uid("mon"),
       userId,
       professionalId: dto.professionalId,
       profession: dto.profession,
@@ -97,11 +97,11 @@ export const AuthService = {
       residence: dto.residence,
       institution: dto.institution,
     };
-    db.Healthcares.push(Healthcare);
+    db.clinicians.push(clinician);
 
     const accessToken = uid("token");
 
-    return { accessToken, user, Healthcare };
+    return { accessToken, user, clinician };
   },
 
   /**

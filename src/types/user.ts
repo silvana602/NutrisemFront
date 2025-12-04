@@ -1,5 +1,7 @@
-// Tipo de Usuario
-export type Role = "admin" | "healthcare" | "patient";
+import { Clinician } from './clinician';
+import { Patient } from './patient';
+
+export type Role = "admin" | "clinician" | "patient";
 
 export type User = {
     userId: string;       
@@ -9,5 +11,7 @@ export type User = {
     identityCard: string;
     phone: string;
     address: string;
-    password: string;     
+    password: string;  
+    clinician?: Clinician;
+    patient?: Patient;   
 };

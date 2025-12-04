@@ -45,7 +45,7 @@ export default function RootLayout({
         <Navbar />
 
         {/* 4. Área principal */}
-        <main className="min-h-screen w-full bg-nutri-off-white px-4 md:px-8 lg:px-25">
+        <main className="min-h-screen w-full bg-nutri-off-white">
           {children}
         </main>
 

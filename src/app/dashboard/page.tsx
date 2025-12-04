@@ -2,7 +2,7 @@
 
 import { useAuthStore } from "@/store/useAuthStore";
 import AdminDashboard from "./admin/page";
-import HealthcareDashboard from "./healthcare/page";
+import ClinicianDashboard from "./clinician/page";
 import PatientDashboard from "./patient/page";
 import { LoadingButton } from "@/components/ui/Spinner";
 
@@ -20,8 +20,8 @@ export default function DashboardPage() {
   switch (user.role) {
     case "admin":
       return <AdminDashboard />;
-    case "healthcare":
-      return <HealthcareDashboard />;
+    case "clinician":
+      return <ClinicianDashboard />;
     case "patient":
       return <PatientDashboard />;
     default:

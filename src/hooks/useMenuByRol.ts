@@ -1,7 +1,8 @@
-import { adminMenu, medicoMenu, pacienteMenu, Role } from "@/config/menus";
+import { adminMenu, clinicianMenu, pacienteMenu } from "@/config/menus";
+import { Role } from "@/types/user";
 
 export function useMenuByRole(role: Role) {
-  if (role === "ADMIN") return adminMenu;
-  if (role === "MEDICO") return medicoMenu;
+  if (role === "admin") return adminMenu;
+  if (role === "clinician") return clinicianMenu;
   return pacienteMenu; // default PACIENTE
 }

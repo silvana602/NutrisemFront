@@ -2,7 +2,7 @@
 export type Consultation = {
     consultationId: string;
     patientId: string;
-    healthcareId: string;
+    clinicianId: string;
     date: string;  // fecha
     time: string;  // hora
 };

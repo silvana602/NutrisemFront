@@ -1,14 +1,14 @@
 import { create } from "zustand";
 
 import type { User } from "@/types/user";
-import type { Healthcare } from "@/types/healthcare";
+import type { Clinician } from "@/types/clinician";
 
 type AuthState = {
   hydrated: boolean;
 
   accessToken: string | null;
-  user: User | null;      // admin o healthcare
-  healthcare: Healthcare | null; // si rol === healthcare
+  user: User | null;      // admin o clinician
+  clinician: Clinician | null; // si rol === clinician
 
   /** Marcar hidratado */
   setHydrated: (v: boolean) => void;
@@ -17,7 +17,7 @@ type AuthState = {
   setSession: (data: {
     accessToken: string | null;
     user: User;
-    healthcare?: Healthcare | null;
+    clinician?: Clinician | null;
   }) => void;
 
   /** Cerrar sesión */
@@ -27,7 +27,7 @@ type AuthState = {
 
   /** Helpers */
   isAdmin: () => boolean;
-  ishealthcare: () => boolean;
+  isclinician: () => boolean;
   isPatient: () => boolean; // depende de implementación futura
 };
 
@@ -36,22 +36,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   accessToken: null,
   user: null,
-  healthcare: null,
+  clinician: null,
 
   setHydrated: (v) => set({ hydrated: v }),
 
-  setSession: ({ accessToken, user, healthcare }) =>
+  setSession: ({ accessToken, user, clinician }) =>
     set({
       accessToken,
       user,
-      healthcare: healthcare ?? null,
+      clinician: clinician ?? null,
     }),
 
   clearSession: () =>
     set({
       accessToken: null,
       user: null,
-      healthcare: null,
+      clinician: null,
     }),
 
   setUser: (u) => set({ user: u }),
@@ -60,6 +60,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   // Helpers
   isAdmin: () => get().user?.role === "admin",
-  ishealthcare: () => !!get().healthcare,
+  isclinician: () => !!get().clinician,
   isPatient: () => false, // se habilitará cuando implementemos login tutor
 }));

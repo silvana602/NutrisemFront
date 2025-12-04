@@ -10,9 +10,9 @@ export type PatientTutor = {
     relation: string;    // ejemplo: "madre", "padre", "tía"
 };
 
-// Relación Paciente-Healthcare
-export type PatientHealthcare = {
-    patientHealthcareId: string;
+// Relación Paciente-clinician
+export type Patientclinician = {
+    patientclinicianId: string;
     patientId: string;
-    healthcareId: string;  // id del healthcare (no userId)
+    clinicianId: string;  // id del clinician (no userId)
 };

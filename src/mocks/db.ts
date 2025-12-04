@@ -3,10 +3,10 @@ import { uid } from "./utils";
 
 import type {
   User,
-  Healthcare,
+  Clinician,
   Patient,
   PatientTutor,
-  PatientHealthcare,
+  Patientclinician,
   Consultation,
   AnthropometricData,
   ClinicalData,
@@ -15,10 +15,10 @@ import type {
 
 type Store = {
   users: User[];
-  Healthcares: Healthcare[];
+  clinicians: Clinician[];
   patients: Patient[];
   patientTutor: PatientTutor[];
-  patientHealthcare: PatientHealthcare[];
+  patientclinician: Patientclinician[];
   consultations: Consultation[];
   anthropometricData: AnthropometricData[];
   clinicalData: ClinicalData[];
@@ -33,10 +33,10 @@ function initDb(): Store {
   if (!G.__NUTRISEM_DB__) {
     G.__NUTRISEM_DB__ = {
       users: [],
-      Healthcares: [],
+      clinicians: [],
       patients: [],
       patientTutor: [],
-      patientHealthcare: [],
+      patientclinician: [],
       consultations: [],
       anthropometricData: [],
       clinicalData: [],
@@ -59,10 +59,10 @@ export function getUserByCI(ci: string) {
 
 export function hardResetDb() {
   db.users.length = 0;
-  db.Healthcares.length = 0;
+  db.clinicians.length = 0;
   db.patients.length = 0;
   db.patientTutor.length = 0;
-  db.patientHealthcare.length = 0;
+  db.patientclinician.length = 0;
   db.consultations.length = 0;
   db.anthropometricData.length = 0;
   db.clinicalData.length = 0;
@@ -86,15 +86,15 @@ export function seedOnce() {
     password: "admin",
   };
 
-  const userHealthcare: User = {
+  const userClinician: User = {
     userId: uid("usr"),
-    role: "healthcare",
+    role: "clinician",
     firstName: "Juan",
     lastName: "Mendez",
     identityCard: "1234567",
     phone: "7777777",
     address: "La Paz",
-    password: "healthcare",
+    password: "clinician",
   };
 
   const userPatient: User = {
@@ -108,16 +108,16 @@ export function seedOnce() {
     password: "patient",
   };
 
-  db.users.push(userAdmin, userHealthcare, userPatient);
+  db.users.push(userAdmin, userClinician, userPatient);
 
   // passwords centralizadas
   db.passwords.set(userAdmin.userId, "admin");
-  db.passwords.set(userHealthcare.userId, "healthcare");
+  db.passwords.set(userClinician.userId, "clinician");
   db.passwords.set(userPatient.userId, "patient");
 
-  const healthcare1: Healthcare = {
-    healthcareId: uid("mon"),
-    userId: userHealthcare.userId,
+  const clinician1: Clinician = {
+    clinicianId: uid("mon"),
+    userId: userClinician.userId,
     professionalId: "MP-001",
     profession: "Nutritionist",
     specialty: "Pediatrics",
@@ -125,7 +125,10 @@ export function seedOnce() {
     institution: "Children's Hospital",
   };
 
-  db.Healthcares.push(healthcare1);
+  db.clinicians.push(clinician1);
+
+  // Relación 1:1 -> asociar clinician dentro de user
+  userClinician.clinician = clinician1;
 
   const patient1: Patient = {
     patientId: uid("pat"),
@@ -150,16 +153,16 @@ export function seedOnce() {
 
   patient1.tutors.push(tutor1);
 
-  db.patientHealthcare.push({
-    patientHealthcareId: uid("pm"),
+  db.patientclinician.push({
+    patientclinicianId: uid("pm"),
     patientId: patient1.patientId,
-    healthcareId: healthcare1.healthcareId,
+    clinicianId: clinician1.clinicianId,
   });
 
   const consultation1: Consultation = {
     consultationId: uid("con"),
     patientId: patient1.patientId,
-    healthcareId: healthcare1.healthcareId,
+    clinicianId: clinician1.clinicianId,
     date: "2025-01-15",
     time: "09:00",
   };
