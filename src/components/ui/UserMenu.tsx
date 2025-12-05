@@ -115,7 +115,7 @@ export default function UserMenu() {
           )}
           {isclinician && (
             <Link
-              href="/dashboard/paciente"
+              href="/dashboard/patient"
               onClick={navigate}
               className="block px-4 py-2 text-sm rounded-lg text-gray-700 hover:bg-primary/10 transition-colors"
               style={{ color: colors.darkGrey }}
