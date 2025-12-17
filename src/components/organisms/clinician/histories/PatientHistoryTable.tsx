@@ -1,58 +1,128 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Pagination } from "@/components/atoms/Pagination";
+import { db } from "@/mocks/db";
 
-interface HistoryEntry {
-  id: number;
-  consultationId: string;
-  diagnostic: string;
-  age: string | number;
-  weight: string | number;
-  height: string | number;
+interface History {
+  historyId: number;
+  patientId: number;
   date: string;
-  complete: boolean;
+  reason: string;
+  professional: string;
+  notes?: string;
+  type?: "Consulta" | "Control" | "Urgencia"; // ejemplo de badge
 }
 
-interface PatientHistoryTableProps {
-  data: HistoryEntry[];
+interface Props {
+  patientId: number;
 }
 
-export const PatientHistoryTable: React.FC<PatientHistoryTableProps> = ({ data }) => {
+export const PatientsHistoryTable: React.FC<Props> = ({ patientId }) => {
+  const [history, setHistory] = useState<History[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [expandedRows, setExpandedRows] = useState<number[]>([]);
+  const itemsPerPage = 5;
+
+  useEffect(() => {
+    const allHistory = db.histories
+      ?.filter((h: History) => h.patientId === patientId)
+      .sort((a: History, b: History) => new Date(b.date).getTime() - new Date(a.date).getTime()) ?? [];
+
+    setHistory(allHistory);
+    setCurrentPage(1);
+    setExpandedRows([]);
+  }, [patientId]);
+
+  const toggleRow = (id: number) => {
+    setExpandedRows((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  const totalPages = Math.ceil(history.length / itemsPerPage);
+  const currentData = history.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const getBadgeColor = (type?: string) => {
+    switch (type) {
+      case "Consulta":
+        return "bg-blue-100 text-blue-800";
+      case "Control":
+        return "bg-green-100 text-green-800";
+      case "Urgencia":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
   return (
-    <div className="w-full overflow-x-auto border rounded-md">
-      <table className="min-w-[900px] w-full text-sm">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="px-3 py-2">Nro</th>
-            <th className="px-3 py-2">Diagnóstico</th>
-            <th className="px-3 py-2">Edad</th>
-            <th className="px-3 py-2">Peso</th>
-            <th className="px-3 py-2">Talla</th>
-            <th className="px-3 py-2">Fecha</th>
-            <th className="px-3 py-2">Reporte</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((h) => (
-            <tr key={h.consultationId} className="border-t">
-              <td className="px-3 py-2">{h.id}</td>
-              <td className="px-3 py-2">{h.diagnostic}</td>
-              <td className="px-3 py-2">{h.age}</td>
-              <td className="px-3 py-2">{h.weight}</td>
-              <td className="px-3 py-2">{h.height}</td>
-              <td className="px-3 py-2">{new Date(h.date).toLocaleDateString()}</td>
-              <td className="px-3 py-2 text-blue-600 cursor-pointer">Ver</td>
-            </tr>
-          ))}
-          {data.length === 0 && (
-            <tr>
-              <td colSpan={7} className="px-4 py-6 text-center text-gray-500">
-                No hay historiales para este paciente.
-              </td>
-            </tr>
+    <div className="bg-white shadow rounded-md p-4 space-y-4">
+      <h2 className="text-lg font-semibold">Historial de Consultas</h2>
+
+      {history.length === 0 ? (
+        <p className="text-sm text-gray-500">
+          No hay consultas registradas para este paciente.
+        </p>
+      ) : (
+        <>
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="py-2 px-3 text-left">Fecha</th>
+                <th className="py-2 px-3 text-left">Motivo</th>
+                <th className="py-2 px-3 text-left">Profesional</th>
+                <th className="py-2 px-3 text-left">Tipo</th>
+                <th className="py-2 px-3 text-left">Notas</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentData.map((h) => {
+                const isExpanded = expandedRows.includes(h.historyId);
+
+                return (
+                  <React.Fragment key={h.historyId}>
+                    <tr
+                      className="border-b hover:bg-gray-50 cursor-pointer"
+                      onClick={() => toggleRow(h.historyId)}
+                    >
+                      <td className="py-2 px-3">{new Date(h.date).toLocaleDateString()}</td>
+                      <td className="py-2 px-3">{h.reason}</td>
+                      <td className="py-2 px-3">{h.professional}</td>
+                      <td className="py-2 px-3">
+                        <span className={`px-2 py-1 rounded text-xs font-semibold ${getBadgeColor(h.type)}`}>
+                          {h.type ?? "-"}
+                        </span>
+                      </td>
+                      <td className="py-2 px-3">{h.notes ? (isExpanded ? h.notes : `${h.notes.slice(0, 30)}...`) : "-"}</td>
+                    </tr>
+
+                    {/* Fila expandida para mostrar notas completas */}
+                    {isExpanded && h.notes && (
+                      <tr className="bg-gray-50">
+                        <td colSpan={5} className="py-2 px-3 text-gray-700 text-sm">
+                          <strong>Notas completas:</strong> {h.notes}
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           )}
-        </tbody>
-      </table>
+        </>
+      )}
     </div>
   );
 };

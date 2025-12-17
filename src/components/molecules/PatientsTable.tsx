@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { colors } from "@/lib/colors";
-import { Pagination } from "../atoms/Pagination";
 
 interface Patient {
   id: number;
@@ -14,15 +13,28 @@ interface Patient {
   lastConsult: string;
 }
 
+interface HistoryEntry {
+  id: number;
+  consultationId: string;
+  diagnostic: string;
+  age: string | number;
+  weight: string | number;
+  height: string | number;
+  date: string;
+  complete: boolean;
+}
+
 interface Props {
   data: Patient[];
+}
+
+interface PatientHistoryTableProps {
+  data: HistoryEntry[];
 }
 
 export const PatientsTable: React.FC<Props> = ({ data }) => {
   const [page, setPage] = useState(1);
   const pageSize = 8;
-
-  const totalPages = Math.ceil(data.length / pageSize);
 
   const paginated = useMemo(() => {
     const start = (page - 1) * pageSize;
@@ -31,25 +43,28 @@ export const PatientsTable: React.FC<Props> = ({ data }) => {
 
   return (
     <div className="mt-6 w-full space-y-4">
-
       {/* WRAPPER QUE ACTIVA EL SCROLL */}
-      <div className="w-full overflow-x-auto rounded-lg border"
-          style={{ borderColor: colors.lightGrey }}>
-
+      <div
+        className="w-full overflow-x-auto rounded-lg border"
+        style={{ borderColor: colors.lightGrey }}
+      >
         {/* 👇 QUITAMOS el min-width fijo */}
         <table className="w-full text-sm">
-          <thead
-            className="bg-gray-50"
-            style={{ background: colors.offWhite }}
-          >
+          <thead className="bg-gray-50" style={{ background: colors.offWhite }}>
             <tr>
               <th className="px-3 py-2 text-left font-semibold">Nro</th>
-              <th className="px-3 py-2 text-left font-semibold">Nombre completo</th>
-              <th className="px-3 py-2 text-left font-semibold">Nombre del tutor</th>
+              <th className="px-3 py-2 text-left font-semibold">
+                Nombre completo
+              </th>
+              <th className="px-3 py-2 text-left font-semibold">
+                Nombre del tutor
+              </th>
               <th className="px-3 py-2 text-left font-semibold">Cédula</th>
               <th className="px-3 py-2 text-left font-semibold">Edad</th>
               <th className="px-3 py-2 text-left font-semibold">Sexo</th>
-              <th className="px-3 py-2 text-left font-semibold">Última consulta</th>
+              <th className="px-3 py-2 text-left font-semibold">
+                Última consulta
+              </th>
               <th className="px-3 py-2 text-left font-semibold">Historial</th>
             </tr>
           </thead>
@@ -82,9 +97,6 @@ export const PatientsTable: React.FC<Props> = ({ data }) => {
           </tbody>
         </table>
       </div>
-
-      {/* PAGINACIÓN */}
-      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
     </div>
   );
 };

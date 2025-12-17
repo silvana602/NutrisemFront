@@ -6,6 +6,7 @@ import { IconButton } from "../../atoms/IconButton";
 import { SearchBar } from "../../molecules/SearchBar";
 import { FilterBar } from "../../molecules/FilterBar";
 import { PatientsTable } from "../../molecules/PatientsTable";
+import { Pagination } from "../../atoms/Pagination";
 import { colors } from "@/lib/colors";
 import { calculateAge } from "@/lib/utils";
 
@@ -22,15 +23,18 @@ type RowPatient = {
   lastConsult: string;
 };
 
+const PAGE_SIZE = 8;
+
 export const PatientsListContent: React.FC = () => {
   const [search, setSearch] = useState("");
   const [ageFilter, setAgeFilter] = useState("all");
   const [sexFilter, setSexFilter] = useState("all");
   const [rows, setRows] = useState<RowPatient[]>([]);
+  const [page, setPage] = useState(1);
 
-  // Cargar pacientes
+  // 🔹 Cargar pacientes
   useEffect(() => {
-    const loadPatients = async () => {
+    const loadPatients = () => {
       try {
         seedOnce();
       } catch {}
@@ -47,6 +51,7 @@ export const PatientsListContent: React.FC = () => {
           : `Paciente ${idx + 1}`;
 
         const ci = user?.identityCard ?? "----";
+
         const tutor = p.tutors?.[0]
           ? `${p.tutors[0].firstName} ${p.tutors[0].lastName}`
           : "-";
@@ -54,7 +59,11 @@ export const PatientsListContent: React.FC = () => {
         const age = p.birthDate ? calculateAge(p.birthDate) : 0;
 
         const sex =
-          p.gender === "male" ? "M" : p.gender === "female" ? "F" : "-";
+          p.gender === "male"
+            ? "M"
+            : p.gender === "female"
+            ? "F"
+            : "-";
 
         const patientConsults = consultations
           .filter((c: any) => c.patientId === p.patientId)
@@ -63,7 +72,15 @@ export const PatientsListContent: React.FC = () => {
         const lastConsult =
           patientConsults.length > 0 ? patientConsults[0].date : "-";
 
-        return { id: idx + 1, name, tutor, ci, age, sex, lastConsult };
+        return {
+          id: idx + 1,
+          name,
+          tutor,
+          ci,
+          age,
+          sex,
+          lastConsult,
+        };
       });
 
       setRows(list);
@@ -72,12 +89,11 @@ export const PatientsListContent: React.FC = () => {
     loadPatients();
   }, []);
 
-  // Filtrado
+  // 🔹 Filtro y búsqueda
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
 
     return rows.filter((r) => {
-      // Buscador
       const matchesSearch =
         q === "" ||
         r.name.toLowerCase().includes(q) ||
@@ -85,24 +101,34 @@ export const PatientsListContent: React.FC = () => {
 
       if (!matchesSearch) return false;
 
-      // Filtro sexo
       if (sexFilter !== "all" && r.sex !== sexFilter) return false;
 
-      // Filtro edad
       if (ageFilter !== "all") {
-        const age = r.age;
-
         const [min, max] =
           ageFilter === "16+"
             ? [16, Infinity]
             : ageFilter.split("-").map(Number);
 
-        if (!(age >= min && age <= (max ?? Infinity))) return false;
+        if (!(r.age >= min && r.age <= max)) return false;
       }
 
       return true;
     });
   }, [rows, search, sexFilter, ageFilter]);
+
+  // 🔹 Resetear página al filtrar/buscar
+  useEffect(() => {
+    setPage(1);
+  }, [search, ageFilter, sexFilter]);
+
+  // 🔹 Paginación
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+
+  const paginatedPatients = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    return filtered.slice(start, end);
+  }, [filtered, page]);
 
   return (
     <div className="w-full px-4 sm:px-6 py-4">
@@ -130,7 +156,15 @@ export const PatientsListContent: React.FC = () => {
         </p>
       </div>
 
-      <PatientsTable data={filtered} />
+      {/* Tabla */}
+      <PatientsTable data={paginatedPatients} />
+
+      {/* Paginación */}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onChange={setPage}
+      />
     </div>
   );
 };
