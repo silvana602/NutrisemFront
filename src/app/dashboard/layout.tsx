@@ -2,10 +2,14 @@
 
 import React, { useEffect } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
-import Sidebar from "@/components/layout/Sidebar";
+import Sidebar from "@/components/layout/sidebar/Sidebar";
 import { LoadingButton } from "@/components/ui/Spinner";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const user = useAuthStore((state) => state.user);
   const setSession = useAuthStore((state) => state.setSession);
   const hydrated = useAuthStore((state) => state.hydrated);
@@ -33,21 +37,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (!user) {
     return (
-      <div className="p-4 text-center text-red-600">No hay usuario. Inicie sesión.</div>
+      <div className="p-4 text-center text-red-600">
+        No hay usuario. Inicie sesión.
+      </div>
     );
   }
 
   const role = user.role;
 
   return (
-    <div className="flex min-h-screen">
-      {/* 💡 Sidebar fluye en el layout */}
+    <div className="flex min-h-screen overflow-hidden">
+      {/* Sidebar fija */}
       <Sidebar role={role} />
 
-      {/* Contenido */}
-      <main className="flex-1 p-4">
-        {children}
-      </main>
+      {/* CONTENEDOR PRINCIPAL */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* WRAPPER DEL CONTENIDO: agrega scroll vertical */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 max-w-full">
+          {/* CONTENEDOR DE ANCHO MÁXIMO (MUY IMPORTANTE) */}
+          <div className="max-w-[1400px] w-full mx-auto">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }

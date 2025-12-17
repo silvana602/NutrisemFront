@@ -11,3 +11,23 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export function calculateAge(
+  birthdate: string | Date, 
+  atDate?: string | Date
+): number {
+  const birth = new Date(birthdate);
+  const today = atDate ? new Date(atDate) : new Date();
+
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  const dayDiff = today.getDate() - birth.getDate();
+
+  // Restamos 1 si aún no ha cumplido años en el año de referencia
+  if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+    age--;
+  }
+
+  return age;
+}
+

@@ -39,11 +39,11 @@ export const adminMenu: MenuItem[] = [
 ];
 
 export const clinicianMenu: MenuItem[] = [
-  { label: "Inicio", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Mis Pacientes", href: "/clinician/pacientes", icon: BookOpen },
-  { label: "Consultas", href: "/clinician/consultas", icon: Notebook },
-  { label: "Diagnósticos", href: "/clinician/diagnosticos", icon: Activity },
-  { label: "Reportes", href: "/clinician/reportes", icon: BarChart3 },
+  { label: "Inicio", href: "/dashboard/clinician", icon: LayoutDashboard },
+  { label: "Mis Pacientes", href: "/dashboard/clinician/patients", icon: BookOpen },
+  { label: "Consultas", href: "/dashboard/clinician/consultas", icon: Notebook },
+  { label: "Diagnósticos", href: "/dashboard/clinician/diagnosticos", icon: Activity },
+  { label: "Historiales y Reportes", href: "/dashboard/clinician/reports", icon: BarChart3 },
 ];
 
 export const pacienteMenu: MenuItem[] = [

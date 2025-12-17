@@ -32,3 +32,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Scroll fino estilo iOS/Mockup */
+::-webkit-scrollbar {
+  height: 8px; /* grosor horizontal */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}

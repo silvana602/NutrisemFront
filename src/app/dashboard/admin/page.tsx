@@ -1,7 +1,5 @@
-"use client"
+import AdminDashboardContent from "@/components/organisms/admin/AdminDashboardContent";
 
-export default function AdminDashboard () {
-  return (
-    <div>ADMIN</div>
-  )
+export default function ClinicianDashboards() {
+  return <AdminDashboardContent />;
 }

@@ -7,7 +7,8 @@ import PatientDashboard from "./patient/page";
 import { LoadingButton } from "@/components/ui/Spinner";
 
 export default function DashboardPage() {
-  const { user } = useAuthStore();
+
+  const user = useAuthStore((state) => state.user);
 
   if (!user) {
     return (
