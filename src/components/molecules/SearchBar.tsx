@@ -26,10 +26,20 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         icon={
           <Search
             size={20}
-            className="text-gray-400 transition-colors"
+            className="text-[#6B7280] transition-colors group-focus-within:text-[#2E7D32]"
           />
         }
-        className="w-full focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+        className={`
+          w-full 
+          rounded-lg 
+          bg-[#F1F8E9] 
+          border border-[#C8E6C9] 
+          px-4 py-2 
+          focus:ring-2 focus:ring-[#A5D6A7] 
+          focus:border-[#2E7D32] 
+          transition-all 
+          placeholder-gray-400
+        `}
       />
     </div>
   );

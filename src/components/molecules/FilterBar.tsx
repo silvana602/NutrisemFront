@@ -24,7 +24,7 @@ export function FilterBar({
         <select
           value={age}
           onChange={(e) => onAgeChange(e.target.value)}
-          className="border rounded-lg px-3 py-2 text-gray-700 bg-white shadow-sm"
+          className="rounded-lg px-3 py-2 text-gray-700 bg-white shadow-sm"
         >
           <option value="all">Todos</option>
           <option value="0-1">0 - 1 año</option>
@@ -44,7 +44,7 @@ export function FilterBar({
         <select
           value={gender}
           onChange={(e) => onGenderChange(e.target.value)}
-          className="border rounded-lg px-3 py-2 text-gray-700 bg-white shadow-sm"
+          className="rounded-lg px-3 py-2 text-gray-700 bg-white shadow-sm"
         >
           <option value="all">Todos</option>
           <option value="M">Masculino</option>

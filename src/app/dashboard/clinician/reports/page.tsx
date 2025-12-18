@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { PatientsHistoryContent } from "@/components/organisms/clinician/histories/PatientsHistoryContent";
+import { PatientHistoryContent } from "@/components/organisms/clinician/histories/PatientHistoryContent";
 import { ReportsContent } from "@/components/organisms/clinician/reports/ReportsContent";
 
 export default function HistorialesReportesPage() {
@@ -29,7 +29,7 @@ export default function HistorialesReportesPage() {
 
       {/* Contenido */}
       <div className="w-full">
-        {tab === "historiales" && <PatientsHistoryContent />}
+        {tab === "historiales" && <PatientHistoryContent />}
         {tab === "reportes" && <ReportsContent />}
       </div>
     </div>

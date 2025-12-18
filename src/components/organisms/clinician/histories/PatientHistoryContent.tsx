@@ -1,4 +1,5 @@
 "use client";
+import { colors } from "@/lib/colors";
 
 import { useEffect, useState } from "react";
 import { Heading } from "@/components/atoms/Heading";
@@ -9,22 +10,19 @@ import { PatientsHistoryTable } from "./PatientHistoryTable";
 import { seedOnce, db } from "@/mocks/db";
 import type { Patient, User } from "@/types";
 
-export const PatientHistoryContent = () => {
+export const PatientHistoryContent: React.FC = () => {
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
-  // ✅ Cargar DB una sola vez
   useEffect(() => {
     seedOnce();
   }, []);
 
-  // 🔍 Búsqueda con debounce (SIN loops de render)
   useEffect(() => {
     const q = search.trim().toLowerCase();
 
     const timer = setTimeout(() => {
-      // reset limpio
       if (q.length < 2) {
         setResults([]);
         setSelectedPatient(null);
@@ -39,7 +37,7 @@ export const PatientHistoryContent = () => {
         if (!user) return false;
 
         const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-        const ci = user.identityCard?.toLowerCase() ?? "";
+        const ci = user.identityNumber?.toLowerCase() ?? "";
 
         return fullName.includes(q) || ci.includes(q);
       });
@@ -52,20 +50,20 @@ export const PatientHistoryContent = () => {
   }, [search]);
 
   return (
-    <div className="w-full px-4 py-4 space-y-6">
-      <Heading>Historial del Paciente</Heading>
+    <div className="w-full px-6 py-6 space-y-8">
+      <Heading>Patient History</Heading>
 
       {/* Buscador */}
       <SearchBar value={search} onChange={setSearch} />
 
       {/* Lista de resultados */}
       {results.length > 1 && !selectedPatient && (
-        <div className="bg-white rounded-md shadow p-4">
-          <p className="text-sm text-gray-500 mb-2">
-            Selecciona un paciente:
+        <div className={`${colors.secondary} rounded-xl shadow-lg p-6 border ${colors.lightGrey}`}>
+          <p className={`text-sm ${colors.darkGrey} mb-3`}>
+            Select a patient:
           </p>
 
-          <ul className="divide-y">
+          <ul className="divide-y divide-gray-200">
             {results.map((p) => {
               const user = db.users.find(
                 (u: User) => u.userId === p.userId
@@ -73,14 +71,14 @@ export const PatientHistoryContent = () => {
 
               return (
                 <li
-                  key={p.patientId} // ✅ string OK
-                  className="py-2 cursor-pointer hover:bg-gray-50 px-2 rounded"
+                  key={p.patientId}
+                  className={`py-3 px-4 mb-2 cursor-pointer rounded-lg transition ${colors.lightGrey}`}
                   onClick={() => setSelectedPatient(p)}
                 >
-                  <strong>
+                  <strong className={`${colors.primary}`}>
                     {user?.firstName} {user?.lastName}
                   </strong>{" "}
-                  – CI: {user?.identityCard ?? "----"}
+                  – CI: {user?.identityNumber ?? "----"}
                 </li>
               );
             })}
@@ -90,18 +88,21 @@ export const PatientHistoryContent = () => {
 
       {/* Summary + Historial */}
       {selectedPatient && (
-        <div className="space-y-6">
-          <PatientSummary patient={selectedPatient} />
-          <PatientsHistoryTable
-            patientId={selectedPatient.patientId} // ✅ string
-          />
+        <div className="space-y-8">
+          <div className="rounded-xl shadow-lg p-6 bg-white border border-gray-100">
+            <PatientSummary patient={selectedPatient} />
+          </div>
+
+          <div className="rounded-xl shadow-lg p-6 bg-white border border-gray-100">
+            <PatientsHistoryTable patientId={selectedPatient.patientId} />
+          </div>
         </div>
       )}
 
       {/* Sin resultados */}
       {search.length >= 2 && results.length === 0 && (
-        <p className="text-sm text-gray-500">
-          No se encontraron pacientes.
+        <p className={`text-sm ${colors.darkGrey} mt-4`}>
+          Pacientes no encontrados
         </p>
       )}
     </div>
