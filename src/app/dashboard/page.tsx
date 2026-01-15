@@ -19,11 +19,11 @@ export default function DashboardPage() {
   }
 
   switch (user.role) {
-    case "admin":
+    case "ADMIN":
       return <AdminDashboard />;
-    case "clinician":
+    case "CLINICIAN":
       return <ClinicianDashboard />;
-    case "patient":
+    case "PATIENT":
       return <PatientDashboard />;
     default:
       return (
