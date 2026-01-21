@@ -12,6 +12,7 @@ import { useGlobalDismiss } from "@/hooks/useGlobalDismiss";
 import { colors } from "@/lib/colors";
 // import { Link } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 
 function buildNext(pathname: string | null, qs: string): string | "" {
   if (!pathname) return "";
@@ -47,7 +48,7 @@ export const Navbar = () => {
   );
 
   return (
-    <header className="shadow-md bg-white">
+    <header className="shadow-m" style={{ backgroundColor: colors.white, }}>
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* LOGO */}
@@ -80,12 +81,12 @@ export const Navbar = () => {
             <UserMenu />
           ) : (
             <>
-              <Link
-                href={`/login${nextQuery}`}
-                className="text-sm px-3 py-1 border border-nutri-primary text-primary font-semibold rounded-xl hover:bg-nutri-primary hover:text-nutri-off-white transition"
-              >
-                Iniciar sesión
-              </Link>
+            {/* ARREGLAR A FUTURO */}
+              <Button variant="outline">
+                <Link href={`/login${nextQuery}`}>
+                  Iniciar sesión
+                </Link>
+              </Button>
             </>
           )}
         </div>

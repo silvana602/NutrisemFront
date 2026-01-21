@@ -30,9 +30,9 @@ export const PatientSummary: React.FC<Props> = ({ patient }) => {
   const age = patient.birthDate ? calculateAge(patient.birthDate) : "-";
 
   const genderLabel =
-    patient.gender === "MALE"
+    patient.gender === "male"
       ? "Masculino"
-      : patient.gender === "FEMALE"
+      : patient.gender === "female"
       ? "Femenino"
       : "Otro";
 

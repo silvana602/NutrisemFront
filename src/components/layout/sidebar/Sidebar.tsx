@@ -3,32 +3,27 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useMenuByRole } from "@/hooks/useMenuByRol";
-import { Role } from "@/types/user";
-import Avatar from "../../ui/Avatar";
+import { getMenuByRole } from "@/hooks/useMenuByRol";
+import Avatar from "@/components/ui/Avatar";
 
 import { cn } from "@/lib/utils";
 import { colors } from "@/lib/colors";
 
-interface SidebarProps {
-  role: Role;
-}
-
-export default function Sidebar({ role }: SidebarProps) {
+export default function Sidebar() {
+  const hydrated = useAuthStore((s) => s.hydrated);
   const pathname = usePathname();
   const user = useAuthStore((s) => s.user);
-  const menuItems = useMenuByRole(role);
 
-  if (!user) return null;
+  if (!hydrated || !user) return null;
+
+  const menuItems = getMenuByRole(user.role);
 
   return (
     <aside
-      className={cn(
-        "hidden lg:flex lg:flex-col lg:w-72 lg:min-h-screen lg:border-r",
-        "bg-white"
-      )}
+      className="hidden lg:flex lg:flex-col lg:w-72 lg:min-h-screen lg:border-r"
       style={{
         borderColor: colors.lightGrey,
+        backgroundColor: colors.white,
       }}
     >
       {/* USER SECTION */}
@@ -36,11 +31,7 @@ export default function Sidebar({ role }: SidebarProps) {
         <div className="mb-3">
           <Avatar name={`${user.firstName} ${user.lastName}`} size={100} />
         </div>
-
-        <p
-          className="truncate text-sm font-semibold"
-          style={{ color: colors.darkGrey }}
-        >
+        <p className="truncate text-sm font-semibold" style={{ color: colors.darkGrey }}>
           {user.firstName} {user.lastName}
         </p>
       </div>
@@ -50,14 +41,10 @@ export default function Sidebar({ role }: SidebarProps) {
         {menuItems.map((item) => {
           const Icon = item.icon;
 
-          /**
-           * Nueva detección avanzada de ruta activa
-           * Marca activo si la ruta comienza con el href real del item.
-           */
-          const isActive =
-            pathname === item.href ||
-            (pathname.startsWith(item.href + "/") &&
-              item.href !== `/dashboard/${role}`);
+          // ✅ Solo activo si el pathname coincide exactamente o es subruta (opcional)
+          const isActive = item.matchExact
+            ? pathname === item.href
+            : pathname === item.href || pathname.startsWith(item.href + "/");
 
           return (
             <Link
@@ -65,9 +52,7 @@ export default function Sidebar({ role }: SidebarProps) {
               href={item.href}
               className={cn(
                 "flex items-center gap-3 px-6 py-3 mx-3 my-1 rounded-md transition-all duration-150",
-                isActive
-                  ? "shadow-sm text-white"
-                  : "text-gray-700 hover:shadow-sm"
+                isActive ? "shadow-sm text-white" : "hover:shadow-sm"
               )}
               style={{
                 backgroundColor: isActive ? colors.primary : "transparent",

@@ -1,3 +1,4 @@
+import { colors } from '@/lib/colors';
 import React from 'react';
 
 interface CardProps {
@@ -11,7 +12,7 @@ export const Card: React.FC<CardProps> = ({ children, className = '', title, ico
   return (
     <div
       className={`rounded-xl shadow-lg p-6 ${className}`}
-      style={{ backgroundColor: 'white' }}
+      style={{ backgroundColor: colors.white }}
     >
       {(title || icon) && (
         <div className="flex items-center gap-3 mb-4">

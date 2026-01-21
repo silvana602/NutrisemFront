@@ -5,57 +5,54 @@ import { useAuthStore } from "@/store/useAuthStore";
 import Sidebar from "@/components/layout/sidebar/Sidebar";
 import { LoadingButton } from "@/components/ui/Spinner";
 
-export default function DashboardLayout({
-  children,
-}: {
+interface DashboardLayoutProps {
   children: React.ReactNode;
-}) {
-  const user = useAuthStore((state) => state.user);
-  const setSession = useAuthStore((state) => state.setSession);
-  const hydrated = useAuthStore((state) => state.hydrated);
-  const setHydrated = useAuthStore((state) => state.setHydrated);
+}
+
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const { user, setSession, hydrated, setHydrated } = useAuthStore();
 
   useEffect(() => {
+    if (hydrated) return;
+
     const saved = localStorage.getItem("session");
     if (saved) {
       try {
         setSession(JSON.parse(saved));
-      } catch (e) {
-        console.error("Error parsing session from localStorage", e);
+      } catch (error) {
+        console.error("Error parsing session from localStorage", error);
+        localStorage.removeItem("session");
       }
     }
+
     setHydrated(true);
-  }, [setSession, setHydrated]);
+  }, [hydrated, setSession, setHydrated]);
 
   if (!hydrated) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <LoadingButton loading={true}>Cargando...</LoadingButton>
+        <LoadingButton loading>Cargando...</LoadingButton>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="p-4 text-center text-red-600">
+      <div className="flex justify-center items-center min-h-screen text-red-600">
         No hay usuario. Inicie sesión.
       </div>
     );
   }
 
-  const role = user.role;
-
   return (
     <div className="flex min-h-screen overflow-hidden">
-      {/* Sidebar fija */}
-      <Sidebar role={role} />
+      <Sidebar />
 
-      {/* CONTENEDOR PRINCIPAL */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* WRAPPER DEL CONTENIDO: agrega scroll vertical */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 max-w-full">
-          {/* CONTENEDOR DE ANCHO MÁXIMO (MUY IMPORTANTE) */}
-          <div className="max-w-[1400px] w-full mx-auto">{children}</div>
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4">
+          <div className="max-w-[1400px] w-full mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>

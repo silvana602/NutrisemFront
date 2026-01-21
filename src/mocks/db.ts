@@ -106,7 +106,7 @@ export function seedOnce() {
   // -------- Users ----------
   const userAdmin: User = {
     userId: uid("usr"),
-    role: UserRole.ADMIN,
+    role: UserRole.admin,
     firstName: "Admin",
     lastName: "System",
     identityNumber: "0000",
@@ -117,7 +117,7 @@ export function seedOnce() {
 
   const userClinician: User = {
     userId: uid("usr"),
-    role: UserRole.CLINICIAN,
+    role: UserRole.clinician,
     firstName: "Juan",
     lastName: "Mendez",
     identityNumber: "1234567",
@@ -128,7 +128,7 @@ export function seedOnce() {
 
   const userPatient: User = {
     userId: uid("usr"),
-    role: UserRole.PATIENT,
+    role: UserRole.patient,
     firstName: "Maria",
     lastName: "Flores",
     identityNumber: "9988776",
@@ -163,7 +163,7 @@ export function seedOnce() {
     lastName: "Flores",
     identityNumber: "9988776",
     birthDate: new Date("2018-05-12"),
-    gender: "FEMALE",
+    gender: "female",
     address: "El Alto",
   };
   db.patients.push(patient1);

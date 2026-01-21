@@ -41,7 +41,20 @@ export function LoginForm() {
 
       localStorage.setItem("session", JSON.stringify(sessionData));
 
-      window.location.href = "/dashboard";
+      const dashboardPath = (() => {
+        switch (data.user.role) {
+          case "admin":
+            return "/dashboard/admin";
+          case "clinician":
+            return "/dashboard/clinician";
+          case "patient":
+            return "/dashboard/patient";
+          default:
+            return "/"; // fallback
+        }
+      })();
+
+      window.location.href = dashboardPath;
 
     } catch (err: any) {
       setError(err.message);
@@ -53,7 +66,7 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700">CI</label>
+        <label className="block text-sm font-medium text-gray-700" >CI</label>
         <input
           type="text"
           value={ci}

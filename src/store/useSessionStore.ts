@@ -18,9 +18,6 @@ type SessionState = {
         clinician?: Clinician | null;
     }) => void;
 
-    // Login tutor (cuando lo implementes)
-    loginTutor: (data: { token: string }) => void;
-
     logout: () => void;
 
     // Helpers
@@ -43,13 +40,6 @@ export const useSessionStore = create<SessionState>()(
                     token,
                     user,
                     clinician: clinician ?? null,
-                    isAuthenticated: true,
-                }),
-
-            // Login tutor → solo token
-            loginTutor: ({ token }) =>
-                set({
-                    token,
                     isAuthenticated: true,
                 }),
 

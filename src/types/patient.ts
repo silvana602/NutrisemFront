@@ -1,8 +1,8 @@
-export type Gender = "MALE" | "FEMALE";
+export type Gender = "male" | "female";
 
 export interface Patient {
   patientId: string;
-  userId: string; // User with role PATIENT
+  userId: string;
   firstName: string;
   lastName: string;
   identityNumber: string;

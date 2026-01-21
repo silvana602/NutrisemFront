@@ -1,16 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import AdminDashboard from "./admin/page";
-import ClinicianDashboard from "./clinician/page";
+import ClinicianDashboardContent from "./clinician/page";
 import PatientDashboard from "./patient/page";
 import { LoadingButton } from "@/components/ui/Spinner";
+import AlertDialog from "@/components/ui/AlertDialog";
 
 export default function DashboardPage() {
-
   const user = useAuthStore((state) => state.user);
+  const activeRole = useAuthStore((state) => state.activeRole);
 
-  if (!user) {
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  if (!user || !activeRole) {
     return (
       <div className="flex justify-center items-center h-full">
         <LoadingButton loading={true}>Cargando...</LoadingButton>
@@ -18,18 +23,34 @@ export default function DashboardPage() {
     );
   }
 
-  switch (user.role) {
-    case "ADMIN":
+  switch (activeRole) {
+    case "admin":
       return <AdminDashboard />;
-    case "CLINICIAN":
-      return <ClinicianDashboard />;
-    case "PATIENT":
+    case "clinician":
+      return <ClinicianDashboardContent />;
+    case "patient":
       return <PatientDashboard />;
     default:
+      // Si el rol no coincide con nada, mostrar modal de alerta
+      setTimeout(() => {
+        if (!showAlert) {
+          setAlertMessage("Rol desconocido. Contacte con soporte.");
+          setShowAlert(true);
+        }
+      }, 0);
+
       return (
-        <div className="p-4 text-center text-red-600">
-          Unknown role. Contact support.
-        </div>
+        <>
+          <AlertDialog
+            open={showAlert}
+            title="Error"
+            message={alertMessage}
+            onClose={() => setShowAlert(false)}
+          />
+          <div className="flex justify-center items-center h-full">
+            <LoadingButton loading={true}>Cargando...</LoadingButton>
+          </div>
+        </>
       );
   }
 }

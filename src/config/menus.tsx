@@ -1,60 +1,135 @@
 import React from "react";
-import { Role } from "@/types/user";
+import { UserRole } from "@/types/user";
 import {
   LayoutDashboard,
   Users,
-  Stethoscope,
   BookOpen,
   FileChartColumn,
   ClipboardList,
   Activity,
   BarChart3,
   Notebook,
-  HeartPulse
+  HeartPulse,
 } from "lucide-react";
 
-/**
- * Tipos
- */
+/* ======================================================
+    TIPOS
+   ====================================================== */
 
 export interface MenuItem {
   label: string;
   href: string;
-  // guardamos el componente del icono (no la instancia JSX)
   icon: React.ElementType;
   badge?: string | number;
   external?: boolean;
+  matchExact?: boolean;
 }
 
-/**
- * Menús por rol
- * Nota: icon es el componente; se renderiza como <item.icon />
- */
+/* ======================================================
+    MENÚ ADMIN
+   ====================================================== */
+
 export const adminMenu: MenuItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Usuarios", href: "/admin/usuarios", icon: Users },
-  { label: "Médicos", href: "/admin/clinicians", icon: Stethoscope },
-  { label: "Reportes", href: "/admin/reportes", icon: FileChartColumn },
-  { label: "Historiales", href: "/admin/historiales", icon: ClipboardList },
+  {
+    label: "Dashboard",
+    href: "/dashboard/admin",
+    icon: LayoutDashboard,
+    matchExact: true,
+  },
+  {
+    label: "Usuarios",
+    href: "/dashboard/admin/users",
+    icon: Users,
+  },
+  {
+    label: "Reportes",
+    href: "/dashboard/admin/reports",
+    icon: FileChartColumn,
+  },
+  {
+    label: "Historiales",
+    href: "/dashboard/admin/histories",
+    icon: ClipboardList,
+  },
 ];
+
+/* ======================================================
+    MENÚ CLINICIAN
+   ====================================================== */
 
 export const clinicianMenu: MenuItem[] = [
-  { label: "Inicio", href: "/dashboard/clinician", icon: LayoutDashboard },
-  { label: "Mis Pacientes", href: "/dashboard/clinician/patients", icon: BookOpen },
-  { label: "Consultas", href: "/dashboard/clinician/consultas", icon: Notebook },
-  { label: "Diagnósticos", href: "/dashboard/clinician/diagnosticos", icon: Activity },
-  { label: "Historiales y Reportes", href: "/dashboard/clinician/reports", icon: BarChart3 },
+  {
+    label: "Inicio",
+    href: "/dashboard/clinician",
+    icon: LayoutDashboard,
+    matchExact: true,
+  },
+  {
+    label: "Mis Pacientes",
+    href: "/dashboard/clinician/patients",
+    icon: BookOpen,
+  },
+  {
+    label: "Nueva Consulta",
+    href: "/dashboard/clinician/consultation",
+    icon: Notebook,
+  },
+  {
+    label: "Diagnósticos",
+    href: "/dashboard/clinician/diagnosis",
+    icon: Activity,
+  },
+  {
+    label: "Reportes",
+    href: "/dashboard/clinician/reports",
+    icon: BarChart3,
+  },
 ];
 
-export const pacienteMenu: MenuItem[] = [
-  { label: "Inicio", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Mi Progreso", href: "/paciente/progreso", icon: HeartPulse },
-  { label: "Mis Diagnósticos", href: "/paciente/diagnosticos", icon: Activity },
-  { label: "Recomendaciones", href: "/paciente/recomendaciones", icon: ClipboardList },
+/* ======================================================
+    MENÚ PATIENT
+   ====================================================== */
+
+export const patientMenu: MenuItem[] = [
+  {
+    label: "Inicio",
+    href: "/dashboard/patient",
+    icon: LayoutDashboard,
+    matchExact: true,
+  },
+  {
+    label: "Mi Progreso",
+    href: "/dashboard/patient/progress",
+    icon: HeartPulse,
+  },
+  {
+    label: "Diagnósticos",
+    href: "/dashboard/patient/diagnosis",
+    icon: Activity,
+  },
+  {
+    label: "Recomendaciones",
+    href: "/dashboard/patient/recommendations",
+    icon: ClipboardList,
+  },
 ];
 
-export function getMenuByRole(role: Role) {
-  if (role === "admin") return adminMenu;
-  if (role === "clinician") return clinicianMenu;
-  return pacienteMenu;
+/* ======================================================
+    SELECTOR DE MENÚ POR ROL
+   ====================================================== */
+
+export function getMenuByRole(role: UserRole): MenuItem[] {
+  switch (role) {
+    case UserRole.admin:
+      return adminMenu;
+
+    case UserRole.clinician:
+      return clinicianMenu;
+
+    case UserRole.patient:
+      return patientMenu;
+
+    default:
+      return [];
+  }
 }

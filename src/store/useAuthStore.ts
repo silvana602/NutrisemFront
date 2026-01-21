@@ -1,34 +1,35 @@
 import { create } from "zustand";
 
 import type { User } from "@/types/user";
+import type { UserRole } from "@/types/user";
 import type { Clinician } from "@/types/clinician";
 
 type AuthState = {
   hydrated: boolean;
 
   accessToken: string | null;
-  user: User | null;      // admin o clinician
-  clinician: Clinician | null; // si rol === clinician
+  user: User | null;
+  clinician: Clinician | null;
 
-  /** Marcar hidratado */
+  /** NUEVO */
+  activeRole: UserRole | null;
+
   setHydrated: (v: boolean) => void;
 
-  /** Guardar sesión */
   setSession: (data: {
     accessToken: string | null;
     user: User;
     clinician?: Clinician | null;
   }) => void;
 
-  /** Cerrar sesión */
-  clearSession: () => void;
+  setActiveRole: (role: UserRole) => void;
 
-  setUser: (u: any) => void;
+  clearSession: () => void;
 
   /** Helpers */
   isAdmin: () => boolean;
-  isclinician: () => boolean;
-  isPatient: () => boolean; // depende de implementación futura
+  isClinician: () => boolean;
+  isPatient: () => boolean;
 };
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -37,6 +38,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   accessToken: null,
   user: null,
   clinician: null,
+  activeRole: null,
 
   setHydrated: (v) => set({ hydrated: v }),
 
@@ -45,6 +47,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       accessToken,
       user,
       clinician: clinician ?? null,
+      activeRole: user.role, // 🔑 rol inicial
+    }),
+
+  setActiveRole: (role) =>
+    set({
+      activeRole: role,
     }),
 
   clearSession: () =>
@@ -52,14 +60,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       accessToken: null,
       user: null,
       clinician: null,
+      activeRole: null,
     }),
 
-  setUser: (u) => set({ user: u }),
-
-  logout: () => set({ user: null }),
-
   // Helpers
-  isAdmin: () => get().user?.role === "admin",
-  isclinician: () => !!get().clinician,
-  isPatient: () => false, // se habilitará cuando implementemos login tutor
+  isAdmin: () => get().activeRole === "admin",
+  isClinician: () => get().activeRole === "clinician",
+  isPatient: () => get().activeRole === "patient",
 }));

@@ -1,18 +1,23 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Avatar from "@/components/ui/Avatar";
 import { useAuthStore } from "@/store/useAuthStore";
-import { colors } from "@/lib/colors"; // asegúrate de exportar tus colores aquí
+import { UserRole } from "@/types/user";
+import AlertDialog from "@/components/ui/AlertDialog";
 
 export default function UserMenu() {
   const router = useRouter();
+
   const user = useAuthStore((s) => s.user);
+  const activeRole = useAuthStore((s) => s.activeRole);
+  const setActiveRole = useAuthStore((s) => s.setActiveRole);
   const logout = useAuthStore((s) => s.clearSession);
 
   const [open, setOpen] = useState(false);
+  const [showPatientAlert, setShowPatientAlert] = useState(false);
+
   const ref = useRef<HTMLDivElement | null>(null);
   const btnRef = useRef<HTMLButtonElement | null>(null);
 
@@ -20,17 +25,18 @@ export default function UserMenu() {
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (
-        !ref.current?.contains(e.target as Node) &&
-        !btnRef.current?.contains(e.target as Node)
-      )
+      if (!ref.current?.contains(e.target as Node) && !btnRef.current?.contains(e.target as Node)) {
         close();
+      }
     };
+
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
     };
+
     document.addEventListener("mousedown", handleClick);
     document.addEventListener("keydown", handleKey);
+
     return () => {
       document.removeEventListener("mousedown", handleClick);
       document.removeEventListener("keydown", handleKey);
@@ -39,101 +45,89 @@ export default function UserMenu() {
 
   if (!user) return null;
 
-  const isAdmin = user.role === "admin";
-  const isclinician = user.role === "clinician";
+  const canAccessPatientPanel = () => {
+    return Boolean(user.patientId); // ✅ Asegúrate de que user tenga patientId
+  };
 
-  async function onLogout() {
+  const onLogout = () => {
     logout();
     router.replace("/");
-  }
+  };
 
-  const navigate = () => close();
+  const switchPanel = (role: UserRole, path: string) => {
+    if (role === UserRole.patient && !canAccessPatientPanel()) {
+      setShowPatientAlert(true);
+      return;
+    }
+
+    setActiveRole(role); // Cambiamos rol activo
+    close();
+    router.push(path);
+  };
+
+  const baseRole = user.role as UserRole;
+  const isAdmin = baseRole === UserRole.admin;
+  const isClinician = baseRole === UserRole.clinician;
 
   return (
     <div ref={ref} className="relative">
-      {/* --- BOTÓN --- */}
       <button
         ref={btnRef}
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-xl bg-white px-2 py-1 shadow-sm hover:shadow-md transition-shadow duration-200"
+        className="flex items-center gap-2 rounded-xl bg-(--color-nutri-white) px-2 py-1 shadow-sm hover:shadow-md transition-shadow"
       >
-        <Avatar name={user.firstName + " " + user.lastName} size={32} />
+        <Avatar name={`${user.firstName} ${user.lastName}`} size={32} />
       </button>
 
-      {/* --- MENÚ --- */}
       {open && (
-        <div
-          role="menu"
-          className="absolute right-0 mt-2 w-64 rounded-2xl bg-white shadow-lg z-50 animate-[fadeIn_0.15s_ease-out]"
-          style={{ border: `1px solid ${colors.lightGrey}` }}
-        >
-          {/* HEADER */}
+        <div className="absolute right-0 mt-2 w-64 z-50 rounded-2xl bg-(--color-nutri-white) shadow-lg border border-(--color-nutri-light-grey) animate-[fadeIn_0.15s_ease-out]">
           <div className="flex items-center gap-3 px-4 py-4">
-            <Avatar name={user.firstName + " " + user.lastName} size={40} />
+            <Avatar name={`${user.firstName} ${user.lastName}`} size={40} />
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-gray-800">
+              <p className="truncate text-sm font-semibold text-(--color-nutri-black)">
                 {user.firstName} {user.lastName}
               </p>
-              <p className="truncate text-xs text-gray-500">
-                {user.identityCard}
+              <p className="truncate text-xs text-(--color-nutri-dark-grey)">
+                {user.identityNumber}
               </p>
             </div>
           </div>
 
-          <div className="h-px bg-nutri-lightGrey my-2" />
+          <div className="my-2 h-px bg-(--color-nutri-light-grey)" />
 
-          {/* LINKS */}
+          {/* ADMIN */}
           {isAdmin && (
             <>
-              <Link
-                href="/dashboard/admin"
-                onClick={navigate}
-                className="block px-4 py-2 text-sm rounded-lg text-gray-700 hover:bg-primary/10 transition-colors"
-                style={{ color: colors.darkGrey }}
-              >
+              <MenuButton onClick={() => switchPanel(UserRole.admin, "/dashboard/admin")}>
                 Panel de Administración
-              </Link>
-
-              <Link
-                href="/dashboard/clinician"
-                onClick={navigate}
-                className="block px-4 py-2 text-sm rounded-lg text-gray-700 hover:bg-primary/10 transition-colors"
-                style={{ color: colors.darkGrey }}
-              >
+              </MenuButton>
+              <MenuButton onClick={() => switchPanel(UserRole.clinician, "/dashboard/clinician")}>
                 Panel del Salubrista
-              </Link>
-
-              <Link
-                href="/dashboard/patient"
-                onClick={navigate}
-                className="block px-4 py-2 text-sm rounded-lg text-gray-700 hover:bg-primary/10 transition-colors"
-                style={{ color: colors.darkGrey }}
-              >
+              </MenuButton>
+              <MenuButton onClick={() => switchPanel(UserRole.patient, "/dashboard/patient")}>
                 Panel de Paciente
-              </Link>
+              </MenuButton>
             </>
           )}
-          {isclinician && (
-            <Link
-              href="/dashboard/patient"
-              onClick={navigate}
-              className="block px-4 py-2 text-sm rounded-lg text-gray-700 hover:bg-primary/10 transition-colors"
-              style={{ color: colors.darkGrey }}
-            >
-              Mi Panel
-            </Link>
+
+          {/* CLINICIAN */}
+          {isClinician && (
+            <>
+              <MenuButton onClick={() => switchPanel(UserRole.clinician, "/dashboard/clinician")}>
+                Mi Panel Profesional
+              </MenuButton>
+              <MenuButton onClick={() => switchPanel(UserRole.patient, "/dashboard/patient")}>
+                Mi Panel Personal
+              </MenuButton>
+            </>
           )}
 
-          <Link
-            href="/dashboard/settings"
-            onClick={navigate}
-            className="block px-4 py-2 text-sm rounded-lg hover:bg-primary/10 transition-colors"
-            style={{ color: colors.darkGrey }}
-          >
+          {/* CONFIG */}
+          <MenuButton onClick={() => { close(); router.push("/dashboard/settings"); }}>
             Configuración
-          </Link>
+          </MenuButton>
 
-          <div className="h-px bg-nutri-lightGrey my-2" />
+          <div className="my-2 h-px bg-(--color-nutri-light-grey)" />
 
           {/* LOGOUT */}
           <button
@@ -144,6 +138,25 @@ export default function UserMenu() {
           </button>
         </div>
       )}
+
+      {/* ALERTA PACIENTE */}
+      <AlertDialog
+        open={showPatientAlert}
+        title="Paciente no registrado"
+        message="Este usuario no tiene un perfil de paciente asociado. Por favor contacte al administrador."
+        onClose={() => setShowPatientAlert(false)}
+      />
     </div>
+  );
+}
+
+function MenuButton({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      className="block w-full text-left px-4 py-2 text-sm rounded-lg text-(--color-nutri-dark-grey) hover:bg-(--color-nutri-primary)/10 transition-colors"
+    >
+      {children}
+    </button>
   );
 }

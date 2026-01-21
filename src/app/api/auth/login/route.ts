@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db, seedOnce, getUserByCI } from "@/mocks/db";
 import { delay } from "@/mocks/utils";
 import type { AuthResponse } from "@/types/auth";
+import { UserRole } from "@/types";
 
 seedOnce();
 
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
 
   // Si el usuario es clinician, agregar su info de clinician
   let clinicianData: AuthResponse["clinician"] = undefined;
-  if (user.role === "clinician") {
+  if (user.role === UserRole.CLINICIAN) {
     clinicianData = db.clinicians.find((h) => h.userId === user.userId);
   }
 

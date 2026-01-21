@@ -22,7 +22,7 @@ export default function PacienteDashboard() {
           <p className="text-sm text-gray-500 mb-4">
             Consulta los diagnósticos que te han realizado.
           </p>
-          <Link href="/dashboard/paciente/diagnosticos">
+          <Link href="/dashboard/patient/diagnosis">
             <Button>Ver Diagnósticos</Button>
           </Link>
         </Card>
@@ -33,7 +33,7 @@ export default function PacienteDashboard() {
           <p className="text-sm text-gray-500 mb-4">
             Revisa las recomendaciones nutricionales personalizadas.
           </p>
-          <Link href="/dashboard/paciente/recomendaciones">
+          <Link href="/dashboard/patient/recomendations">
             <Button>Ver Recomendaciones</Button>
           </Link>
         </Card>
@@ -44,7 +44,7 @@ export default function PacienteDashboard() {
           <p className="text-sm text-gray-500 mb-4">
             Observa cómo has mejorado mediante gráficos y métricas.
           </p>
-          <Link href="/dashboard/paciente/progreso">
+          <Link href="/dashboard/patient/progress">
             <Button>Ver Progreso</Button>
           </Link>
         </Card>
@@ -55,7 +55,7 @@ export default function PacienteDashboard() {
           <p className="text-sm text-gray-500 mb-4">
             Accede a tu historial completo de consultas y evaluaciones.
           </p>
-          <Link href="/dashboard/paciente/historial">
+          <Link href="/dashboard/patient/history">
             <Button>Ver Historial</Button>
           </Link>
         </Card>
