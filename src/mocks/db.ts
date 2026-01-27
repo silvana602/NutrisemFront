@@ -137,11 +137,23 @@ export function seedOnce() {
     password: "patient",
   };
 
+  const userPatient2: User = {
+    userId: uid("usr"),
+    role: UserRole.patient,
+    firstName: "Juan",
+    lastName: "Alcon",
+    identityNumber: "6655443",
+    phone: "70808090",
+    address: "La Paz",
+    password: "patient",
+  };
+
   db.users.push(userAdmin, userClinician, userPatient);
 
   db.passwords.set(userAdmin.userId, "admin");
   db.passwords.set(userClinician.userId, "clinician");
   db.passwords.set(userPatient.userId, "patient");
+  db.passwords.set(userPatient2.userId, "patient");
 
   // -------- Clinician ----------
   const clinician1: Clinician = {

@@ -1,0 +1,56 @@
+"use client";
+
+import React from "react";
+import { Heading } from "@/components/atoms/Heading";
+import { Button } from "@/components/ui/Button";
+import { colors } from "@/lib/colors";
+
+export const NewConsultationHeader: React.FC = () => {
+    const now = new Date();
+
+    const formattedDate = new Intl.DateTimeFormat("es-ES", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    }).format(now);
+
+    const formattedTime = new Intl.DateTimeFormat("es-ES", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    }).format(now);
+
+    return (
+        <header className="flex flex-col gap-4">
+            <div className="sm:flex-row sm:items-center sm:justify-between">
+                {/* Title */}
+                <Heading>Nueva Consulta</Heading>
+
+                {/* Right section: date/time + actions */}
+                <div className="flex flex-col gap-3 sm:items-end">
+                    {/* Date & Time */}
+                    <div
+                        className="text-sm text-right leading-tight"
+                        style={{ color: colors.darkGrey }}
+                    >
+                        <p>Fecha de consulta: {formattedDate}</p>
+                        <p>Hora de consulta: {formattedTime}</p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-3">
+                        <Button variant="secondary">
+                            Cancelar
+                        </Button>
+
+                        <Button variant="primary">
+                            Guardar consulta
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </header>
+    );
+};

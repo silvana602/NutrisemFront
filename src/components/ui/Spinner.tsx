@@ -2,19 +2,19 @@
 
 import React from "react";
 
+/* =========================
+   Spinner
+========================= */
+
 interface SpinnerProps {
-  size?: "sm" | "md" | "lg";
-  colorClass?: string;
+  size?: "md" | "lg" | "xl";
 }
 
-const Spinner: React.FC<SpinnerProps> = ({
-  size = "md",
-  colorClass = "border-[var(--color-nutri-white)]",
-}) => {
+const Spinner: React.FC<SpinnerProps> = ({ size = "lg" }) => {
   const sizes = {
-    sm: "w-4 h-4 border-2",
     md: "w-6 h-6 border-4",
-    lg: "w-10 h-10 border-4",
+    lg: "w-8 h-8 border-4",
+    xl: "w-10 h-10 border-[5px]",
   };
 
   return (
@@ -22,27 +22,31 @@ const Spinner: React.FC<SpinnerProps> = ({
       <div
         className={`
           ${sizes[size]}
-          rounded-full animate-spin
+          rounded-full
+          animate-spin
           border-[var(--color-nutri-light-grey)]
-          border-t-transparent
-          ${colorClass}
+          border-t-[var(--color-nutri-white)]
         `}
       />
     </div>
   );
 };
 
+/* =========================
+   Loading Button
+========================= */
+
 interface LoadingButtonProps {
   loading?: boolean;
   children: React.ReactNode;
-  spinnerSize?: "sm" | "md" | "lg";
+  spinnerSize?: "md" | "lg" | "xl";
   className?: string;
 }
 
 const LoadingButton: React.FC<LoadingButtonProps> = ({
   loading = false,
   children,
-  spinnerSize = "sm",
+  spinnerSize = "lg",
   className = "",
 }) => {
   return (
@@ -50,17 +54,24 @@ const LoadingButton: React.FC<LoadingButtonProps> = ({
       type="button"
       disabled={loading}
       className={`
-        inline-flex items-center justify-center gap-2
-        px-5 py-2.5 rounded-xl font-semibold text-sm
+        inline-flex items-center justify-center gap-3
+
+        px-7 py-4
+        rounded-2xl
+
+        text-base font-semibold
+        tracking-wide
+
         bg-[var(--color-nutri-primary)]
         text-[var(--color-nutri-white)]
-        shadow-md
+
+        shadow-lg
         transition-all duration-200 ease-in-out
 
         hover:bg-[var(--color-nutri-secondary)]
-        hover:shadow-lg
+        hover:shadow-xl
 
-        active:scale-[0.98]
+        active:scale-[0.97]
 
         focus:outline-none
         focus:ring-2
@@ -70,17 +81,13 @@ const LoadingButton: React.FC<LoadingButtonProps> = ({
 
         disabled:opacity-60
         disabled:cursor-not-allowed
-        disabled:hover:shadow-md
+        disabled:hover:shadow-lg
 
         ${className}
       `}
     >
-      {loading && (
-        <Spinner
-          size={spinnerSize}
-          colorClass="border-t-[var(--color-nutri-white)]"
-        />
-      )}
+      {loading && <Spinner size={spinnerSize} />}
+
       <span className={loading ? "opacity-90" : ""}>
         {children}
       </span>
