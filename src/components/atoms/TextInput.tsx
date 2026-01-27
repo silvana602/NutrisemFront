@@ -7,6 +7,8 @@ interface TextInputProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   icon?: React.ReactNode;
   className?: string; 
+  label?: string;
+  type?: string;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({

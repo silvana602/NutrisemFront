@@ -3,6 +3,7 @@
 import React from "react";
 import { NewConsultationHeader } from "./ConsultationHeader";
 import { PatientSelector } from "./PatientSelector/PatientSelector";
+import { ConsultationTabs } from "./ConsultationTabs/ConsultationTabs";
 
 export const NewConsultationContent: React.FC = () => {
     return (
@@ -19,6 +20,9 @@ export const NewConsultationContent: React.FC = () => {
 
             {/* Patient search & selection */}
             <PatientSelector />
+
+            {/* Tabs */}
+            <ConsultationTabs />
         </div>
     );
 };

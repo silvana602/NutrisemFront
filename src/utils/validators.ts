@@ -119,3 +119,16 @@ export const validateDocumentNumber = (ci: string) => {
 
     return null;
 };
+
+/* Validaciones del formulario de consulta */
+export const validateRange = (
+    value: number,
+    min: number,
+    max: number,
+    label: string
+): string | null => {
+    if (isNaN(value)) return `${label} es obligatorio`;
+    if (value < min) return `${label} no puede ser menor a ${min}`;
+    if (value > max) return `${label} no puede ser mayor a ${max}`;
+    return null;
+};
