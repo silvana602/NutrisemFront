@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { colors } from "@/lib/colors";
 
 export default function NotFound() {
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center text-white px-6 text-center"
+      className="min-h-screen flex flex-col items-center justify-center px-6 text-center text-nutri-white"
       style={{
-        background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+        background:
+          "linear-gradient(135deg, var(--color-nutri-primary), var(--color-nutri-secondary))",
       }}
     >
       <h1 className="text-[8rem] font-extrabold drop-shadow-lg animate-bounce">404</h1>
@@ -17,7 +17,7 @@ export default function NotFound() {
 
       <Link
         href="/"
-        className="px-6 py-3 bg-white text-black font-semibold rounded-full shadow-lg hover:bg-[#F5F5F0] transition-transform transform hover:scale-105"
+        className="px-6 py-3 bg-nutri-white text-nutri-black font-semibold rounded-full shadow-lg hover:bg-nutri-off-white transition-transform transform hover:scale-105"
       >
         Volver al inicio
       </Link>

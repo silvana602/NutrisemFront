@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/Button";
 
 export default function PacienteDashboard() {
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Bienvenido(a)</h1>
+    <div className="bg-nutri-off-white p-6">
+      <h1 className="mb-6 text-3xl font-bold text-nutri-dark-grey">Bienvenido(a)</h1>
 
-      <p className="text-gray-600 mb-8">
+      <p className="mb-8 text-nutri-dark-grey">
         Aquí puedes ver tu progreso, tus diagnósticos y las recomendaciones
         asignadas por tu nutricionista.
       </p>
@@ -18,8 +18,8 @@ export default function PacienteDashboard() {
 
         {/* Diagnósticos */}
         <Card className="p-4 flex flex-col justify-between">
-          <h2 className="text-xl font-semibold mb-2">Diagnósticos</h2>
-          <p className="text-sm text-gray-500 mb-4">
+          <h2 className="mb-2 text-xl font-semibold text-nutri-dark-grey">Diagnósticos</h2>
+          <p className="mb-4 text-sm text-nutri-dark-grey">
             Consulta los diagnósticos que te han realizado.
           </p>
           <Link href="/dashboard/patient/diagnosis">
@@ -29,8 +29,8 @@ export default function PacienteDashboard() {
 
         {/* Recomendaciones */}
         <Card className="p-4 flex flex-col justify-between">
-          <h2 className="text-xl font-semibold mb-2">Recomendaciones</h2>
-          <p className="text-sm text-gray-500 mb-4">
+          <h2 className="mb-2 text-xl font-semibold text-nutri-dark-grey">Recomendaciones</h2>
+          <p className="mb-4 text-sm text-nutri-dark-grey">
             Revisa las recomendaciones nutricionales personalizadas.
           </p>
           <Link href="/dashboard/patient/recomendations">
@@ -40,8 +40,8 @@ export default function PacienteDashboard() {
 
         {/* Progreso */}
         <Card className="p-4 flex flex-col justify-between">
-          <h2 className="text-xl font-semibold mb-2">Progreso</h2>
-          <p className="text-sm text-gray-500 mb-4">
+          <h2 className="mb-2 text-xl font-semibold text-nutri-dark-grey">Progreso</h2>
+          <p className="mb-4 text-sm text-nutri-dark-grey">
             Observa cómo has mejorado mediante gráficos y métricas.
           </p>
           <Link href="/dashboard/patient/progress">
@@ -51,8 +51,8 @@ export default function PacienteDashboard() {
 
         {/* Historial */}
         <Card className="p-4 flex flex-col justify-between">
-          <h2 className="text-xl font-semibold mb-2">Historial</h2>
-          <p className="text-sm text-gray-500 mb-4">
+          <h2 className="mb-2 text-xl font-semibold text-nutri-dark-grey">Historial</h2>
+          <p className="mb-4 text-sm text-nutri-dark-grey">
             Accede a tu historial completo de consultas y evaluaciones.
           </p>
           <Link href="/dashboard/patient/history">
@@ -63,3 +63,4 @@ export default function PacienteDashboard() {
     </div>
   );
 }
+

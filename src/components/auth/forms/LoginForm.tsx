@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
-import { colors } from "@/lib/colors";
 
 export function LoginForm() {
-  const { setSession } = useAuthStore(); // ⬅ Usamos setSession, no setUser
+  const { setSession } = useAuthStore();
 
   const [ci, setCi] = useState("");
   const [password, setPassword] = useState("");
@@ -30,7 +29,6 @@ export function LoginForm() {
       }
 
       const data = await res.json();
-
       const sessionData = {
         accessToken: data.accessToken || "mock-token",
         user: data.user,
@@ -38,7 +36,6 @@ export function LoginForm() {
       };
 
       setSession(sessionData);
-
       localStorage.setItem("session", JSON.stringify(sessionData));
 
       const dashboardPath = (() => {
@@ -50,14 +47,15 @@ export function LoginForm() {
           case "patient":
             return "/dashboard/patient";
           default:
-            return "/"; // fallback
+            return "/";
         }
       })();
 
       window.location.href = dashboardPath;
-
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Error inesperado";
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -66,38 +64,39 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700" >CI</label>
+        <label className="block text-sm font-medium text-nutri-dark-grey">
+          CI
+        </label>
         <input
           type="text"
           value={ci}
           onChange={(e) => setCi(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-          style={{ borderColor: colors.primary }}
+          className="w-full rounded-lg border border-nutri-primary bg-nutri-white px-3 py-2 text-nutri-dark-grey outline-none"
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Contraseña</label>
+        <label className="block text-sm font-medium text-nutri-dark-grey">
+          Contrasena
+        </label>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-          style={{ borderColor: colors.primary }}
+          className="w-full rounded-lg border border-nutri-primary bg-nutri-white px-3 py-2 text-nutri-dark-grey outline-none"
           required
         />
       </div>
 
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p className="text-sm text-nutri-secondary">{error}</p>}
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-2 rounded-lg font-semibold text-white"
-        style={{ backgroundColor: colors.primary }}
+        className="w-full rounded-lg bg-nutri-primary py-2 font-semibold text-nutri-white disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {loading ? "Ingresando..." : "Iniciar sesión"}
+        {loading ? "Ingresando..." : "Iniciar sesion"}
       </button>
     </form>
   );

@@ -1,6 +1,5 @@
 "use client";
 
-import { colors } from "@/lib/colors";
 import type { PatientRow } from "../organisms/clinician/PatientsListContent";
 
 interface Props {
@@ -11,11 +10,10 @@ export const PatientsTable: React.FC<Props> = ({ data }) => {
   return (
     <div className="mt-6 w-full space-y-4">
       <div
-        className="w-full overflow-x-auto rounded-lg border"
-        style={{ borderColor: colors.lightGrey }}
+        className="w-full overflow-x-auto rounded-lg border border-nutri-light-grey"
       >
         <table className="w-full text-sm">
-          <thead style={{ background: colors.offWhite }}>
+          <thead className="bg-nutri-off-white">
             <tr>
               <th className="px-3 py-2 text-left font-semibold">Nro</th>
               <th className="px-3 py-2 text-left font-semibold">
@@ -36,8 +34,7 @@ export const PatientsTable: React.FC<Props> = ({ data }) => {
             {data.map((p, index) => (
               <tr
                 key={p.patientId}
-                className="border-t"
-                style={{ borderColor: colors.lightGrey }}
+                className="border-t border-nutri-light-grey"
               >
                 <td className="px-3 py-2">{index + 1}</td>
                 <td className="px-3 py-2">{p.name}</td>
@@ -48,7 +45,7 @@ export const PatientsTable: React.FC<Props> = ({ data }) => {
                   {p.sex === "M" ? "Masculino" : "Femenino"}
                 </td>
                 <td className="px-3 py-2">{p.lastConsult}</td>
-                <td className="px-3 py-2 text-blue-600 cursor-pointer">Ver</td>
+                <td className="cursor-pointer px-3 py-2 text-nutri-primary">Ver</td>
               </tr>
             ))}
 
@@ -56,7 +53,7 @@ export const PatientsTable: React.FC<Props> = ({ data }) => {
               <tr>
                 <td
                   colSpan={8}
-                  className="px-4 py-6 text-center text-gray-500"
+                  className="px-4 py-6 text-center text-nutri-dark-grey"
                 >
                   No se encontraron pacientes.
                 </td>

@@ -1,5 +1,4 @@
 "use client";
-import { colors } from "@/lib/colors";
 
 import { useEffect, useState } from "react";
 import { Heading } from "@/components/atoms/Heading";
@@ -58,12 +57,12 @@ export const PatientHistoryContent: React.FC = () => {
 
       {/* Lista de resultados */}
       {results.length > 1 && !selectedPatient && (
-        <div className={`${colors.secondary} rounded-xl shadow-lg p-6 border ${colors.lightGrey}`}>
-          <p className={`text-sm ${colors.darkGrey} mb-3`}>
+        <div className="rounded-xl border border-nutri-light-grey bg-nutri-off-white p-6 shadow-lg">
+          <p className="mb-3 text-sm text-nutri-dark-grey">
             Select a patient:
           </p>
 
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-nutri-light-grey">
             {results.map((p) => {
               const user = db.users.find(
                 (u: User) => u.userId === p.userId
@@ -72,10 +71,10 @@ export const PatientHistoryContent: React.FC = () => {
               return (
                 <li
                   key={p.patientId}
-                  className={`py-3 px-4 mb-2 cursor-pointer rounded-lg transition ${colors.lightGrey}`}
+                  className="mb-2 cursor-pointer rounded-lg bg-nutri-light-grey px-4 py-3 transition hover:bg-nutri-off-white"
                   onClick={() => setSelectedPatient(p)}
                 >
-                  <strong className={`${colors.primary}`}>
+                  <strong className="text-nutri-primary">
                     {user?.firstName} {user?.lastName}
                   </strong>{" "}
                   – CI: {user?.identityNumber ?? "----"}
@@ -89,11 +88,11 @@ export const PatientHistoryContent: React.FC = () => {
       {/* Summary + Historial */}
       {selectedPatient && (
         <div className="space-y-8">
-          <div className="rounded-xl shadow-lg p-6 bg-white border border-gray-100">
+          <div className="rounded-xl border border-nutri-light-grey bg-nutri-white p-6 shadow-lg">
             <PatientSummary patient={selectedPatient} />
           </div>
 
-          <div className="rounded-xl shadow-lg p-6 bg-white border border-gray-100">
+          <div className="rounded-xl border border-nutri-light-grey bg-nutri-white p-6 shadow-lg">
             <PatientsHistoryTable patientId={selectedPatient.patientId} />
           </div>
         </div>
@@ -101,7 +100,7 @@ export const PatientHistoryContent: React.FC = () => {
 
       {/* Sin resultados */}
       {search.length >= 2 && results.length === 0 && (
-        <p className={`text-sm ${colors.darkGrey} mt-4`}>
+        <p className="mt-4 text-sm text-nutri-dark-grey">
           Pacientes no encontrados
         </p>
       )}

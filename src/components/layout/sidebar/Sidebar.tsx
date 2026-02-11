@@ -7,7 +7,6 @@ import { getMenuByRole } from "@/hooks/useMenuByRol";
 import Avatar from "@/components/ui/Avatar";
 
 import { cn } from "@/lib/utils";
-import { colors } from "@/lib/colors";
 
 export default function Sidebar() {
   const hydrated = useAuthStore((s) => s.hydrated);
@@ -19,19 +18,13 @@ export default function Sidebar() {
   const menuItems = getMenuByRole(user.role);
 
   return (
-    <aside
-      className="hidden lg:flex lg:flex-col lg:w-72 lg:min-h-screen lg:border-r"
-      style={{
-        borderColor: colors.lightGrey,
-        backgroundColor: colors.white,
-      }}
-    >
+    <aside className="hidden min-h-screen w-72 flex-col border-r border-nutri-light-grey bg-nutri-white lg:flex lg:flex-col lg:w-72">
       {/* USER SECTION */}
       <div className="flex flex-col items-center text-center py-6">
         <div className="mb-3">
           <Avatar name={`${user.firstName} ${user.lastName}`} size={100} />
         </div>
-        <p className="truncate text-sm font-semibold" style={{ color: colors.darkGrey }}>
+        <p className="truncate text-sm font-semibold text-nutri-dark-grey">
           {user.firstName} {user.lastName}
         </p>
       </div>
@@ -52,12 +45,10 @@ export default function Sidebar() {
               href={item.href}
               className={cn(
                 "flex items-center gap-3 px-6 py-3 mx-3 my-1 rounded-md transition-all duration-150",
-                isActive ? "shadow-sm text-white" : "hover:shadow-sm"
+                isActive
+                  ? "bg-nutri-primary text-nutri-white shadow-sm"
+                  : "text-nutri-dark-grey hover:bg-nutri-off-white hover:shadow-sm"
               )}
-              style={{
-                backgroundColor: isActive ? colors.primary : "transparent",
-                color: isActive ? colors.white : colors.darkGrey,
-              }}
             >
               <Icon size={18} />
               <span className="font-medium">{item.label}</span>

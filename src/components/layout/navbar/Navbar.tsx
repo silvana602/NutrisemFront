@@ -9,7 +9,6 @@ import UserMenu from "@/components/layout/sidebar/UserMenu";
 import { useDisclosure } from "@/hooks/useDisclosure";
 import { useGlobalDismiss } from "@/hooks/useGlobalDismiss";
 // import AuthButtons from "@/components/layout/navbar/AuthButtons";
-import { colors } from "@/lib/colors";
 // import { Link } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
@@ -48,21 +47,17 @@ export const Navbar = () => {
   );
 
   return (
-    <header className="shadow-m" style={{ backgroundColor: colors.white, }}>
+    <header className="shadow-m bg-nutri-white">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* LOGO */}
           <div className="flex items-center gap-2">
             <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xl"
-              style={{ backgroundColor: colors.primary }}
+              className="flex h-10 w-10 items-center justify-center rounded-lg bg-nutri-primary text-xl font-bold text-nutri-white"
             >
               N
             </div>
-            <span
-              className="text-2xl font-bold"
-              style={{ color: colors.primary }}
-            >
+            <span className="text-2xl font-bold text-nutri-primary">
               Nutrisem
             </span>
           </div>

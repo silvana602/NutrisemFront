@@ -118,7 +118,7 @@ export const ClinicianDashboardContent: React.FC<Props> = ({ user }) => {
       : "N/A",
 
     height: anthropometric
-      ? `${anthropometric.heightCm} cm`
+      ? `${anthropometric.heightM} m`
       : "N/A",
 
     status: diagnosis

@@ -1,28 +1,24 @@
 import { db } from "@/mocks/db";
 import { uid } from "@/mocks/utils";
 import type { AuthResponse, LoginDto, RegisterclinicianDto } from "@/types/auth";
-import type { User } from "@/types/user";
+import { UserRole, type User } from "@/types/user";
 import type { Clinician } from "@/types/clinician";
 
 export const AuthService = {
   /**
-   * Login de usuario (CI + contraseña)
+   * Login de usuario (CI + contrasena)
    */
   login: (dto: LoginDto): AuthResponse | null => {
-    // Buscar usuario por CI
-    const user = db.users.find((u) => u.identityCard === dto.identityCard);
+    const user = db.users.find((u) => u.identityNumber === dto.identityCard);
     if (!user) return null;
 
-    // Validar contraseña
     if (user.password !== dto.password) return null;
 
-    // Si el usuario es clinician, obtener clinician asociado
     const clinician =
-      user.role === "clinician"
-        ? db.clinicians.find((m) => m.userId === user.userId) ?? undefined
+      user.role === UserRole.clinician
+        ? db.clinicians.find((c) => c.userId === user.userId) ?? undefined
         : undefined;
 
-    // Generar token simulado
     const accessToken = uid("token");
 
     return {
@@ -33,22 +29,22 @@ export const AuthService = {
   },
 
   /**
-   * Obtener el usuario actual a partir del token (mock básico)
+   * Obtener el usuario actual a partir del token (mock basico)
    */
   me: (token: string | null): AuthResponse | null => {
     if (!token) return null;
 
-    const anyUser = db.users[0];
-    if (!anyUser) return null;
+    const user = db.users[0];
+    if (!user) return null;
 
     const clinician =
-      anyUser.role === "clinician"
-        ? db.clinicians.find((m) => m.userId === anyUser.userId) ?? undefined
+      user.role === UserRole.clinician
+        ? db.clinicians.find((c) => c.userId === user.userId) ?? undefined
         : undefined;
 
     return {
       accessToken: token,
-      user: anyUser,
+      user,
       clinician,
     };
   },
@@ -65,33 +61,30 @@ export const AuthService = {
    */
   registerclinician: (dto: RegisterclinicianDto): AuthResponse | null => {
     if (dto.password !== dto.confirmPassword) {
-      throw new Error("Las contraseñas no coinciden");
+      throw new Error("Las contrasenas no coinciden");
     }
 
-    // Validar CI único
-    if (db.users.find((u) => u.identityCard === dto.identityCard)) {
+    if (db.users.find((u) => u.identityNumber === dto.identityCard)) {
       throw new Error("El CI ya existe en el sistema");
     }
 
-    // Crear usuario
     const userId = uid("usr");
     const user: User = {
       userId,
       firstName: dto.firstName,
       lastName: dto.lastName,
-      identityCard: dto.identityCard,
+      identityNumber: dto.identityCard,
       phone: dto.phone,
       address: dto.address,
-      role: "clinician",
+      role: UserRole.clinician,
       password: dto.password,
     };
     db.users.push(user);
 
-    // Crear clinician
     const clinician: Clinician = {
-      clinicianId: uid("mon"),
+      clinicianId: uid("cli"),
       userId,
-      professionalId: dto.professionalId,
+      professionalLicense: dto.professionalId,
       profession: dto.profession,
       specialty: dto.specialty,
       residence: dto.residence,
@@ -100,12 +93,11 @@ export const AuthService = {
     db.clinicians.push(clinician);
 
     const accessToken = uid("token");
-
     return { accessToken, user, clinician };
   },
 
   /**
-   * Cambiar contraseña
+   * Cambiar contrasena
    */
   changePassword: (userId: string, newPassword: string): boolean => {
     const user = db.users.find((u) => u.userId === userId);

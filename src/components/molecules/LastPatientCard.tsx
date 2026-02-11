@@ -1,18 +1,23 @@
-import { colors } from "@/lib/colors";
-import { calculateAge } from "@/lib/utils";
+type LastPatient = {
+  name: string;
+  parentName: string;
+  idCard: string;
+  age: number | string;
+  weight: string;
+  gender: string;
+  height: string;
+  status: string;
+};
 
-export const LastPatientCard = ({ patient }: { patient: any }) => (
-  <div
-    className="p-4 rounded-lg shadow-md border"
-    style={{ background: colors.white, borderColor: colors.lightGrey }}
-  >
-    <h3 className="font-semibold text-lg mb-2">Último paciente</h3>
+export const LastPatientCard = ({ patient }: { patient: LastPatient }) => (
+  <div className="rounded-lg border border-nutri-light-grey bg-nutri-white p-4 shadow-md">
+    <h3 className="mb-2 text-lg font-semibold">Ultimo paciente</h3>
 
     <div className="grid grid-cols-2 gap-2 text-sm">
       <p><strong>Nombre:</strong> {patient.name}</p>
       <p><strong>Padre/Tutor:</strong> {patient.parentName}</p>
       <p><strong>CI:</strong> {patient.idCard}</p>
-      <p><strong>Edad:</strong> {calculateAge(patient.dateOfBirth)}</p>
+      <p><strong>Edad:</strong> {patient.age}</p>
       <p><strong>Peso:</strong> {patient.weight}</p>
       <p><strong>Sexo:</strong> {patient.gender}</p>
       <p><strong>Talla:</strong> {patient.height}</p>
@@ -21,10 +26,9 @@ export const LastPatientCard = ({ patient }: { patient: any }) => (
 
     <a
       href="#"
-      className="text-sm font-semibold mt-3 inline-block"
-      style={{ color: colors.primary }}
+      className="mt-3 inline-block text-sm font-semibold text-nutri-primary"
     >
-      Ver diagnóstico completo
+      Ver diagnostico completo
     </a>
   </div>
 );

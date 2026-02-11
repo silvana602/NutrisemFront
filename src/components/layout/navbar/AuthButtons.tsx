@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Button } from "../../ui/Button"; // o "@/components/ui/button"
-import { colors } from "@/lib/colors";
 
 interface AuthButtonsProps {
   nextQuery: string;

@@ -26,8 +26,8 @@ export const Pagination: React.FC<PaginationProps> = ({
         className="
           flex items-center justify-center
           w-8 h-8 sm:w-10 sm:h-10
-          rounded-full border border-gray-300
-          hover:bg-gray-200 transition
+          rounded-full border border-nutri-light-grey
+          text-nutri-dark-grey hover:bg-nutri-off-white transition
           disabled:opacity-40 disabled:cursor-not-allowed
         "
       >
@@ -38,7 +38,7 @@ export const Pagination: React.FC<PaginationProps> = ({
       <span
         className="
           text-xs sm:text-sm
-          font-medium text-gray-700
+          font-medium text-nutri-dark-grey
         "
       >
         <span className="block sm:hidden">
@@ -56,8 +56,8 @@ export const Pagination: React.FC<PaginationProps> = ({
         className="
           flex items-center justify-center
           w-8 h-8 sm:w-10 sm:h-10
-          rounded-full border border-gray-300
-          hover:bg-gray-200 transition
+          rounded-full border border-nutri-light-grey
+          text-nutri-dark-grey hover:bg-nutri-off-white transition
           disabled:opacity-40 disabled:cursor-not-allowed
         "
       >

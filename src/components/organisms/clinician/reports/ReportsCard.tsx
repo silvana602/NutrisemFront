@@ -9,9 +9,9 @@ interface ReportCardProps {
 
 export const ReportCard: React.FC<ReportCardProps> = ({ title, value }) => {
   return (
-    <div className="p-4 border rounded shadow-sm bg-white">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <p className="text-2xl mt-2">{value}</p>
+    <div className="rounded border border-nutri-light-grey bg-nutri-white p-4 shadow-sm">
+      <h3 className="text-lg font-semibold text-nutri-dark-grey">{title}</h3>
+      <p className="mt-2 text-2xl text-nutri-primary">{value}</p>
     </div>
   );
 };

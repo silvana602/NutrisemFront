@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useConsultationStore } from "@/store/useConsultationStore";
 import { validateRange } from "@/utils/validators";
 import { ValidatedInput } from "@/components/ui/ValidatedInput";
-import { colors } from "@/lib/colors";
 
 type EditableAnthroField =
     | "weightKg"
@@ -100,14 +99,8 @@ export const AnthropometricForm = () => {
     }, [anthropometric, hasErrors, setAnthropometricValidity]);
 
     return (
-        <section
-            className="rounded-xl p-6 space-y-6"
-            style={{ backgroundColor: colors.white }}
-        >
-            <h3
-                className="font-semibold text-lg"
-                style={{ color: colors.primary }}
-            >
+        <section className="space-y-6 rounded-xl bg-nutri-white p-6">
+            <h3 className="text-lg font-semibold text-nutri-primary">
                 Datos Antropométricos
             </h3>
 
@@ -159,3 +152,4 @@ export const AnthropometricForm = () => {
         </section>
     );
 };
+

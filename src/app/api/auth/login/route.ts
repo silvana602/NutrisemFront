@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
   // Si el usuario es clinician, agregar su info de clinician
   let clinicianData: AuthResponse["clinician"] = undefined;
-  if (user.role === UserRole.CLINICIAN) {
+  if (user.role === UserRole.clinician) {
     clinicianData = db.clinicians.find((h) => h.userId === user.userId);
   }
 

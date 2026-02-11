@@ -1,5 +1,4 @@
 import React from "react";
-import { colors } from "@/lib/colors";
 
 interface TextInputProps {
   placeholder?: string;
@@ -16,16 +15,17 @@ export const TextInput: React.FC<TextInputProps> = ({
   value,
   onChange,
   icon,
+  className = "",
+  type = "text",
 }) => {
   return (
-    <div className="flex items-center bg-white border rounded-xl px-3 py-2 shadow-sm"
-        style={{ borderColor: colors.lightGrey }}
+    <div
+      className={`group flex items-center rounded-xl border border-nutri-light-grey bg-nutri-white px-3 py-2 shadow-sm ${className}`}
     >
-      {icon && <div className="mr-2 text-gray-400">{icon}</div>}
+      {icon && <div className="mr-2 text-nutri-secondary">{icon}</div>}
       <input
-        className="w-full outline-none text-sm"
-        style={{ color: colors.darkGrey }}
-        type="text"
+        className="w-full bg-transparent text-sm text-nutri-dark-grey outline-none"
+        type={type}
         placeholder={placeholder}
         value={value}
         onChange={onChange}

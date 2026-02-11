@@ -1,8 +1,12 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Stepper } from "./Stepper";
 import { Button } from "@/components/ui/Button";
-import { useConsultationStore } from "@/store/useConsultationStore";
+import {
+    useConsultationStore,
+    type ConsultationStep,
+} from "@/store/useConsultationStore";
 import { AnthropometricForm } from "../forms/AnthropometricForm";
 /* import { ClinicalForm } from "../forms/ClinicalForm"; // ejemplo
 import { HistoryForm } from "../forms/HistoryForm"; // ejemplo */
@@ -18,20 +22,22 @@ export const ConsultationWizard = () => {
     } = useConsultationStore();
 
     // Orden de pasos
-    const steps = ["anthropometric", "clinical", "history"] as const;
+    const steps: ConsultationStep[] = ["anthropometric", "clinical"];
 
     // Mapear cada step a su componente
-    const stepComponents: Record<string, JSX.Element> = {
+    const stepComponents: Record<ConsultationStep, ReactNode> = {
         anthropometric: <AnthropometricForm />,
-        /* clinical: <ClinicalForm />,
-        history: <HistoryForm />, */
+        clinical: (
+            <p className="text-sm text-[var(--color-nutri-dark-grey)]">
+                Pendiente: Datos Clinicos
+            </p>
+        ),
     };
 
     // Validaciones por step
-    const stepValidity: Record<string, boolean> = {
+    const stepValidity: Record<ConsultationStep, boolean> = {
         anthropometric: isAnthropometricValid,
-        /* clinical: isClinicalValid,
-        history: isHistoryValid, */
+        clinical: true,
     };
 
     const currentIndex = steps.indexOf(currentStep);

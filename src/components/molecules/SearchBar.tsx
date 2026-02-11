@@ -26,19 +26,19 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         icon={
           <Search
             size={20}
-            className="text-[#6B7280] transition-colors group-focus-within:text-[#2E7D32]"
+            className="text-nutri-dark-grey transition-colors group-focus-within:text-nutri-primary"
           />
         }
         className={`
           w-full 
           rounded-lg 
-          bg-[#F1F8E9] 
-          border border-[#C8E6C9] 
+          bg-nutri-white 
+          border border-nutri-light-grey
           px-4 py-2 
-          focus:ring-2 focus:ring-[#A5D6A7] 
-          focus:border-[#2E7D32] 
+          focus-within:ring-2 focus-within:ring-nutri-secondary/30
+          focus-within:border-nutri-secondary
           transition-all 
-          placeholder-gray-400
+          placeholder:text-nutri-secondary
         `}
       />
     </div>

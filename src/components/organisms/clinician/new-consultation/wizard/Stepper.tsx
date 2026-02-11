@@ -7,8 +7,8 @@ export const Stepper = ({ currentStep }: { currentStep: string }) => {
                 <div
                     key={step}
                     className={`px-4 py-2 rounded-full text-sm ${currentStep === step
-                            ? "bg-green-600 text-white"
-                            : "bg-gray-200"
+                            ? "bg-nutri-primary text-nutri-white"
+                            : "bg-nutri-light-grey text-nutri-dark-grey"
                         }`}
                 >
                     {i + 1}. {step}

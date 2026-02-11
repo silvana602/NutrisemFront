@@ -1,5 +1,4 @@
 "use client";
-import { colors } from "@/lib/colors";
 
 import React, { useMemo, useState } from "react";
 import { Heading } from "../../atoms/Heading";
@@ -64,7 +63,7 @@ export const PatientsListContent: React.FC = () => {
         guardian: guardian ? `${guardian.firstName} ${guardian.lastName}` : "-",
         ci: p.identityNumber,
         age: calculateAge(p.birthDate),
-        sex: p.gender === "MALE" ? "M" : "F",
+        sex: p.gender === "male" ? "M" : "F",
         lastConsult: lastHistory
           ? lastHistory.creationDate.toLocaleDateString()
           : "-",
@@ -117,13 +116,13 @@ export const PatientsListContent: React.FC = () => {
 
       {/* Total */}
       <div className="mt-6">
-        <p className={`text-sm font-semibold ${colors.lightGrey}`}>
+        <p className="text-sm font-semibold text-nutri-dark-grey">
           Total patients: {filtered.length}
         </p>
       </div>
 
       {/* Tabla */}
-      <div className={`rounded-xl shadow-lg ${colors.white} bg-white overflow-hidden`}>
+      <div className="overflow-hidden rounded-xl bg-nutri-white shadow-lg">
         <PatientsTable data={paginatedPatients} />
       </div>
 

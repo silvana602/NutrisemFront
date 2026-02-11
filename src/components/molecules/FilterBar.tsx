@@ -17,14 +17,14 @@ export function FilterBar({
     <div className="flex flex-wrap gap-4 items-center mt-4">
       {/* Filtro Edad */}
       <div className="flex flex-col">
-        <label className="text-sm font-semibold text-gray-700 mb-1">
+        <label className="mb-1 text-sm font-semibold text-nutri-dark-grey">
           Edad
         </label>
 
         <select
           value={age}
           onChange={(e) => onAgeChange(e.target.value)}
-          className="rounded-lg px-3 py-2 text-gray-700 bg-white shadow-sm"
+          className="rounded-lg border border-nutri-light-grey bg-nutri-white px-3 py-2 text-nutri-dark-grey shadow-sm"
         >
           <option value="all">Todos</option>
           <option value="0-1">0 - 1 año</option>
@@ -37,14 +37,14 @@ export function FilterBar({
 
       {/* Filtro Sexo */}
       <div className="flex flex-col">
-        <label className="text-sm font-semibold text-gray-700 mb-1">
+        <label className="mb-1 text-sm font-semibold text-nutri-dark-grey">
           Sexo
         </label>
 
         <select
           value={gender}
           onChange={(e) => onGenderChange(e.target.value)}
-          className="rounded-lg px-3 py-2 text-gray-700 bg-white shadow-sm"
+          className="rounded-lg border border-nutri-light-grey bg-nutri-white px-3 py-2 text-nutri-dark-grey shadow-sm"
         >
           <option value="all">Todos</option>
           <option value="M">Masculino</option>

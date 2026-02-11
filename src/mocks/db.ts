@@ -41,7 +41,12 @@ type Store = {
   passwords: Map<string, string>;
 };
 
-const G = globalThis as any;
+type GlobalDbState = typeof globalThis & {
+  __NUTRISEM_DB__?: Store;
+  __NUTRISEM_MOCKS_SEEDED__?: boolean;
+};
+
+const G = globalThis as GlobalDbState;
 
 function initDb(): Store {
   if (!G.__NUTRISEM_DB__) {
@@ -216,7 +221,7 @@ export function seedOnce() {
     anthropometricDataId: uid("ad"),
     consultationId: consultation1.consultationId,
     weightKg: 14.2,
-    heightCm: 98,
+    heightM: 0.98,
     muacCm: 13.5,
     headCircumferenceCm: 49,
   });

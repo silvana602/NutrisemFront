@@ -3,7 +3,6 @@
 import React from "react";
 import { Heading } from "@/components/atoms/Heading";
 import { Button } from "@/components/ui/Button";
-import { colors } from "@/lib/colors";
 
 export const NewConsultationHeader: React.FC = () => {
     const now = new Date();
@@ -32,8 +31,7 @@ export const NewConsultationHeader: React.FC = () => {
                 <div className="flex flex-col gap-3 sm:items-end">
                     {/* Date & Time */}
                     <div
-                        className="text-sm text-right leading-tight"
-                        style={{ color: colors.darkGrey }}
+                        className="text-right text-sm leading-tight text-nutri-dark-grey"
                     >
                         <p>Fecha de consulta: {formattedDate}</p>
                         <p>Hora de consulta: {formattedTime}</p>

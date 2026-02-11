@@ -6,7 +6,6 @@ import { IconButton } from "../../atoms/IconButton";
 import { SectionTitle } from "../../atoms/SectionTitle";
 import { MetricsGrid } from "../../molecules/MetricsGrid";
 import { ChartsGrid } from "../../molecules/ChartsGrid";
-import { colors } from "@/lib/colors";
 
 export default function AdminDashboardContent() {
   const user = useAuthStore(s => s.user);
@@ -19,10 +18,7 @@ export default function AdminDashboardContent() {
   ];
 
   return (
-    <div
-      className="p-6 min-h-screen"
-      style={{ backgroundColor: colors.offWhite }}
-    >
+    <div className="min-h-screen bg-nutri-off-white p-6">
       <div className="flex justify-between items-center mb-6">
         <Heading>
           Bienvenid@, Administrador(a) {user.firstName} {user.lastName}
@@ -36,7 +32,7 @@ export default function AdminDashboardContent() {
         Vista general de la actividad del sistema
       </SectionTitle>
 
-      <p className="text-sm mb-4" style={{ color: colors.darkGrey }}>
+      <p className="mb-4 text-sm text-nutri-dark-grey">
         (número de pacientes, médicos, consultas, diagnósticos recientes, etc.)
       </p>
 
@@ -45,7 +41,7 @@ export default function AdminDashboardContent() {
       {/* Gráficos */}
       <SectionTitle>Gráficos globales</SectionTitle>
 
-      <p className="text-sm mb-4" style={{ color: colors.darkGrey }}>
+      <p className="mb-4 text-sm text-nutri-dark-grey">
         de desempeño, crecimiento de pacientes, comparativas por género o edad.
       </p>
 

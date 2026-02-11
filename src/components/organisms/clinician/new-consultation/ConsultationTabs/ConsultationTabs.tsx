@@ -20,7 +20,7 @@ export const ConsultationTabs: React.FC = () => {
                 px-4 py-2 text-sm font-medium rounded-t-md
                 transition-colors
                 ${activeTab === tab.id
-                                ? "bg-[var(--color-nutri-secondary)] text-white"
+                                ? "bg-[var(--color-nutri-secondary)] text-nutri-white"
                                 : "bg-transparent text-[var(--color-nutri-dark-grey)] hover:bg-[var(--color-nutri-light-grey)]"
                             }
             `}

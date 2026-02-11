@@ -1,86 +1,83 @@
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
 /**
  * Decodifica un JWT sin verificar la firma.
- * Devuelve el payload como un tipo genérico T.
+ * Devuelve el payload como un tipo generico T.
  */
-export function decodeToken<T = any>(token: string): T | null {
-    try {
-        if (!token || typeof token !== "string") return null;
+export function decodeToken<T = Record<string, unknown>>(
+  token: string
+): T | null {
+  try {
+    if (!token || typeof token !== "string") return null;
 
-        const parts = token.split(".");
-        if (parts.length !== 3) return null;
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
 
-        const payload = parts[1];
+    const payload = parts[1];
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
 
-        // Base64URL → Base64
-        const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((char) => `%${`00${char.charCodeAt(0).toString(16)}`.slice(-2)}`)
+        .join("")
+    );
 
-        // Decodificar
-        const jsonPayload = decodeURIComponent(
-            atob(base64)
-                .split("")
-                .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-                .join("")
-        );
-
-        return JSON.parse(jsonPayload) as T;
-    } catch (error) {
-        console.error("Error al decodificar token:", error);
-        return null;
-    }
+    return JSON.parse(jsonPayload) as T;
+  } catch (error: unknown) {
+    console.error("Error al decodificar token:", error);
+    return null;
+  }
 }
 
 /**
- * Devuelve la fecha de expiración del token (exp) en milisegundos.
+ * Devuelve la fecha de expiracion del token (exp) en milisegundos.
  */
 export function getTokenExpiration(token: string): number | null {
-    const decoded = decodeToken<{ exp: number }>(token);
-    if (!decoded?.exp) return null;
-
-    // JWT usa segundos → convertir a milisegundos
-    return decoded.exp * 1000;
+  const decoded = decodeToken<{ exp: number }>(token);
+  if (!decoded?.exp) return null;
+  return decoded.exp * 1000;
 }
 
 /**
- * Retorna true si el token ya expiró.
+ * Retorna true si el token ya expiro.
  */
 export function isTokenExpired(token: string): boolean {
-    const expMs = getTokenExpiration(token);
-    if (!expMs) return true;
-
-    return Date.now() >= expMs;
+  const expMs = getTokenExpiration(token);
+  if (!expMs) return true;
+  return Date.now() >= expMs;
 }
 
 /**
  * Retorna el usuario decodificado dentro del token.
- * Útil para cargar datos al store sin otra petición HTTP.
  */
-export function getDecodedUser<T = any>(token: string): T | null {
-    const decoded = decodeToken<{ user?: T }>(token);
+export function getDecodedUser<T = Record<string, unknown>>(
+  token: string
+): T | null {
+  const decoded = decodeToken<Record<string, unknown>>(token);
+  if (!decoded) return null;
 
-    // Si tu backend manda directamente los datos del usuario
-    if (decoded && (decoded as any).user) {
-        return (decoded as any).user as T;
-    }
+  if ("user" in decoded && decoded.user !== undefined) {
+    return decoded.user as T;
+  }
 
-    // Si tu backend mete todo el contenido directamente en el payload
-    return decoded as T;
+  return decoded as T;
 }
 
 /**
- * Helper pro: Procesa un token y devuelve:
- * - user → datos del usuario
- * - exp → expiración en ms
- * - isExpired → boolean
- * 
- * Perfecto para cargar al Zustand store.
+ * Procesa un token y devuelve user, expiracion e indicador de expiracion.
  */
-export function processToken<T = any>(token: string) {
-    const user = getDecodedUser<T>(token);
-    const exp = getTokenExpiration(token);
+export function processToken<T = Record<string, unknown>>(token: string) {
+  const user = getDecodedUser<T>(token);
+  const exp = getTokenExpiration(token);
 
-    return {
-        user,
-        exp,
-        isExpired: !exp || Date.now() >= exp
-    };
+  return {
+    user,
+    exp,
+    isExpired: !exp || Date.now() >= exp,
+  };
 }
+
+export { isRecord };

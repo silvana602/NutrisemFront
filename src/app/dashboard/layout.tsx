@@ -38,7 +38,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-screen text-red-600">
+      <div className="flex justify-center items-center min-h-screen text-nutri-primary">
         No hay usuario. Inicie sesión.
       </div>
     );

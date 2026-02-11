@@ -1,5 +1,4 @@
 import { Card } from "@/components/ui/Card";
-import { colors } from "@/lib/colors";
 
 export function ChartsGrid() {
   return (
@@ -10,11 +9,7 @@ export function ChartsGrid() {
           className="p-4 h-64 rounded-xl shadow"
         >
           <div
-            className="h-full w-full rounded-xl"
-            style={{
-              backgroundColor: colors.lightGrey,
-              opacity: 0.7,
-            }}
+            className="h-full w-full rounded-xl bg-nutri-light-grey opacity-70"
           />
         </Card>
       ))}
