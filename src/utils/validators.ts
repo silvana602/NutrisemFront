@@ -127,8 +127,17 @@ export const validateRange = (
     max: number,
     label: string
 ): string | null => {
-    if (isNaN(value)) return `${label} es obligatorio`;
-    if (value < min) return `${label} no puede ser menor a ${min}`;
-    if (value > max) return `${label} no puede ser mayor a ${max}`;
+    if (!Number.isFinite(value)) {
+        return "Valor inválido";
+    }
+
+    if (value < min) {
+        return `${label} no puede ser menor a ${min}`;
+    }
+
+    if (value > max) {
+        return `${label} no puede ser mayor a ${max}`;
+    }
+
     return null;
 };

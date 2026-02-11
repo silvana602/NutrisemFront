@@ -2,9 +2,9 @@ interface Props {
     label: string;
     placeholder: string;
     suffix: string;
-    value?: number;
+    value?: string;
     error?: string;
-    onChange: (value: number) => void;
+    onChange: (value: string) => void;
 }
 
 export const ValidatedInput = ({
@@ -20,12 +20,15 @@ export const ValidatedInput = ({
 
         <div className="relative">
             <input
-                type="number"
-                step="any"
+                type="text"
+                inputMode="decimal"
                 placeholder={placeholder}
                 value={value ?? ""}
-                onChange={(e) => onChange(Number(e.target.value))}
-                className={`w-full border border-black rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 ${error ? "border-red-500 focus:ring-red-300" : "border-[var(--color-nutri-primary)]"
+                onChange={(e) => onChange(e.target.value)}
+                className={`w-full rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2
+                    ${error
+                        ? "border border-red-500 focus:ring-red-300"
+                        : "border border-[var(--color-nutri-primary)] focus:ring-[var(--color-nutri-primary)]"
                     }`}
             />
 
@@ -35,7 +38,9 @@ export const ValidatedInput = ({
         </div>
 
         {error && (
-            <span className="text-xs text-red-600 font-medium">{error}</span>
+            <span className="text-xs text-red-600 font-medium">
+                {error}
+            </span>
         )}
     </div>
 );

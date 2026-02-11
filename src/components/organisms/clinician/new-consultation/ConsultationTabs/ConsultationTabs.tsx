@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { CONSULTATION_TABS, ConsultationTabId } from "./tabs.constants";
-import { AnthropometricForm } from "../Forms/AntropometricForm";
+import { AnthropometricForm } from "../forms/AnthropometricForm";
 
 export const ConsultationTabs: React.FC = () => {
     const [activeTab, setActiveTab] =
