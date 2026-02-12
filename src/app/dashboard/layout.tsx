@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import Sidebar from "@/components/layout/sidebar/Sidebar";
 import { LoadingButton } from "@/components/ui/Spinner";
@@ -10,23 +10,7 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { user, setSession, hydrated, setHydrated } = useAuthStore();
-
-  useEffect(() => {
-    if (hydrated) return;
-
-    const saved = localStorage.getItem("session");
-    if (saved) {
-      try {
-        setSession(JSON.parse(saved));
-      } catch (error) {
-        console.error("Error parsing session from localStorage", error);
-        localStorage.removeItem("session");
-      }
-    }
-
-    setHydrated(true);
-  }, [hydrated, setSession, setHydrated]);
+  const { user, hydrated } = useAuthStore();
 
   if (!hydrated) {
     return (

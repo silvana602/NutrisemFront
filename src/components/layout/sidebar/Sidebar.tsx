@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import { getMenuByRole } from "@/hooks/useMenuByRol";
+import { getMenuByRole } from "@/config/menus";
 import Avatar from "@/components/ui/Avatar";
 
 import { cn } from "@/lib/utils";

@@ -39,10 +39,20 @@ export async function POST(req: NextRequest) {
     clinician: clinicianData,
   });
 
+  const isProd = process.env.NODE_ENV === "production";
+
+  res.cookies.set("accessToken", accessToken, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: isProd,
+    maxAge: 60 * 60,
+    path: "/",
+  });
+
   res.cookies.set("refreshToken", `mock-refresh-${user.userId}`, {
     httpOnly: true,
     sameSite: "lax",
-    secure: false,
+    secure: isProd,
     maxAge: 60 * 60 * 24 * 7,
     path: "/",
   });
