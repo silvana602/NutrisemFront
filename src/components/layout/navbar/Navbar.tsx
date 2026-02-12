@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Backdrop } from "@/components/ui/Backdrop";
 import MobileToggle from "@/components/layout/sidebar/MobileToggle";
@@ -22,13 +22,11 @@ function buildNext(pathname: string | null, qs: string): string | "" {
 
 export const Navbar = () => {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   // ⬅ AHORA USAMOS ZUSTAND, NO REDUX
   const user = useAuthStore((s) => s.user);
 
-  const qs = searchParams.toString();
-  const nextFull = buildNext(pathname, qs);
+  const nextFull = buildNext(pathname, "");
   const nextQuery = nextFull ? `?next=${encodeURIComponent(nextFull)}` : "";
 
   // Estados y refs

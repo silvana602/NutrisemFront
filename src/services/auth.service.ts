@@ -1,6 +1,6 @@
 import { db } from "@/mocks/db";
 import { uid } from "@/mocks/utils";
-import type { AuthResponse, LoginDto, RegisterclinicianDto } from "@/types/auth";
+import type { AuthResponse, LoginDto, RegisterClinicianDto } from "@/types/auth";
 import { UserRole, type User } from "@/types/user";
 import type { Clinician } from "@/types/clinician";
 
@@ -59,7 +59,7 @@ export const AuthService = {
   /**
    * Registro de clinician
    */
-  registerclinician: (dto: RegisterclinicianDto): AuthResponse | null => {
+  registerClinician: (dto: RegisterClinicianDto): AuthResponse | null => {
     if (dto.password !== dto.confirmPassword) {
       throw new Error("Las contrasenas no coinciden");
     }
