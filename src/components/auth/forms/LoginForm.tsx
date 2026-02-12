@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 
 export function LoginForm() {
   const { setSession } = useAuthStore();
+  const router = useRouter();
 
   const [ci, setCi] = useState("");
   const [password, setPassword] = useState("");
@@ -17,7 +19,8 @@ export function LoginForm() {
     setError("");
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "/api";
+      const res = await fetch(`${baseUrl}/auth/login`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -37,6 +40,7 @@ export function LoginForm() {
 
       setSession(sessionData);
       localStorage.setItem("session", JSON.stringify(sessionData));
+      localStorage.setItem("accessToken", sessionData.accessToken);
 
       const dashboardPath = (() => {
         switch (data.user.role) {
@@ -51,7 +55,7 @@ export function LoginForm() {
         }
       })();
 
-      window.location.href = dashboardPath;
+      router.push(dashboardPath);
     } catch (error: unknown) {
       const message =
         error instanceof Error ? error.message : "Error inesperado";

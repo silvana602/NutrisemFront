@@ -2,7 +2,7 @@
 
 import React from "react";
 import { NewConsultationHeader } from "./ConsultationHeader";
-import { PatientSelector } from "./patientSelector/PatientSelector";
+import { PatientSelector } from "./PatientSelector/PatientSelector";
 import { ConsultationTabs } from "./ConsultationTabs/ConsultationTabs";
 
 export const NewConsultationContent: React.FC = () => {

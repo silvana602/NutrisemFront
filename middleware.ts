@@ -25,7 +25,7 @@ const ROLE_ROUTES: Record<UserRole, string[]> = {
     "/dashboard/patient",
     "/dashboard/patient/progress",
     "/dashboard/patient/diagnosis",
-    "/dashboard/patient/recomendations",
+    "/dashboard/patient/recommendations",
   ],
 };
 
@@ -36,7 +36,10 @@ function isProtected(pathname: string) {
 }
 
 function isPublic(pathname: string) {
-  return PUBLIC_ROUTES.some((p) => pathname === p || pathname.startsWith(p));
+  return PUBLIC_ROUTES.some((p) => {
+    if (p === "/") return pathname === "/";
+    return pathname === p || pathname.startsWith(`${p}/`);
+  });
 }
 
 export function middleware(req: NextRequest) {
@@ -73,7 +76,7 @@ export function middleware(req: NextRequest) {
   const isAllowed = allowedRoutes.some((route) => pathname.startsWith(route));
 
   if (!isAllowed) {
-    return NextResponse.redirect(new URL("/dashboard/unauthorized", req.url));
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   return NextResponse.next();
