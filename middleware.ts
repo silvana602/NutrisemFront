@@ -4,7 +4,7 @@ import { UserRole } from "@/types/user";
 
 const SESSION_COOKIE = "accessToken";
 
-const PUBLIC_ROUTES = ["/", "/login", "/register", "/auth/login", "/auth/registro"] as const;
+const PUBLIC_ROUTES = ["/", "/login", "/register", "/auth/login", "/auth/register", "/auth/registro"] as const;
 const PROTECTED_PREFIXES = ["/dashboard"] as const;
 
 const ROLE_ROUTES: Record<UserRole, string[]> = {

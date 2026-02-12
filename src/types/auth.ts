@@ -15,8 +15,8 @@ export interface LoginDto {
     password: string;  // contraseña
 }
 
-// DTO para registro SOLO DE clinicianES
-export interface RegisterclinicianDto {
+// DTO para registro SOLO DE CLINICIANS
+export interface RegisterClinicianDto {
     // Datos de User
     password: string;      // contraseña
     roleId: string;        // rol asignado (clinician)
