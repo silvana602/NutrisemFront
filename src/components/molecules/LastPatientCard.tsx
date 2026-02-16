@@ -11,7 +11,6 @@ type LastPatient = {
 
 export const LastPatientCard = ({ patient }: { patient: LastPatient }) => (
   <div className="rounded-lg border border-nutri-light-grey bg-nutri-white p-4 shadow-md">
-    <h3 className="mb-2 text-lg font-semibold">Ultimo paciente</h3>
 
     <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
       <p><strong>Nombre:</strong> {patient.name}</p>

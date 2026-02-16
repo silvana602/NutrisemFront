@@ -7,6 +7,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { UserRole } from "@/types/user";
 import AlertDialog from "@/components/ui/AlertDialog";
 import { db } from "@/mocks/db";
+import { cn } from "@/lib/utils";
 
 export default function UserMenu() {
   const router = useRouter();
@@ -114,28 +115,7 @@ export default function UserMenu() {
 
       {/* Menu */}
       {open && (
-        <div className="
-          absolute right-0 mt-2 w-64 z-50
-          rounded-2xl
-          bg-[var(--color-nutri-white)]
-          shadow-lg
-          border border-[var(--color-nutri-light-grey)]
-        ">
-          {/* USER INFO */}
-          <div className="flex items-center gap-3 px-4 py-4">
-            <Avatar name={`${user.firstName} ${user.lastName}`} size={40} />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-[var(--color-nutri-black)]">
-                {user.firstName} {user.lastName}
-              </p>
-              <p className="truncate text-xs text-[var(--color-nutri-dark-grey)]">
-                C.I. {user.identityNumber}
-              </p>
-            </div>
-          </div>
-
-          <div className="my-2 h-px bg-[var(--color-nutri-light-grey)]" />
-
+        <div className="absolute right-0 z-50 mt-2 w-72 rounded-xl border border-nutri-light-grey bg-nutri-white/95 shadow-sm">
           {/* ADMIN */}
           {isAdmin && (
             <>
@@ -189,22 +169,12 @@ export default function UserMenu() {
             </>
           )}
 
-          <div className="my-2 h-px bg-[var(--color-nutri-light-grey)]" />
+          <div className="my-2 h-px bg-nutri-light-grey" />
 
           {/* LOGOUT */}
           <button
             onClick={onLogout}
-            className="
-              w-full text-left
-              px-4 py-2.5
-              text-sm font-semibold
-              rounded-xl
-              text-[var(--color-nutri-primary)]
-              bg-[var(--color-nutri-primary)/5]
-              border border-[var(--color-nutri-primary)/20]
-              hover:bg-[var(--color-nutri-primary)/10]
-              transition-all
-            "
+            className="mx-3 my-1 flex w-[calc(100%-1.5rem)] items-center rounded-xl px-6 py-3 text-left text-sm font-medium text-nutri-dark-grey transition-all duration-150 hover:bg-nutri-off-white"
           >
             Cerrar sesión
           </button>
@@ -245,21 +215,12 @@ function MenuButton({
   return (
     <button
       onClick={onClick}
-      className={`
-        block w-full text-left
-        px-4 py-2
-        text-sm rounded-lg
-        transition-colors
-
-        text-[var(--color-nutri-dark-grey)]
-        hover:bg-[var(--color-nutri-primary)/10]
-
-        ${
-          active
-            ? "bg-[var(--color-nutri-primary)] text-[var(--color-nutri-white)]"
-            : ""
-        }
-      `}
+      className={cn(
+        "mx-3 my-1 flex w-[calc(100%-1.5rem)] items-center rounded-xl px-6 py-3 text-left text-sm font-medium transition-all duration-150",
+        active
+          ? "bg-nutri-primary text-nutri-white shadow-sm"
+          : "text-nutri-dark-grey hover:bg-nutri-off-white"
+      )}
     >
       {children}
     </button>
