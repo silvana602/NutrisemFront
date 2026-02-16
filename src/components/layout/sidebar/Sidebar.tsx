@@ -18,7 +18,7 @@ export default function Sidebar() {
   const menuItems = getMenuByRole(user.role);
 
   return (
-    <aside className="hidden min-h-screen w-72 flex-col border-r border-nutri-light-grey bg-nutri-white lg:flex lg:flex-col lg:w-72">
+    <aside className="hidden min-h-screen w-72 flex-col border-r border-nutri-light-grey bg-nutri-white/95 shadow-sm lg:flex lg:flex-col lg:w-72">
       {/* USER SECTION */}
       <div className="flex flex-col items-center text-center py-6">
         <div className="mb-3">
@@ -44,10 +44,10 @@ export default function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-6 py-3 mx-3 my-1 rounded-md transition-all duration-150",
+                "mx-3 my-1 flex items-center gap-3 rounded-xl px-6 py-3 transition-all duration-150",
                 isActive
                   ? "bg-nutri-primary text-nutri-white shadow-sm"
-                  : "text-nutri-dark-grey hover:bg-nutri-off-white hover:shadow-sm"
+                  : "text-nutri-dark-grey hover:bg-nutri-off-white"
               )}
             >
               <Icon size={18} />

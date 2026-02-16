@@ -1,4 +1,5 @@
 import React from 'react';
+import { cn } from "@/lib/utils";
 
 interface CardProps {
   children: React.ReactNode;
@@ -9,11 +10,11 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ children, className = '', title, icon }) => {
   return (
-    <div className={`rounded-xl bg-nutri-white p-6 shadow-lg ${className}`}>
+    <div className={cn("nutri-surface p-6", className)}>
       {(title || icon) && (
-        <div className="flex items-center gap-3 mb-4">
+        <div className="mb-4 flex items-center gap-3">
           {icon && <div className="text-nutri-secondary">{icon}</div>}
-          {title && <h3 className="text-xl font-bold text-nutri-dark-grey">{title}</h3>}
+          {title && <h3 className="text-lg font-semibold text-nutri-dark-grey">{title}</h3>}
         </div>
       )}
       {children}

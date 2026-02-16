@@ -1,160 +1,154 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-/* =========================
-   Tipos de pasos (Wizard)
-========================= */
-export type ConsultationStep =
-    | "anthropometric"
-    | "clinical";
+export type ConsultationStep = "anthropometric" | "clinical";
 
-/* =========================
-   Estados de formulario
-========================= */
 export interface AnthropometricFormState {
-    weightKg?: number;
-    heightM?: number;
-    muacCm?: number;
-    headCircumferenceCm?: number;
-
-    bmi?: number;
-    zScore?: number;
-    percentile?: number;
+  weightKg?: number;
+  heightM?: number;
+  muacCm?: number;
+  headCircumferenceCm?: number;
+  bmi?: number;
+  zScore?: number;
+  percentile?: number;
 }
 
 export interface ClinicalFormState {
-    ageYears?: number;
+  ageYears?: number;
 }
 
-/* =========================
-   Store
-========================= */
 interface ConsultationStore {
-    currentStep: ConsultationStep;
-    completedSteps: ConsultationStep[];
+  selectedPatientId: string | null;
+  currentStep: ConsultationStep;
+  completedSteps: ConsultationStep[];
 
-    anthropometric: AnthropometricFormState;
-    clinical: ClinicalFormState;
+  anthropometric: AnthropometricFormState;
+  clinical: ClinicalFormState;
 
-    /** ✅ VALIDACIÓN DEL PASO */
-    isAnthropometricValid: boolean;
-    setAnthropometricValidity: (valid: boolean) => void;
+  isAnthropometricValid: boolean;
+  isClinicalValid: boolean;
+  setAnthropometricValidity: (valid: boolean) => void;
+  setClinicalValidity: (valid: boolean) => void;
+  setSelectedPatientId: (patientId: string | null) => void;
+  clearAnthropometric: () => void;
 
-    setStep: (step: ConsultationStep) => void;
-    nextStep: () => void;
-    prevStep: () => void;
+  setStep: (step: ConsultationStep) => void;
+  nextStep: () => void;
+  prevStep: () => void;
 
-    setAnthropometric: (
-        data: Partial<AnthropometricFormState>
-    ) => void;
+  setAnthropometric: (data: Partial<AnthropometricFormState>) => void;
+  setClinical: (data: Partial<ClinicalFormState>) => void;
 
-    setClinical: (
-        data: Partial<ClinicalFormState>
-    ) => void;
-
-    reset: () => void;
+  reset: () => void;
 }
 
-/* =========================
-   Utilidades de cálculo
-========================= */
 function calculateZScoreAndPercentile(bmi: number) {
-    const mean = 16;
-    const sd = 2;
+  const mean = 16;
+  const sd = 2;
+  const zScore = Number(((bmi - mean) / sd).toFixed(2));
+  const percentile = Math.min(99, Math.max(1, Math.round(50 + zScore * 15)));
 
-    const zScore = Number(((bmi - mean) / sd).toFixed(2));
-    const percentile = Math.min(
-        99,
-        Math.max(1, Math.round(50 + zScore * 15))
-    );
-
-    return { zScore, percentile };
+  return { zScore, percentile };
 }
 
-/* =========================
-   Orden del Wizard
-========================= */
-const STEP_ORDER: ConsultationStep[] = [
-    "anthropometric",
-    "clinical",
-];
+const STEP_ORDER: ConsultationStep[] = ["anthropometric", "clinical"];
 
-/* =========================
-   Store implementation
-========================= */
-export const useConsultationStore = create<ConsultationStore>(
+const INITIAL_STATE = {
+  selectedPatientId: null,
+  currentStep: "anthropometric" as ConsultationStep,
+  completedSteps: [] as ConsultationStep[],
+  anthropometric: {} as AnthropometricFormState,
+  clinical: {} as ClinicalFormState,
+  isAnthropometricValid: false,
+  isClinicalValid: false,
+};
+
+export const useConsultationStore = create<ConsultationStore>()(
+  persist(
     (set, get) => ({
-        currentStep: "anthropometric",
-        completedSteps: [],
+      ...INITIAL_STATE,
 
-        anthropometric: {},
-        clinical: {},
+      setAnthropometricValidity: (valid) => set({ isAnthropometricValid: valid }),
+      setClinicalValidity: (valid) => set({ isClinicalValid: valid }),
 
-        /** ✅ VALIDACIÓN */
-        isAnthropometricValid: false,
+      setSelectedPatientId: (patientId) =>
+        set((state) => {
+          if (state.selectedPatientId === patientId) {
+            return { selectedPatientId: patientId };
+          }
 
-        setAnthropometricValidity: (valid) =>
-            set({ isAnthropometricValid: valid }),
+          return {
+            selectedPatientId: patientId,
+            currentStep: "anthropometric",
+            completedSteps: [],
+            anthropometric: {},
+            clinical: {},
+            isAnthropometricValid: false,
+            isClinicalValid: false,
+          };
+        }),
 
-        setStep: (step) => set({ currentStep: step }),
+      clearAnthropometric: () =>
+        set({
+          anthropometric: {},
+          isAnthropometricValid: false,
+        }),
 
-        nextStep: () => {
-            const { currentStep, completedSteps } = get();
-            const index = STEP_ORDER.indexOf(currentStep);
+      setStep: (step) => set({ currentStep: step }),
 
-            if (index < STEP_ORDER.length - 1) {
-                set({
-                    currentStep: STEP_ORDER[index + 1],
-                    completedSteps: Array.from(
-                        new Set([...completedSteps, currentStep])
-                    ),
-                });
-            }
-        },
+      nextStep: () => {
+        const { currentStep, completedSteps } = get();
+        const index = STEP_ORDER.indexOf(currentStep);
 
-        prevStep: () => {
-            const { currentStep } = get();
-            const index = STEP_ORDER.indexOf(currentStep);
+        if (index < STEP_ORDER.length - 1) {
+          set({
+            currentStep: STEP_ORDER[index + 1],
+            completedSteps: Array.from(new Set([...completedSteps, currentStep])),
+          });
+        }
+      },
 
-            if (index > 0) {
-                set({ currentStep: STEP_ORDER[index - 1] });
-            }
-        },
+      prevStep: () => {
+        const { currentStep } = get();
+        const index = STEP_ORDER.indexOf(currentStep);
 
-        setAnthropometric: (data) =>
-            set((state) => {
-                const next = {
-                    ...state.anthropometric,
-                    ...data,
-                };
+        if (index > 0) {
+          set({ currentStep: STEP_ORDER[index - 1] });
+        }
+      },
 
-                if (next.weightKg && next.heightM && next.heightM > 0) {
-                    const bmi =
-                        next.weightKg / (next.heightM * next.heightM);
+      setAnthropometric: (data) =>
+        set((state) => {
+          const next = {
+            ...state.anthropometric,
+            ...data,
+          };
 
-                    next.bmi = Number(bmi.toFixed(2));
+          if (next.weightKg && next.heightM && next.heightM > 0) {
+            const bmi = next.weightKg / (next.heightM * next.heightM);
+            next.bmi = Number(bmi.toFixed(2));
+            const { zScore, percentile } = calculateZScoreAndPercentile(next.bmi);
+            next.zScore = zScore;
+            next.percentile = percentile;
+          }
 
-                    const { zScore, percentile } =
-                        calculateZScoreAndPercentile(next.bmi);
+          return { anthropometric: next };
+        }),
 
-                    next.zScore = zScore;
-                    next.percentile = percentile;
-                }
+      setClinical: (data) =>
+        set((state) => ({
+          clinical: { ...state.clinical, ...data },
+        })),
 
-                return { anthropometric: next };
-            }),
-
-        setClinical: (data) =>
-            set((state) => ({
-                clinical: { ...state.clinical, ...data },
-            })),
-
-        reset: () =>
-            set({
-                currentStep: "anthropometric",
-                completedSteps: [],
-                anthropometric: {},
-                clinical: {},
-                isAnthropometricValid: false,
-            }),
-    })
+      reset: () => set({ ...INITIAL_STATE }),
+    }),
+    {
+      name: "consultation-store",
+      partialize: (state) => ({
+        selectedPatientId: state.selectedPatientId,
+        anthropometric: state.anthropometric,
+        clinical: state.clinical,
+      }),
+    }
+  )
 );

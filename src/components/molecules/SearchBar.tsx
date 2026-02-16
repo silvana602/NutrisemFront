@@ -18,7 +18,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     onChange(e.target.value);
 
   return (
-    <div className="w-full max-w-full sm:max-w-xl mt-4 px-2">
+    <div className="mt-4 w-full max-w-full sm:max-w-xl">
       <TextInput
         placeholder={placeholder}
         value={value}
@@ -26,20 +26,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         icon={
           <Search
             size={20}
-            className="text-nutri-dark-grey transition-colors group-focus-within:text-nutri-primary"
+            className="text-current"
           />
         }
-        className={`
-          w-full 
-          rounded-lg 
-          bg-nutri-white 
-          border border-nutri-light-grey
-          px-4 py-2 
-          focus-within:ring-2 focus-within:ring-nutri-secondary/30
-          focus-within:border-nutri-secondary
-          transition-all 
-          placeholder:text-nutri-secondary
-        `}
+        className="w-full"
       />
     </div>
   );

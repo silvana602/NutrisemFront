@@ -5,6 +5,7 @@ import React from "react";
 export type TabItem<T extends string> = {
   id: T;
   label: string;
+  disabled?: boolean;
 };
 
 type TabsProps<T extends string> = {
@@ -26,7 +27,8 @@ export function Tabs<T extends string>({
         <button
           key={tab.id}
           type="button"
-          onClick={() => onTabChange(tab.id)}
+          disabled={tab.disabled}
+          onClick={() => !tab.disabled && onTabChange(tab.id)}
           className={`
             rounded-t-md px-4 py-2 text-sm font-medium transition-colors
             ${
@@ -34,6 +36,7 @@ export function Tabs<T extends string>({
                 ? "bg-[var(--color-nutri-secondary)] text-nutri-white"
                 : "bg-transparent text-[var(--color-nutri-dark-grey)] hover:bg-[var(--color-nutri-light-grey)]"
             }
+            ${tab.disabled ? "cursor-not-allowed opacity-45 hover:bg-transparent" : ""}
           `}
         >
           {tab.label}

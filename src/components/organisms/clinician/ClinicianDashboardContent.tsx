@@ -7,7 +7,7 @@ import { MetricsGrid } from "@/components/molecules/MetricsGrid";
 import { LastPatientCard } from "@/components/molecules/LastPatientCard";
 import { ChartsGrid } from "@/components/molecules/ChartsGrid";
 
-import { db } from "@/mocks/db";
+import { db, seedOnce } from "@/mocks/db";
 import { calculateAge } from "@/lib/utils";
 
 import type { User } from "@/types/user";
@@ -20,6 +20,8 @@ import type { Diagnosis } from "@/types/diagnosis";
 interface Props {
   user: User;
 }
+
+seedOnce();
 
 export const ClinicianDashboardContent: React.FC<Props> = ({ user }) => {
   /* =====================================================

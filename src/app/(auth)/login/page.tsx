@@ -3,7 +3,7 @@ import { LoginForm } from "@/components/auth/forms/LoginForm";
 export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-2xl bg-nutri-white p-8 shadow-lg">
+      <div className="nutri-surface w-full max-w-md p-8">
         <h1 className="text-center text-2xl font-semibold text-nutri-primary">
           Iniciar sesion
         </h1>

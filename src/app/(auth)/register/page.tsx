@@ -1,6 +1,6 @@
 export default function RegisterPage() {
   return (
-    <div className="rounded-2xl bg-nutri-white p-8 shadow-lg">
+    <div className="nutri-surface p-8">
       <h1 className="text-center text-2xl font-semibold text-nutri-primary">
         Registro
       </h1>

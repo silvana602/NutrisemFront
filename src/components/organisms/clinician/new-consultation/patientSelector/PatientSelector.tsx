@@ -3,6 +3,8 @@
 import React, { useMemo, useState } from "react";
 import { SearchBar } from "@/components/molecules/SearchBar";
 import { db, seedOnce } from "@/mocks/db";
+import { Button } from "@/components/ui/Button";
+import { useConsultationStore } from "@/store/useConsultationStore";
 import type { Patient } from "@/types";
 
 // Inicializa mock DB (idempotente)
@@ -17,10 +19,16 @@ const normalize = (value: string) =>
 
 export const PatientSelector: React.FC = () => {
     const [query, setQuery] = useState("");
-    const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
     const [highlightedIndex, setHighlightedIndex] = useState(0);
+    const selectedPatientId = useConsultationStore((s) => s.selectedPatientId);
+    const setSelectedPatientId = useConsultationStore((s) => s.setSelectedPatientId);
+    const clearAnthropometric = useConsultationStore((s) => s.clearAnthropometric);
 
     const patients = db.patients;
+    const selectedPatient = useMemo(
+        () => patients.find((p) => p.patientId === selectedPatientId) ?? null,
+        [patients, selectedPatientId]
+    );
 
     const filteredPatients = useMemo(() => {
         if (query.trim().length < 3) return [];
@@ -37,8 +45,24 @@ export const PatientSelector: React.FC = () => {
         });
     }, [query, patients]);
 
+    const clearPatientAnthropometricDraft = () => {
+        clearAnthropometric();
+    };
+
     const handleSelect = (patient: Patient) => {
-        setSelectedPatient(patient);
+        if (selectedPatientId !== patient.patientId) {
+            clearPatientAnthropometricDraft();
+        }
+
+        setSelectedPatientId(patient.patientId);
+        setQuery("");
+        setHighlightedIndex(0);
+    };
+
+    const handleClearSelection = () => {
+        if (!selectedPatientId) return;
+        clearPatientAnthropometricDraft();
+        setSelectedPatientId(null);
         setQuery("");
         setHighlightedIndex(0);
     };
@@ -131,12 +155,25 @@ export const PatientSelector: React.FC = () => {
             border border-[var(--color-nutri-light-grey)]
             px-4 py-3          "
                 >
-                    <p className="text-sm text-[var(--color-nutri-dark-grey)]">
-                        Consulta al paciente:
-                    </p>
-                    <p className="text-base font-semibold text-[var(--color-nutri-primary)]">
-                        {selectedPatient.firstName} {selectedPatient.lastName}
-                    </p>
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <p className="text-sm text-[var(--color-nutri-dark-grey)]">
+                                Consulta al paciente:
+                            </p>
+                            <p className="text-base font-semibold text-[var(--color-nutri-primary)]">
+                                {selectedPatient.firstName} {selectedPatient.lastName}
+                            </p>
+                        </div>
+
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="px-3 py-1.5 text-xs"
+                            onClick={handleClearSelection}
+                        >
+                            Quitar paciente
+                        </Button>
+                    </div>
                 </div>
             )}
         </section>

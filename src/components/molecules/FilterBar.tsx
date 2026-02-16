@@ -24,7 +24,7 @@ export function FilterBar({
         <select
           value={age}
           onChange={(e) => onAgeChange(e.target.value)}
-          className="rounded-lg border border-nutri-light-grey bg-nutri-white px-3 py-2 text-nutri-dark-grey shadow-sm"
+          className="nutri-input min-w-[160px]"
         >
           <option value="all">Todos</option>
           <option value="0-1">0 - 1 año</option>
@@ -44,7 +44,7 @@ export function FilterBar({
         <select
           value={gender}
           onChange={(e) => onGenderChange(e.target.value)}
-          className="rounded-lg border border-nutri-light-grey bg-nutri-white px-3 py-2 text-nutri-dark-grey shadow-sm"
+          className="nutri-input min-w-[160px]"
         >
           <option value="all">Todos</option>
           <option value="M">Masculino</option>

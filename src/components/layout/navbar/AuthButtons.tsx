@@ -20,7 +20,7 @@ export default function AuthButtons({ nextQuery }: AuthButtonsProps) {
 
       <button
         aria-label="Cambiar idioma"
-        className="rounded-xl border border-border p-2 hover:bg-brand-50"
+        className="rounded-xl border border-nutri-light-grey bg-nutri-white p-2 text-nutri-dark-grey transition-colors hover:bg-nutri-off-white"
       >
       </button>
     </div>
