@@ -14,9 +14,9 @@ export function FilterBar({
   onAgeChange,
 }: FilterBarProps) {
   return (
-    <div className="flex flex-wrap gap-4 items-center mt-4">
+    <div className="mt-2 flex w-full flex-col gap-4 sm:mt-4 sm:flex-row sm:flex-wrap sm:items-end">
       {/* Filtro Edad */}
-      <div className="flex flex-col">
+      <div className="flex w-full flex-col sm:w-auto">
         <label className="mb-1 text-sm font-semibold text-nutri-dark-grey">
           Edad
         </label>
@@ -24,7 +24,7 @@ export function FilterBar({
         <select
           value={age}
           onChange={(e) => onAgeChange(e.target.value)}
-          className="nutri-input min-w-[160px]"
+          className="nutri-input w-full sm:min-w-[160px]"
         >
           <option value="all">Todos</option>
           <option value="0-1">0 - 1 año</option>
@@ -36,7 +36,7 @@ export function FilterBar({
       </div>
 
       {/* Filtro Sexo */}
-      <div className="flex flex-col">
+      <div className="flex w-full flex-col sm:w-auto">
         <label className="mb-1 text-sm font-semibold text-nutri-dark-grey">
           Sexo
         </label>
@@ -44,7 +44,7 @@ export function FilterBar({
         <select
           value={gender}
           onChange={(e) => onGenderChange(e.target.value)}
-          className="nutri-input min-w-[160px]"
+          className="nutri-input w-full sm:min-w-[160px]"
         >
           <option value="all">Todos</option>
           <option value="M">Masculino</option>

@@ -46,36 +46,45 @@ export const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-30 h-[var(--nutri-navbar-height)] border-b border-nutri-light-grey bg-nutri-white/95 shadow-sm backdrop-blur">
-      <div className="container mx-auto flex h-full px-4">
+      <div className="container mx-auto flex h-full px-3 sm:px-4">
         <div className="flex w-full items-center justify-between">
           {/* LOGO */}
-          <div className="flex items-center gap-2">
+          <Link
+            href="/"
+            aria-label="Ir a la pagina de bienvenida"
+            className="flex min-w-0 items-center gap-2"
+          >
             <div
-              className="flex h-10 w-10 items-center justify-center rounded-lg bg-nutri-primary text-xl font-bold text-nutri-white"
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-nutri-primary text-lg font-bold text-nutri-white sm:h-10 sm:w-10 sm:text-xl"
             >
               N
             </div>
-            <span className="text-2xl font-bold text-nutri-primary">
+            <span className="hidden truncate text-xl font-bold text-nutri-primary sm:inline sm:text-2xl">
               Nutrisem
             </span>
-          </div>
+          </Link>
 
           {/* TOGGLE MÓVIL */}
-          <div className="ml-auto md:hidden">
-            <MobileToggle
-              ref={mobileBtnRef}
-              open={mobile.open}
-              onToggle={mobile.onToggle}
-              menuId="navbar-mobile-menu"
-            />
-          </div>
+          {user && (
+            <div className="ml-auto md:hidden">
+              <MobileToggle
+                ref={mobileBtnRef}
+                open={mobile.open}
+                onToggle={mobile.onToggle}
+                menuId="navbar-mobile-menu"
+              />
+            </div>
+          )}
 
           {user ? (
             <UserMenu />
           ) : (
             <>
             {/* ARREGLAR A FUTURO */}
-              <Button variant="outline">
+              <Button
+                variant="outline"
+                className="px-3 py-2 text-sm sm:px-5 sm:py-2.5"
+              >
                 <Link href={`/login${nextQuery}`}>
                   Iniciar sesión
                 </Link>

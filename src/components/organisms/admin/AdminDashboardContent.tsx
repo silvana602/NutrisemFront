@@ -18,13 +18,16 @@ export default function AdminDashboardContent() {
   ];
 
   return (
-    <div className="min-h-screen bg-nutri-off-white p-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="min-h-0 bg-nutri-off-white p-4 sm:p-6">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Heading>
           Bienvenid@, Administrador(a) {user.firstName} {user.lastName}
         </Heading>
 
-        <IconButton label="Añadir nuevo profesional medico" />
+        <IconButton
+          label="Añadir nuevo profesional medico"
+          className="w-full justify-center sm:w-auto"
+        />
       </div>
 
       {/* Vista general */}

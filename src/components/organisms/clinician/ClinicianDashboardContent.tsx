@@ -138,14 +138,20 @@ export const ClinicianDashboardContent: React.FC<Props> = ({ user }) => {
   ];
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       <Heading>
         Bienvenid@, Dr(a) {user.firstName} {user.lastName}
       </Heading>
 
-      <div className="flex gap-4 mt-4">
-        <IconButton label="Añadir nueva consulta" />
-        <IconButton label="Añadir nuevo paciente" />
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:gap-4">
+        <IconButton
+          label="Añadir nueva consulta"
+          className="w-full justify-center sm:w-auto"
+        />
+        <IconButton
+          label="Añadir nuevo paciente"
+          className="w-full justify-center sm:w-auto"
+        />
       </div>
 
       <SectionTitle>Último paciente</SectionTitle>

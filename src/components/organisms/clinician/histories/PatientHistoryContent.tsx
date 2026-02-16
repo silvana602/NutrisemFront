@@ -49,7 +49,7 @@ export const PatientHistoryContent: React.FC = () => {
   }, [search]);
 
   return (
-    <div className="w-full px-6 py-6 space-y-8">
+    <div className="w-full space-y-6 px-3 py-4 sm:space-y-8 sm:px-6 sm:py-6">
       <Heading>Patient History</Heading>
 
       {/* Buscador */}
@@ -57,7 +57,7 @@ export const PatientHistoryContent: React.FC = () => {
 
       {/* Lista de resultados */}
       {results.length > 1 && !selectedPatient && (
-        <div className="rounded-xl border border-nutri-light-grey bg-nutri-off-white p-6 shadow-lg">
+        <div className="rounded-xl border border-nutri-light-grey bg-nutri-off-white p-4 shadow-lg sm:p-6">
           <p className="mb-3 text-sm text-nutri-dark-grey">
             Select a patient:
           </p>
@@ -71,7 +71,7 @@ export const PatientHistoryContent: React.FC = () => {
               return (
                 <li
                   key={p.patientId}
-                  className="mb-2 cursor-pointer rounded-lg bg-nutri-light-grey px-4 py-3 transition hover:bg-nutri-off-white"
+                  className="mb-2 cursor-pointer rounded-lg bg-nutri-light-grey px-3 py-2.5 transition hover:bg-nutri-off-white sm:px-4 sm:py-3"
                   onClick={() => setSelectedPatient(p)}
                 >
                   <strong className="text-nutri-primary">
@@ -88,11 +88,11 @@ export const PatientHistoryContent: React.FC = () => {
       {/* Summary + Historial */}
       {selectedPatient && (
         <div className="space-y-8">
-          <div className="rounded-xl border border-nutri-light-grey bg-nutri-white p-6 shadow-lg">
+          <div className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-lg sm:p-6">
             <PatientSummary patient={selectedPatient} />
           </div>
 
-          <div className="rounded-xl border border-nutri-light-grey bg-nutri-white p-6 shadow-lg">
+          <div className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-lg sm:p-6">
             <PatientsHistoryTable patientId={selectedPatient.patientId} />
           </div>
         </div>

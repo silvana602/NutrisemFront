@@ -40,7 +40,7 @@ export const PatientSummary: React.FC<Props> = ({ patient }) => {
     <div className="space-y-2 rounded-md bg-nutri-white p-4 shadow">
       <h2 className="text-lg font-semibold text-nutri-dark-grey">Resumen del Paciente</h2>
 
-      <div className="grid grid-cols-2 gap-2 text-sm">
+      <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
         <div>
           <strong>Nombre:</strong> {user.firstName} {user.lastName}
         </div>

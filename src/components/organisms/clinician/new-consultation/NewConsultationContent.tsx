@@ -9,8 +9,8 @@ export const NewConsultationContent: React.FC = () => {
     return (
         <div
             className="
-        w-full min-h-screen
-        px-6 py-6
+        w-full min-h-0
+        px-3 py-4 sm:px-6 sm:py-6
         space-y-8
         flex flex-col
         bg-[var(--color-nutri-off-white)]"

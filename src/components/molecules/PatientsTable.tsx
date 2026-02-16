@@ -12,7 +12,7 @@ export const PatientsTable: React.FC<Props> = ({ data }) => {
       <div
         className="w-full overflow-x-auto rounded-lg border border-nutri-light-grey"
       >
-        <table className="w-full text-sm">
+        <table className="min-w-[860px] w-full text-sm">
           <thead className="bg-nutri-off-white">
             <tr>
               <th className="px-3 py-2 text-left font-semibold">Nro</th>

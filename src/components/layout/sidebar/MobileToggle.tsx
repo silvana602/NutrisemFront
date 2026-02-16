@@ -11,13 +11,13 @@ const MobileToggle = forwardRef<HTMLButtonElement, {
 }>(({ open, onToggle, menuId }, ref) => (
     <button
         ref={ref}
-        className="text-nutri-primary px-3 py-2"
+        className="rounded-lg px-2.5 py-1.5 text-nutri-primary"
         aria-controls={menuId}
         aria-expanded={open}
         aria-label={open ? "Cerrar menú" : "Abrir menú"}
         onClick={onToggle}
     >
-        {open ? <CgClose size={25} /> : <TiThMenu size={35} />}
+        {open ? <CgClose size={22} /> : <TiThMenu size={28} />}
     </button>
 ));
 

@@ -93,18 +93,19 @@ export const PatientsListContent: React.FC = () => {
   }, [filtered, page]);
 
   return (
-    <div className="w-full px-6 py-6 space-y-8">
+    <div className="w-full space-y-6 px-3 py-4 sm:space-y-8 sm:px-6 sm:py-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Heading >Lista de pacientes</Heading>
         <IconButton
           label="Add New Patient"
+          className="w-full justify-center sm:w-auto"
           onClick={() => {}}
         />
       </div>
 
       {/* Search y Filters */}
-      <div className="mt-4 flex flex-col sm:flex-row sm:items-end sm:gap-6 gap-4">
+      <div className="mt-2 flex flex-col gap-4 sm:mt-4 sm:flex-row sm:items-end sm:gap-6">
         <SearchBar value={search} onChange={handleSearchChange} />
         <FilterBar
           age={ageFilter}
@@ -122,7 +123,7 @@ export const PatientsListContent: React.FC = () => {
       </div>
 
       {/* Tabla */}
-      <div className="overflow-hidden rounded-xl bg-nutri-white shadow-lg">
+      <div className="overflow-x-auto rounded-xl bg-nutri-white shadow-lg">
         <PatientsTable data={paginatedPatients} />
       </div>
 

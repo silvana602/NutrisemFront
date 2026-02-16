@@ -9,14 +9,14 @@ export default function LandingPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-nutri-off-white">
-      <section className="container mx-auto px-4 py-16 md:py-24">
+    <div className="min-h-0 bg-nutri-off-white">
+      <section className="container mx-auto px-4 py-10 sm:py-14 md:py-24">
         <div className="grid items-center gap-12 md:grid-cols-2">
           <div>
-            <h1 className="mb-6 text-4xl font-bold text-nutri-dark-grey md:text-5xl">
+            <h1 className="mb-5 text-3xl font-bold text-nutri-dark-grey sm:text-4xl md:mb-6 md:text-5xl">
               Sistema de Monitoreo Nutricional en Bolivia
             </h1>
-            <p className="mb-8 text-lg text-nutri-dark-grey">
+            <p className="mb-6 text-base text-nutri-dark-grey sm:text-lg md:mb-8">
               Plataforma integral para el seguimiento y diagnostico del estado
               nutricional de la poblacion boliviana, facilitando la deteccion
               temprana de malnutricion y promoviendo intervenciones oportunas.
@@ -27,10 +27,10 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-xl bg-nutri-white p-6 text-center shadow-lg">
-              <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-nutri-primary">
-                <Activity className="text-nutri-white" size={32} />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="rounded-xl bg-nutri-white p-4 text-center shadow-lg sm:p-6">
+              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-nutri-primary sm:h-16 sm:w-16">
+                <Activity className="text-nutri-white" size={28} />
               </div>
               <h3 className="mb-2 font-semibold text-nutri-dark-grey">
                 Seguimiento Continuo
@@ -40,9 +40,9 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="rounded-xl bg-nutri-white p-6 text-center shadow-lg">
-              <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-nutri-secondary">
-                <BarChart3 className="text-nutri-white" size={32} />
+            <div className="rounded-xl bg-nutri-white p-4 text-center shadow-lg sm:p-6">
+              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-nutri-secondary sm:h-16 sm:w-16">
+                <BarChart3 className="text-nutri-white" size={28} />
               </div>
               <h3 className="mb-2 font-semibold text-nutri-dark-grey">
                 Estadisticas
@@ -52,9 +52,9 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="rounded-xl bg-nutri-white p-6 text-center shadow-lg">
-              <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-nutri-secondary">
-                <Users className="text-nutri-white" size={32} />
+            <div className="rounded-xl bg-nutri-white p-4 text-center shadow-lg sm:p-6">
+              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-nutri-secondary sm:h-16 sm:w-16">
+                <Users className="text-nutri-white" size={28} />
               </div>
               <h3 className="mb-2 font-semibold text-nutri-dark-grey">
                 Profesionales
@@ -64,9 +64,9 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="rounded-xl bg-nutri-white p-6 text-center shadow-lg">
-              <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-nutri-primary">
-                <FileText className="text-nutri-white" size={32} />
+            <div className="rounded-xl bg-nutri-white p-4 text-center shadow-lg sm:p-6">
+              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-nutri-primary sm:h-16 sm:w-16">
+                <FileText className="text-nutri-white" size={28} />
               </div>
               <h3 className="mb-2 font-semibold text-nutri-dark-grey">
                 Historial y Reportes
@@ -79,9 +79,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="rounded-t-2xl bg-nutri-primary py-16">
+      <section className="rounded-t-2xl bg-nutri-primary py-12 sm:py-16">
         <div className="container mx-auto px-4">
-          <h2 className="mb-12 text-center text-3xl font-bold text-nutri-white">
+          <h2 className="mb-10 text-center text-2xl font-bold text-nutri-white sm:mb-12 sm:text-3xl">
             Estadisticas sobre Nutricion en Bolivia
           </h2>
           <div className="mx-auto grid max-w-4xl gap-8 md:grid-cols-2">

@@ -32,7 +32,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="flex min-h-[calc(100dvh-var(--nutri-navbar-height)-var(--nutri-footer-height))] items-start">
       <Sidebar />
 
-      <main className="min-w-0 flex-1 p-4">
+      <main className="min-w-0 flex-1 p-3 sm:p-4">
         <div className="mx-auto w-full max-w-[1400px]">{children}</div>
       </main>
     </div>
