@@ -18,7 +18,7 @@ export default function Sidebar() {
   const menuItems = getMenuByRole(user.role);
 
   return (
-    <aside className="hidden min-h-screen w-72 flex-col border-r border-nutri-light-grey bg-nutri-white/95 shadow-sm lg:flex lg:flex-col lg:w-72">
+    <aside className="hidden w-72 shrink-0 flex-col border-r border-nutri-light-grey bg-nutri-white/95 shadow-sm lg:sticky lg:top-[var(--nutri-navbar-height)] lg:flex lg:h-[calc(100dvh-var(--nutri-navbar-height)-var(--nutri-footer-height))] lg:self-start lg:flex-col lg:overflow-y-auto lg:w-72">
       {/* USER SECTION */}
       <div className="flex flex-col items-center text-center py-6">
         <div className="mb-3">

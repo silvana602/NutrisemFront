@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   if (!hydrated) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex min-h-[calc(100dvh-var(--nutri-navbar-height)-var(--nutri-footer-height))] items-center justify-center">
         <LoadingButton loading>Cargando...</LoadingButton>
       </div>
     );
@@ -22,23 +22,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-screen text-nutri-primary">
+      <div className="flex min-h-[calc(100dvh-var(--nutri-navbar-height)-var(--nutri-footer-height))] items-center justify-center text-nutri-primary">
         No hay usuario. Inicie sesión.
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen overflow-hidden">
+    <div className="flex min-h-[calc(100dvh-var(--nutri-navbar-height)-var(--nutri-footer-height))] items-start">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4">
-          <div className="max-w-[1400px] w-full mx-auto">
-            {children}
-          </div>
-        </main>
-      </div>
+      <main className="min-w-0 flex-1 p-4">
+        <div className="mx-auto w-full max-w-[1400px]">{children}</div>
+      </main>
     </div>
   );
 }

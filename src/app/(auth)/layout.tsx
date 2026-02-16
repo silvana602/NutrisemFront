@@ -3,18 +3,13 @@ import "@/app/globals.css";
 
 export const metadata: Metadata = {
   title: "Acceso | Nutrisem",
-  description: "Inicia sesión para acceder al sistema Nutrisem",
+  description: "Inicia sesion para acceder al sistema Nutrisem",
 };
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col bg-nutri-off-white">
-      {/* MAIN — ocupa todo el espacio entre navbar y footer */}
-      <main className="flex-1 flex items-center justify-center px-0 py-0">
-        <div className="w-full max-w-md">
-          {children}
-        </div>
-      </main>
+    <div className="grid min-h-[calc(100dvh-var(--nutri-navbar-height)-var(--nutri-footer-height))] w-full place-items-center px-4">
+      <div className="w-full max-w-md">{children}</div>
     </div>
   );
 }

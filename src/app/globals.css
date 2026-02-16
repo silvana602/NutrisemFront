@@ -3,6 +3,8 @@
 :root {
   --background: #f5efeb;
   --foreground: #3e4a4f;
+  --nutri-navbar-height: 4.5rem;
+  --nutri-footer-height: 4.25rem;
 
   --nutri-radius-sm: 0.625rem;
   --nutri-radius-md: 0.875rem;

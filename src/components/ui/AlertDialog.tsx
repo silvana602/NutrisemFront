@@ -1,6 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { Backdrop } from "@/components/ui/Backdrop";
 
 interface AlertDialogProps {
     open: boolean;
@@ -17,19 +19,26 @@ export default function AlertDialog({
     onClose,
     actionLabel = "Aceptar",
 }: AlertDialogProps) {
-    if (!open) return null;
+    const [mounted, setMounted] = useState(false);
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-            {/* Overlay */}
-            <div
-                className="absolute inset-0 bg-[var(--color-nutri-black)]/50"
-                onClick={onClose}
-            />
+    useEffect(() => {
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
 
-            {/* Dialog */}
-            <div
-                className="
+    if (!open || !mounted) return null;
+
+    return createPortal(
+        <>
+            <Backdrop show onClick={onClose} className="z-[190] bg-[var(--color-nutri-black)]/55" />
+
+            <div className="fixed inset-0 z-[200] grid h-dvh w-screen place-items-center p-4">
+
+                {/* Dialog */}
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    className="
           relative z-10 w-full
 
           max-w-[90%]
@@ -43,32 +52,32 @@ export default function AlertDialog({
 
           shadow-2xl
         "
-            >
-                <h2
-                    className="
+                >
+                    <h2
+                        className="
             text-base sm:text-lg
             font-semibold
             text-[var(--color-nutri-primary)]
           "
-                >
-                    {title}
-                </h2>
+                    >
+                        {title}
+                    </h2>
 
-                <p
-                    className="
+                    <p
+                        className="
             mt-2 sm:mt-3
             text-xs sm:text-sm
             leading-relaxed
             text-[var(--color-nutri-dark-grey)]
           "
-                >
-                    {message}
-                </p>
+                    >
+                        {message}
+                    </p>
 
-                <div className="mt-5 sm:mt-6 flex justify-end">
-                    <button
-                        onClick={onClose}
-                        className="
+                    <div className="mt-5 sm:mt-6 flex justify-end">
+                        <button
+                            onClick={onClose}
+                            className="
                 rounded-lg
 
                 px-4 py-2
@@ -88,11 +97,13 @@ export default function AlertDialog({
                 focus:ring-2
                 focus:ring-[var(--color-nutri-secondary)]
             "
-                    >
-                        {actionLabel}
-                    </button>
+                        >
+                            {actionLabel}
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>,
+        document.body
     );
 }

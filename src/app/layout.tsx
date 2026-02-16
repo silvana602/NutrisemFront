@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" data-theme="light" suppressHydrationWarning>
-      <body>
+      <body className="min-h-dvh flex flex-col bg-nutri-off-white text-nutri-dark-grey">
         {/* 1. Anti-FOUC */}
         <script
           dangerouslySetInnerHTML={{
@@ -45,7 +45,7 @@ export default function RootLayout({
         <Navbar />
 
         {/* 4. Área principal */}
-        <main className="min-h-screen w-full bg-nutri-off-white">
+        <main className="min-h-0 flex-1 w-full bg-nutri-off-white">
           {children}
         </main>
 

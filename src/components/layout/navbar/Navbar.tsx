@@ -45,9 +45,9 @@ export const Navbar = () => {
   );
 
   return (
-    <header className="sticky top-0 z-30 border-b border-nutri-light-grey bg-nutri-white/95 shadow-sm backdrop-blur">
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
+    <header className="sticky top-0 z-30 h-[var(--nutri-navbar-height)] border-b border-nutri-light-grey bg-nutri-white/95 shadow-sm backdrop-blur">
+      <div className="container mx-auto flex h-full px-4">
+        <div className="flex w-full items-center justify-between">
           {/* LOGO */}
           <div className="flex items-center gap-2">
             <div
