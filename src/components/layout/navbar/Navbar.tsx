@@ -125,11 +125,11 @@ export const Navbar = () => {
             <div className="hidden md:block">
               <UserMenu />
             </div>
-          ) : (
+          ) : pathname !== "/login" ? (
             <Button variant="outline" className="px-3 py-2 text-sm sm:px-5 sm:py-2.5">
               <Link href={`/login${nextQuery}`}>Iniciar sesion</Link>
             </Button>
-          )}
+          ) : null}
         </div>
       </div>
 

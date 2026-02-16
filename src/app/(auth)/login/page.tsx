@@ -8,7 +8,7 @@ export default function LoginPage() {
       </h1>
 
       <p className="mt-1 text-center text-sm text-nutri-dark-grey">
-        Accede a la plataforma y conoce mas sobre tu estado nutricional.
+        Bienvenid@ a Nutrisem. Por favor, introduzca sus credenciales para acceder a su cuenta.
       </p>
 
       <div className="mt-6">

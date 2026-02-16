@@ -22,8 +22,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   if (!user) {
     return (
-      <div className="flex min-h-[calc(100dvh-var(--nutri-navbar-height)-var(--nutri-footer-height))] items-center justify-center text-nutri-primary">
-        No hay usuario. Inicie sesión.
+      <div className="flex min-h-[calc(100dvh-var(--nutri-navbar-height)-var(--nutri-footer-height))] items-center justify-center px-4">
+        <div className="w-full max-w-md rounded-xl border border-nutri-secondary/35 bg-nutri-white p-5 shadow-sm">
+          <p className="text-base font-semibold text-nutri-primary">
+            Sesion no disponible
+          </p>
+          <p className="mt-1 text-sm text-nutri-dark-grey">
+            No hay usuario activo. Inicie sesion para continuar.
+          </p>
+        </div>
       </div>
     );
   }
