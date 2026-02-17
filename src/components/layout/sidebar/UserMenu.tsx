@@ -8,6 +8,7 @@ import { UserRole } from "@/types/user";
 import AlertDialog from "@/components/ui/AlertDialog";
 import { db } from "@/mocks/db";
 import { cn } from "@/lib/utils";
+import { logoutClient } from "@/lib/auth/client";
 
 export default function UserMenu() {
   const router = useRouter();
@@ -68,8 +69,8 @@ export default function UserMenu() {
      ACCIONES
   ========================= */
 
-  const onLogout = () => {
-    logout();
+  const onLogout = async () => {
+    await logoutClient(logout);
     router.replace("/");
   };
 
@@ -115,7 +116,7 @@ export default function UserMenu() {
 
       {/* Menu */}
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-72 rounded-xl border border-nutri-light-grey bg-nutri-white/95 shadow-sm">
+        <div className="absolute right-0 z-50 mt-2 w-[min(18rem,calc(100vw-1rem))] rounded-xl border border-nutri-light-grey bg-nutri-white/95 shadow-sm">
           {/* ADMIN */}
           {isAdmin && (
             <>

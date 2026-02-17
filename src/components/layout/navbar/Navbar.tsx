@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { db } from "@/mocks/db";
 import { useAuthStore } from "@/store/useAuthStore";
 import { UserRole } from "@/types/user";
+import { logoutClient } from "@/lib/auth/client";
 
 function buildNext(pathname: string | null, qs: string): string | "" {
   if (!pathname) return "";
@@ -84,8 +85,8 @@ export const Navbar = () => {
     router.push(path);
   };
 
-  const onLogout = () => {
-    clearSession();
+  const onLogout = async () => {
+    await logoutClient(clearSession);
     mobile.onClose();
     router.replace("/");
   };

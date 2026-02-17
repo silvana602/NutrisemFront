@@ -1,19 +1,26 @@
 export const Stepper = ({ currentStep }: { currentStep: string }) => {
     const steps = ["anthropometric", "clinical"];
+    const stepLabel: Record<string, string> = {
+        anthropometric: "Antropometrico",
+        clinical: "Clinico",
+        historical: "Historico",
+    };
 
     return (
-        <div className="flex gap-4 mb-6">
-            {steps.map((step, i) => (
-                <div
-                    key={step}
-                    className={`px-4 py-2 rounded-full text-sm ${currentStep === step
-                            ? "bg-nutri-primary text-nutri-white"
-                            : "bg-nutri-light-grey text-nutri-dark-grey"
-                        }`}
-                >
-                    {i + 1}. {step}
-                </div>
-            ))}
+        <div className="mb-6 overflow-x-auto">
+            <div className="flex min-w-max gap-2 sm:gap-4">
+                {steps.map((step, i) => (
+                    <div
+                        key={step}
+                        className={`shrink-0 rounded-full px-3 py-2 text-xs sm:px-4 sm:text-sm ${currentStep === step
+                                ? "bg-nutri-primary text-nutri-white"
+                                : "bg-nutri-light-grey text-nutri-dark-grey"
+                            }`}
+                    >
+                        {i + 1}. {stepLabel[step] ?? step}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };

@@ -123,7 +123,7 @@ export const PatientsListContent: React.FC = () => {
       </div>
 
       {/* Tabla */}
-      <div className="overflow-x-auto rounded-xl bg-nutri-white shadow-lg">
+      <div className="rounded-xl bg-nutri-white shadow-lg">
         <PatientsTable data={paginatedPatients} />
       </div>
 

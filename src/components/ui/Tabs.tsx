@@ -22,26 +22,28 @@ export function Tabs<T extends string>({
   className = "",
 }: TabsProps<T>) {
   return (
-    <div className={`flex gap-2 border-b border-[var(--color-nutri-light-grey)] ${className}`.trim()}>
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          type="button"
-          disabled={tab.disabled}
-          onClick={() => !tab.disabled && onTabChange(tab.id)}
-          className={`
-            rounded-t-md px-4 py-2 text-sm font-medium transition-colors
-            ${
-              activeTab === tab.id
-                ? "bg-[var(--color-nutri-secondary)] text-nutri-white"
-                : "bg-transparent text-[var(--color-nutri-dark-grey)] hover:bg-[var(--color-nutri-light-grey)]"
-            }
-            ${tab.disabled ? "cursor-not-allowed opacity-45 hover:bg-transparent" : ""}
-          `}
-        >
-          {tab.label}
-        </button>
-      ))}
+    <div className={`w-full border-b border-[var(--color-nutri-light-grey)] ${className}`.trim()}>
+      <div className="flex min-w-max gap-2 overflow-x-auto pb-1">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            disabled={tab.disabled}
+            onClick={() => !tab.disabled && onTabChange(tab.id)}
+            className={`
+              shrink-0 rounded-t-md px-3 py-2 text-xs font-medium transition-colors sm:px-4 sm:text-sm
+              ${
+                activeTab === tab.id
+                  ? "bg-[var(--color-nutri-secondary)] text-nutri-white"
+                  : "bg-transparent text-[var(--color-nutri-dark-grey)] hover:bg-[var(--color-nutri-light-grey)]"
+              }
+              ${tab.disabled ? "cursor-not-allowed opacity-45 hover:bg-transparent" : ""}
+            `}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

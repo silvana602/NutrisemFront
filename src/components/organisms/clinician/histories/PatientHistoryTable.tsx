@@ -95,8 +95,60 @@ export const PatientsHistoryTable: React.FC<Props> = ({ patientId }) => {
         </p>
       ) : (
         <>
-          <div className="w-full overflow-x-auto rounded-lg border border-nutri-light-grey">
-            <table className="min-w-[860px] w-full border-collapse text-sm">
+          <div className="space-y-3 md:hidden">
+            {currentData.map((row) => (
+              <article
+                key={row.historyId}
+                className="rounded-lg border border-nutri-light-grey bg-nutri-white p-4 shadow-sm"
+              >
+                <p className="text-xs font-medium uppercase tracking-wide text-nutri-dark-grey/70">
+                  Consulta
+                </p>
+                <h3 className="text-sm font-semibold text-nutri-dark-grey">
+                  {row.consultDate.toLocaleDateString()}
+                </h3>
+
+                <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
+                  <div>
+                    <dt className="text-xs text-nutri-dark-grey/70">Edad</dt>
+                    <dd className="font-medium text-nutri-dark-grey">
+                      {patient
+                        ? getAgeAtDate(patient.birthDate, row.consultDate)
+                        : "-"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-nutri-dark-grey/70">Peso (kg)</dt>
+                    <dd className="font-medium text-nutri-dark-grey">{row.weightKg}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-nutri-dark-grey/70">Talla (m)</dt>
+                    <dd className="font-medium text-nutri-dark-grey">{row.heightM}</dd>
+                  </div>
+                  <div className="col-span-2">
+                    <dt className="text-xs text-nutri-dark-grey/70">
+                      Diagnostico nutricional
+                    </dt>
+                    <dd className="font-medium text-nutri-dark-grey">
+                      {row.nutritionalDiagnosis}
+                    </dd>
+                  </div>
+                </dl>
+
+                <div className="mt-3 flex items-center gap-4 text-sm font-medium text-nutri-primary">
+                  <span className="cursor-pointer hover:underline">Diagnostico</span>
+                  <span className="cursor-pointer hover:underline">Reporte</span>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <p className="hidden text-xs text-nutri-dark-grey md:block lg:hidden">
+            Desliza horizontalmente para ver todas las columnas.
+          </p>
+
+          <div className="hidden w-full overflow-x-auto rounded-lg border border-nutri-light-grey md:block">
+            <table className="w-full min-w-[860px] border-collapse text-sm">
               <thead>
                 <tr className="bg-nutri-off-white">
                   <th className="px-3 py-2 text-left">Fecha de Consulta</th>

@@ -25,13 +25,13 @@ export const Pagination: React.FC<PaginationProps> = ({
         disabled={!canPrev}
         className="
           flex items-center justify-center
-          w-8 h-8 sm:w-10 sm:h-10
+          h-9 w-9 sm:h-10 sm:w-10
           rounded-full border border-nutri-light-grey
           text-nutri-dark-grey hover:bg-nutri-off-white transition
           disabled:opacity-40 disabled:cursor-not-allowed
         "
       >
-        <MdChevronLeft size={20} className="sm:size-24" />
+        <MdChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
       </button>
 
       {/* Número de páginas */}
@@ -55,13 +55,13 @@ export const Pagination: React.FC<PaginationProps> = ({
         disabled={!canNext}
         className="
           flex items-center justify-center
-          w-8 h-8 sm:w-10 sm:h-10
+          h-9 w-9 sm:h-10 sm:w-10
           rounded-full border border-nutri-light-grey
           text-nutri-dark-grey hover:bg-nutri-off-white transition
           disabled:opacity-40 disabled:cursor-not-allowed
         "
       >
-        <MdChevronRight size={20} className="sm:size-24" />
+        <MdChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
       </button>
     </div>
   );
