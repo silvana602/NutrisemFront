@@ -121,4 +121,3 @@ export const ConsultationTabs: React.FC = () => {
     </section>
   );
 };
-

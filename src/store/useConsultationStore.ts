@@ -14,7 +14,31 @@ export interface AnthropometricFormState {
 }
 
 export interface ClinicalFormState {
-  ageYears?: number;
+  ageYears?: number; // legado
+  activityLevel?: string[];
+  apathy?: string[];
+  generalObservations?: string;
+
+  hairCondition?: string[];
+  skinCondition?: string[];
+  edema?: string[];
+  dentition?: string[];
+  physicalObservations?: string;
+
+  diarrhea?: string;
+  vomiting?: string;
+  dehydration?: string[];
+  digestiveObservations?: string;
+
+  temperatureCelsius?: number;
+  temperatureObservation?: string;
+  heartRate?: number;
+  heartRateObservation?: string;
+  respiratoryRate?: number;
+  respiratoryRateObservation?: string;
+  bloodPressure?: string;
+  bloodPressureObservation?: string;
+  observations?: string;
 }
 
 interface ConsultationStore {
