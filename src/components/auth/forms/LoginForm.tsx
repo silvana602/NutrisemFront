@@ -6,6 +6,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/Button";
 import { validateDocumentNumber, validateRequired } from "@/utils/validators";
+import type { User } from "@/types/user";
+import type { Clinician } from "@/types/clinician";
 
 type LoginField = "ci" | "password";
 type LoginErrors = Partial<Record<LoginField | "form", string>>;
@@ -13,6 +15,11 @@ type LoginApiError = {
   message?: string;
   field?: string;
   fieldErrors?: Partial<Record<LoginField, string>>;
+};
+type LoginSuccessResponse = {
+  accessToken: string;
+  user: User;
+  clinician?: Clinician | null;
 };
 
 type RememberedPasswords = Record<string, string>;
@@ -201,9 +208,14 @@ export function LoginForm() {
         throw new Error(payload?.message ?? "No se pudo iniciar sesion");
       }
 
-      const data = await res.json();
+      const data = (await res.json()) as Partial<LoginSuccessResponse>;
+
+      if (!data.accessToken || !data.user) {
+        throw new Error("Respuesta de login invalida");
+      }
+
       const sessionData = {
-        accessToken: data.accessToken || "mock-token",
+        accessToken: data.accessToken,
         user: data.user,
         clinician: data.clinician || null,
       };

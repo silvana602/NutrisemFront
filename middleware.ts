@@ -7,6 +7,7 @@ const SESSION_COOKIE = "accessToken";
 const PUBLIC_ROUTES = ["/", "/401", "/login", "/register", "/auth/login", "/auth/register", "/auth/registro"] as const;
 const PROTECTED_PREFIXES = ["/dashboard"] as const;
 const UNAUTHORIZED_PATH = "/401";
+const FORBIDDEN_PATH = "/403";
 
 const ROLE_ROUTES: Record<UserRole, string[]> = {
   [UserRole.admin]: [
@@ -80,7 +81,7 @@ export function middleware(req: NextRequest) {
   const isAllowed = allowedRoutes.some((route) => pathname.startsWith(route));
 
   if (!isAllowed) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.redirect(new URL(FORBIDDEN_PATH, req.url));
   }
 
   return NextResponse.next();
