@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { CONSULTATION_TABS, ConsultationTabId } from "./tabs.constants";
 import { AnthropometricForm } from "../forms/AnthropometricForm";
 import { ClinicalForm } from "../forms/ClinicalForm";
@@ -11,13 +12,20 @@ import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { useConsultationStore } from "@/store/useConsultationStore";
 
 export const ConsultationTabs: React.FC = () => {
+  const router = useRouter();
   const selectedPatientId = useConsultationStore((s) => s.selectedPatientId);
   const isAnthropometricValid = useConsultationStore((s) => s.isAnthropometricValid);
   const isClinicalValid = useConsultationStore((s) => s.isClinicalValid);
   const isHistoricalValid = useConsultationStore((s) => s.isHistoricalValid);
+  const setSelectedPatientId = useConsultationStore((s) => s.setSelectedPatientId);
+  const saveCurrentConsultationSnapshot = useConsultationStore(
+    (s) => s.saveCurrentConsultationSnapshot
+  );
 
   const [activeTab, setActiveTab] = useState<ConsultationTabId>("anthropometric");
   const [isSaveConfirmOpen, setIsSaveConfirmOpen] = useState(false);
+  const [saveStage, setSaveStage] = useState<"confirm" | "saved">("confirm");
+  const [savedPatientId, setSavedPatientId] = useState<string | null>(null);
   const isClinicalUnlocked = Boolean(selectedPatientId && isAnthropometricValid);
   const isHistoricalUnlocked = Boolean(isClinicalUnlocked && isClinicalValid);
 
@@ -69,9 +77,40 @@ export const ConsultationTabs: React.FC = () => {
     (safeActiveTab === "clinical" && isClinicalValid);
   const showSave = safeActiveTab === "historical" && isHistoricalValid;
 
-  const handleConfirmSave = () => {
+  const openSaveDialog = () => {
+    setSaveStage("confirm");
+    setSavedPatientId(null);
+    setIsSaveConfirmOpen(true);
+  };
+
+  const closeSaveDialog = () => {
+    if (saveStage === "saved") return;
     setIsSaveConfirmOpen(false);
   };
+
+  const handleConfirmSave = () => {
+    const snapshot = saveCurrentConsultationSnapshot();
+    if (!snapshot) return;
+
+    setSavedPatientId(snapshot.patientId);
+    setSelectedPatientId(null);
+    setSaveStage("saved");
+  };
+
+  const handleViewDiagnosis = () => {
+    const query = savedPatientId ? `?patientId=${encodeURIComponent(savedPatientId)}` : "";
+    setIsSaveConfirmOpen(false);
+    setSaveStage("confirm");
+    setSavedPatientId(null);
+    router.push(`/dashboard/clinician/diagnosis${query}`);
+  };
+
+  const dialogTitle =
+    saveStage === "confirm" ? "Advertencia de seguridad" : "Consulta guardada";
+  const dialogMessage =
+    saveStage === "confirm"
+      ? "Se guardaran los cambios de todo el formulario. Verifica que la informacion sea correcta antes de confirmar."
+      : "La consulta se guardo correctamente. Para continuar, abre el documento del diagnostico.";
 
   return (
     <section className="w-full">
@@ -104,7 +143,7 @@ export const ConsultationTabs: React.FC = () => {
           )}
 
           {showSave && (
-            <Button variant="primary" onClick={() => setIsSaveConfirmOpen(true)}>
+            <Button variant="primary" onClick={openSaveDialog}>
               Guardar consulta
             </Button>
           )}
@@ -113,12 +152,14 @@ export const ConsultationTabs: React.FC = () => {
 
       <ConfirmDialog
         open={isSaveConfirmOpen}
-        title="Advertencia de seguridad"
-        message="Se guardaran los cambios de todo el formulario. Verifica que la informacion sea correcta antes de confirmar."
-        onCancel={() => setIsSaveConfirmOpen(false)}
-        onConfirm={handleConfirmSave}
-        confirmLabel="Guardar"
+        title={dialogTitle}
+        message={dialogMessage}
+        onCancel={closeSaveDialog}
+        onConfirm={saveStage === "confirm" ? handleConfirmSave : handleViewDiagnosis}
+        confirmLabel={saveStage === "confirm" ? "Guardar" : "Ver diagnostico"}
         cancelLabel="Cancelar"
+        showCancel={saveStage === "confirm"}
+        disableBackdropClose={saveStage === "saved"}
       />
     </section>
   );

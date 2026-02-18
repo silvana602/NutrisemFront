@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useConsultationStore } from "@/store/useConsultationStore";
 import { validateRange } from "@/utils/validators";
 import { ValidatedInput } from "@/components/ui/ValidatedInput";
+import { db, seedOnce } from "@/mocks/db";
+import {
+  calculateAgeInMonths,
+  formatPediatricAge,
+  isTargetPediatricAge,
+} from "@/lib/pediatricAge";
+
+seedOnce();
 
 type EditableAnthroField =
   | "weightKg"
@@ -49,6 +57,17 @@ export const AnthropometricForm = () => {
 
   const previousPatientIdRef = useRef<string | null>(selectedPatientId);
   const isPatientSelected = Boolean(selectedPatientId);
+  const selectedPatient = useMemo(
+    () => db.patients.find((patient) => patient.patientId === selectedPatientId) ?? null,
+    [selectedPatientId]
+  );
+  const selectedPatientAgeMonths = useMemo(
+    () => (selectedPatient ? calculateAgeInMonths(selectedPatient.birthDate) : null),
+    [selectedPatient]
+  );
+  const isTargetAgeSelected =
+    selectedPatientAgeMonths !== null && isTargetPediatricAge(selectedPatientAgeMonths);
+  const isFormEnabled = isPatientSelected && isTargetAgeSelected;
 
   useEffect(() => {
     if (previousPatientIdRef.current === selectedPatientId) return;
@@ -65,7 +84,7 @@ export const AnthropometricForm = () => {
     max: number,
     label: string
   ) => {
-    if (!isPatientSelected) return;
+    if (!isFormEnabled) return;
 
     setValues((prev) => ({ ...prev, [key]: rawValue }));
 
@@ -98,7 +117,7 @@ export const AnthropometricForm = () => {
   const hasErrors = Object.values(errors).some(Boolean);
 
   useEffect(() => {
-    if (!isPatientSelected) {
+    if (!isFormEnabled) {
       setAnthropometricValidity(false);
       return;
     }
@@ -110,7 +129,7 @@ export const AnthropometricForm = () => {
       anthropometric.headCircumferenceCm !== undefined;
 
     setAnthropometricValidity(hasAllValues && !hasErrors);
-  }, [isPatientSelected, anthropometric, hasErrors, setAnthropometricValidity]);
+  }, [isFormEnabled, anthropometric, hasErrors, setAnthropometricValidity]);
 
   return (
     <section className="space-y-6 rounded-xl bg-nutri-white p-6">
@@ -123,46 +142,55 @@ export const AnthropometricForm = () => {
           Selecciona un paciente para registrar sus datos antropometricos.
         </p>
       )}
+      {isPatientSelected && !isTargetAgeSelected && (
+        <p className="rounded-lg border border-nutri-secondary/40 bg-nutri-off-white px-4 py-3 text-sm text-nutri-dark-grey">
+          Este formulario esta orientado a pacientes de 6 meses a 5 anios. Edad del paciente
+          seleccionado:{" "}
+          {selectedPatientAgeMonths !== null
+            ? formatPediatricAge(selectedPatientAgeMonths)
+            : "Sin dato"}.
+        </p>
+      )}
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <ValidatedInput
           label="Peso actual"
-          placeholder="Ej: 1.1"
+          placeholder="Ej: 8.4"
           suffix="kg"
           value={values.weightKg ?? ""}
           error={errors.weightKg}
-          disabled={!isPatientSelected}
-          onChange={(v) => handleChange("weightKg", v, 1, 300, "Peso")}
+          disabled={!isFormEnabled}
+          onChange={(v) => handleChange("weightKg", v, 4, 30, "Peso")}
         />
 
         <ValidatedInput
           label="Talla / Longitud"
-          placeholder="Ej: 0.3"
+          placeholder="Ej: 0.84"
           suffix="m"
           value={values.heightM ?? ""}
           error={errors.heightM}
-          disabled={!isPatientSelected}
-          onChange={(v) => handleChange("heightM", v, 0.3, 2.5, "Talla")}
+          disabled={!isFormEnabled}
+          onChange={(v) => handleChange("heightM", v, 0.6, 1.25, "Talla")}
         />
 
         <ValidatedInput
           label="Perimetro braquial (MUAC)"
-          placeholder="Ej: 5.1"
+          placeholder="Ej: 14.2"
           suffix="cm"
           value={values.muacCm ?? ""}
           error={errors.muacCm}
-          disabled={!isPatientSelected}
-          onChange={(v) => handleChange("muacCm", v, 5, 40, "MUAC")}
+          disabled={!isFormEnabled}
+          onChange={(v) => handleChange("muacCm", v, 9, 22, "MUAC")}
         />
 
         <ValidatedInput
           label="Perimetro cefalico"
-          placeholder="Ej: 20.1"
+          placeholder="Ej: 47.5"
           suffix="cm"
           value={values.headCircumferenceCm ?? ""}
           error={errors.headCircumferenceCm}
-          disabled={!isPatientSelected}
-          onChange={(v) => handleChange("headCircumferenceCm", v, 20, 70, "PC")}
+          disabled={!isFormEnabled}
+          onChange={(v) => handleChange("headCircumferenceCm", v, 40, 54, "PC")}
         />
       </div>
     </section>

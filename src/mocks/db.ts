@@ -179,7 +179,7 @@ export function seedOnce() {
     firstName: "Maria",
     lastName: "Flores",
     identityNumber: "9988776",
-    birthDate: new Date("2018-05-12"),
+    birthDate: new Date("2023-05-12"),
     gender: "female",
     address: "El Alto",
   };

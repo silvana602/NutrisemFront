@@ -92,6 +92,14 @@ export type HistoricalMealSlotId =
   | "dinner"
   | "nightSnack";
 
+export interface SavedConsultationSnapshot {
+  savedAt: string;
+  patientId: string;
+  anthropometric: AnthropometricFormState;
+  clinical: ClinicalFormState;
+  historical: HistoricalFormState;
+}
+
 interface ConsultationStore {
   selectedPatientId: string | null;
   currentStep: ConsultationStep;
@@ -100,6 +108,7 @@ interface ConsultationStore {
   anthropometric: AnthropometricFormState;
   clinical: ClinicalFormState;
   historical: HistoricalFormState;
+  lastSavedConsultation: SavedConsultationSnapshot | null;
 
   isAnthropometricValid: boolean;
   isClinicalValid: boolean;
@@ -117,6 +126,8 @@ interface ConsultationStore {
   setAnthropometric: (data: Partial<AnthropometricFormState>) => void;
   setClinical: (data: Partial<ClinicalFormState>) => void;
   setHistorical: (data: Partial<HistoricalFormState>) => void;
+  saveCurrentConsultationSnapshot: () => SavedConsultationSnapshot | null;
+  clearLastSavedConsultation: () => void;
 
   reset: () => void;
 }
@@ -139,6 +150,7 @@ const INITIAL_STATE = {
   anthropometric: {} as AnthropometricFormState,
   clinical: {} as ClinicalFormState,
   historical: {} as HistoricalFormState,
+  lastSavedConsultation: null as SavedConsultationSnapshot | null,
   isAnthropometricValid: false,
   isClinicalValid: false,
   isHistoricalValid: false,
@@ -229,6 +241,53 @@ export const useConsultationStore = create<ConsultationStore>()(
           historical: { ...state.historical, ...data },
         })),
 
+      saveCurrentConsultationSnapshot: () => {
+        const state = get();
+
+        if (!state.selectedPatientId) return null;
+
+        const snapshot: SavedConsultationSnapshot = {
+          savedAt: new Date().toISOString(),
+          patientId: state.selectedPatientId,
+          anthropometric: { ...state.anthropometric },
+          clinical: {
+            ...state.clinical,
+            activityLevel: state.clinical.activityLevel
+              ? [...state.clinical.activityLevel]
+              : undefined,
+            apathy: state.clinical.apathy ? [...state.clinical.apathy] : undefined,
+            hairCondition: state.clinical.hairCondition
+              ? [...state.clinical.hairCondition]
+              : undefined,
+            skinCondition: state.clinical.skinCondition
+              ? [...state.clinical.skinCondition]
+              : undefined,
+            edema: state.clinical.edema ? [...state.clinical.edema] : undefined,
+            dentition: state.clinical.dentition ? [...state.clinical.dentition] : undefined,
+            dehydration: state.clinical.dehydration
+              ? [...state.clinical.dehydration]
+              : undefined,
+          },
+          historical: {
+            ...state.historical,
+            foodFrequencyByGroup: state.historical.foodFrequencyByGroup
+              ? { ...state.historical.foodFrequencyByGroup }
+              : undefined,
+            mealSchedule: state.historical.mealSchedule
+              ? { ...state.historical.mealSchedule }
+              : undefined,
+            recentIllnesses: state.historical.recentIllnesses
+              ? [...state.historical.recentIllnesses]
+              : undefined,
+          },
+        };
+
+        set({ lastSavedConsultation: snapshot });
+        return snapshot;
+      },
+
+      clearLastSavedConsultation: () => set({ lastSavedConsultation: null }),
+
       reset: () => set({ ...INITIAL_STATE }),
     }),
     {
@@ -238,6 +297,7 @@ export const useConsultationStore = create<ConsultationStore>()(
         anthropometric: state.anthropometric,
         clinical: state.clinical,
         historical: state.historical,
+        lastSavedConsultation: state.lastSavedConsultation,
       }),
     }
   )

@@ -13,6 +13,10 @@ interface ConfirmDialogProps {
   onCancel: () => void;
   confirmLabel?: string;
   cancelLabel?: string;
+  showCancel?: boolean;
+  disableConfirm?: boolean;
+  disableCancel?: boolean;
+  disableBackdropClose?: boolean;
 }
 
 export default function ConfirmDialog({
@@ -23,6 +27,10 @@ export default function ConfirmDialog({
   onCancel,
   confirmLabel = "Guardar",
   cancelLabel = "Cancelar",
+  showCancel = true,
+  disableConfirm = false,
+  disableCancel = false,
+  disableBackdropClose = false,
 }: ConfirmDialogProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -35,7 +43,11 @@ export default function ConfirmDialog({
 
   return createPortal(
     <>
-      <Backdrop show onClick={onCancel} className="z-[190] bg-[var(--color-nutri-black)]/55" />
+      <Backdrop
+        show
+        onClick={disableBackdropClose ? undefined : onCancel}
+        className="z-[190] bg-[var(--color-nutri-black)]/55"
+      />
 
       <div className="fixed inset-0 z-[200] grid h-dvh w-screen place-items-center p-4">
         <div
@@ -52,10 +64,12 @@ export default function ConfirmDialog({
           </p>
 
           <div className="mt-5 flex flex-col-reverse gap-2 sm:mt-6 sm:flex-row sm:justify-end">
-            <Button variant="outline" onClick={onCancel}>
-              {cancelLabel}
-            </Button>
-            <Button variant="primary" onClick={onConfirm}>
+            {showCancel && (
+              <Button variant="outline" disabled={disableCancel} onClick={onCancel}>
+                {cancelLabel}
+              </Button>
+            )}
+            <Button variant="primary" disabled={disableConfirm} onClick={onConfirm}>
               {confirmLabel}
             </Button>
           </div>

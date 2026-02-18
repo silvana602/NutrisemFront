@@ -4,6 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { validateRange } from "@/utils/validators";
+import { db, seedOnce } from "@/mocks/db";
+import {
+  calculateAgeInMonths,
+  formatPediatricAge,
+  isTargetPediatricAge,
+} from "@/lib/pediatricAge";
 import {
   useConsultationStore,
   type HistoricalFoodFrequency,
@@ -13,6 +19,8 @@ import {
 } from "@/store/useConsultationStore";
 import { MultiSelectOptionGroup, SingleSelectOptionGroup } from "./shared/OptionGroups";
 import { StepDots } from "./shared/StepDots";
+
+seedOnce();
 
 const HISTORICAL_STEPS = [
   { id: "feeding", title: "3.1 Alimentacion actual y pasada" },
@@ -100,6 +108,17 @@ export const HistoricalForm = () => {
   } = useConsultationStore();
 
   const isPatientSelected = Boolean(selectedPatientId);
+  const selectedPatient = useMemo(
+    () => db.patients.find((patient) => patient.patientId === selectedPatientId) ?? null,
+    [selectedPatientId]
+  );
+  const selectedPatientAgeMonths = useMemo(
+    () => (selectedPatient ? calculateAgeInMonths(selectedPatient.birthDate) : null),
+    [selectedPatient]
+  );
+  const isTargetAgeSelected =
+    selectedPatientAgeMonths !== null && isTargetPediatricAge(selectedPatientAgeMonths);
+  const isFormEnabled = isPatientSelected && isTargetAgeSelected;
   const stepKey = selectedPatientId ?? "__no-patient__";
   const [stepByPatient, setStepByPatient] = useState<Record<string, number>>({});
   const rawStep = stepByPatient[stepKey] ?? 0;
@@ -121,12 +140,12 @@ export const HistoricalForm = () => {
     field: K,
     value: HistoricalFormState[K]
   ) => {
-    if (!isPatientSelected) return;
+    if (!isFormEnabled) return;
     setHistorical(toFieldPatch(field, value));
   };
 
   const handleComplementaryAgeInput = (rawValue: string) => {
-    if (!isPatientSelected) return;
+    if (!isFormEnabled) return;
 
     const trimmed = rawValue.trim();
     if (!trimmed) {
@@ -140,7 +159,7 @@ export const HistoricalForm = () => {
   };
 
   const setFoodFrequency = (groupId: HistoricalFoodGroupId, value?: HistoricalFoodFrequency) => {
-    if (!isPatientSelected) return;
+    if (!isFormEnabled) return;
 
     const nextMap = { ...foodFrequencyByGroup };
     if (value) {
@@ -153,7 +172,7 @@ export const HistoricalForm = () => {
   };
 
   const setMealTime = (slotId: HistoricalMealSlotId, value: string) => {
-    if (!isPatientSelected) return;
+    if (!isFormEnabled) return;
 
     const nextSchedule = { ...mealSchedule };
     if (value) {
@@ -166,12 +185,12 @@ export const HistoricalForm = () => {
   };
 
   const applySuggestedSchedule = () => {
-    if (!isPatientSelected) return;
+    if (!isFormEnabled) return;
     setField("mealSchedule", { ...SUGGESTED_SCHEDULE });
   };
 
   const handleWaterInput = (rawValue: string) => {
-    if (!isPatientSelected) return;
+    if (!isFormEnabled) return;
 
     const trimmed = rawValue.trim();
     if (!trimmed) {
@@ -185,7 +204,7 @@ export const HistoricalForm = () => {
   };
 
   const handleSleepAverageInput = (rawValue: string) => {
-    if (!isPatientSelected) return;
+    if (!isFormEnabled) return;
 
     const trimmed = rawValue.trim();
     if (!trimmed) {
@@ -203,20 +222,20 @@ export const HistoricalForm = () => {
     historical.complementaryFeedingStartMonths !== undefined
       ? validateRange(
           historical.complementaryFeedingStartMonths,
-          0,
-          36,
+          4,
+          12,
           "Edad de inicio de alimentacion complementaria"
         )
       : null;
 
   const waterGlassesError =
     historical.waterGlassesPerDay !== undefined
-      ? validateRange(historical.waterGlassesPerDay, 0, 20, "Vasos de agua")
+      ? validateRange(historical.waterGlassesPerDay, 1, 12, "Vasos de agua")
       : null;
 
   const sleepAverageError =
     historical.sleepAverageHours !== undefined
-      ? validateRange(historical.sleepAverageHours, 0, 24, "Horas promedio de sueno")
+      ? validateRange(historical.sleepAverageHours, 8, 16, "Horas promedio de sueno")
       : null;
 
   const mealEntries = MEAL_SLOTS.filter((slot) => Boolean(mealSchedule[slot.id]));
@@ -225,7 +244,7 @@ export const HistoricalForm = () => {
     .join(" - ");
 
   useEffect(() => {
-    if (!isPatientSelected) return;
+    if (!isFormEnabled) return;
     if (historical.bottleFeeding === "SI") return;
     if (!historical.feedingFrequency) return;
 
@@ -233,12 +252,12 @@ export const HistoricalForm = () => {
   }, [
     historical.bottleFeeding,
     historical.feedingFrequency,
-    isPatientSelected,
+    isFormEnabled,
     setHistorical,
   ]);
 
   useEffect(() => {
-    if (!isPatientSelected) return;
+    if (!isFormEnabled) return;
     if (recentIllnesses.includes("OTROS")) return;
     if (!historical.recentIllnessesOther) return;
 
@@ -246,15 +265,15 @@ export const HistoricalForm = () => {
   }, [
     recentIllnesses,
     historical.recentIllnessesOther,
-    isPatientSelected,
+    isFormEnabled,
     setHistorical,
   ]);
 
   useEffect(() => {
-    if (!isPatientSelected) return;
+    if (!isFormEnabled) return;
     if ((historical.habitualSchedule ?? "") === habitualScheduleValue) return;
     setHistorical({ habitualSchedule: habitualScheduleValue });
-  }, [historical.habitualSchedule, habitualScheduleValue, isPatientSelected, setHistorical]);
+  }, [historical.habitualSchedule, habitualScheduleValue, isFormEnabled, setHistorical]);
 
   const isBottleFrequencyComplete =
     historical.bottleFeeding !== "SI" || Boolean(historical.feedingFrequency?.trim());
@@ -324,14 +343,14 @@ export const HistoricalForm = () => {
 
   useEffect(() => {
     setHistoricalValidity(
-      isPatientSelected &&
+      isFormEnabled &&
         isStepOneComplete &&
         isStepTwoComplete &&
         isStepThreeComplete &&
         isStepFourComplete
     );
   }, [
-    isPatientSelected,
+    isFormEnabled,
     isStepOneComplete,
     isStepTwoComplete,
     isStepThreeComplete,
@@ -340,14 +359,14 @@ export const HistoricalForm = () => {
   ]);
 
   const maxUnlockedStep = useMemo(() => {
-    if (!isPatientSelected) return 0;
+    if (!isFormEnabled) return 0;
     if (!isStepOneComplete) return 0;
     if (!isStepTwoComplete) return 1;
     if (!isStepThreeComplete) return 2;
     if (!isStepFourComplete) return 3;
     return 3;
   }, [
-    isPatientSelected,
+    isFormEnabled,
     isStepOneComplete,
     isStepTwoComplete,
     isStepThreeComplete,
@@ -367,8 +386,17 @@ export const HistoricalForm = () => {
           Selecciona un paciente para registrar sus datos historicos.
         </p>
       )}
+      {isPatientSelected && !isTargetAgeSelected && (
+        <p className="rounded-lg border border-nutri-secondary/40 bg-nutri-off-white px-4 py-3 text-sm text-nutri-dark-grey">
+          Los antecedentes se registran bajo parametros para 6 meses a 5 anios. Edad del paciente
+          seleccionado:{" "}
+          {selectedPatientAgeMonths !== null
+            ? formatPediatricAge(selectedPatientAgeMonths)
+            : "Sin dato"}.
+        </p>
+      )}
 
-      <div className={cn("space-y-5", !isPatientSelected && "opacity-60")}>
+      <div className={cn("space-y-5", !isFormEnabled && "opacity-60")}>
         <header className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/70 px-4 py-3">
           <p className="text-sm font-semibold text-nutri-dark-grey">
             {HISTORICAL_STEPS[currentStep].title}
@@ -384,7 +412,7 @@ export const HistoricalForm = () => {
                   value={historical.breastfeeding}
                   options={BREASTFEEDING_OPTIONS}
                   columnsClassName="grid-cols-1"
-                  disabled={!isPatientSelected}
+                  disabled={!isFormEnabled}
                   onChange={(value) => setField("breastfeeding", value)}
                 />
 
@@ -394,17 +422,17 @@ export const HistoricalForm = () => {
                   </label>
                   <input
                     type="number"
-                    min={0}
-                    max={36}
+                    min={4}
+                    max={12}
                     step={1}
-                    disabled={!isPatientSelected}
+                    disabled={!isFormEnabled}
                     value={historical.complementaryFeedingStartMonths ?? ""}
                     onChange={(event) => handleComplementaryAgeInput(event.target.value)}
                     className={cn(
                       "nutri-input",
                       complementaryAgeError && "border-nutri-secondary"
                     )}
-                    placeholder="Edad en meses"
+                    placeholder="Rango sugerido: 4 a 12 meses"
                   />
                   {complementaryAgeError && (
                     <p className="text-xs font-medium text-nutri-secondary">
@@ -420,7 +448,7 @@ export const HistoricalForm = () => {
                   value={historical.bottleFeeding}
                   options={YES_NO_OPTIONS}
                   columnsClassName="grid-cols-1 sm:grid-cols-2"
-                  disabled={!isPatientSelected}
+                  disabled={!isFormEnabled}
                   onChange={(value) => setField("bottleFeeding", value)}
                 />
 
@@ -430,7 +458,7 @@ export const HistoricalForm = () => {
                   </label>
                   <input
                     type="text"
-                    disabled={!isPatientSelected || historical.bottleFeeding !== "SI"}
+                    disabled={!isFormEnabled || historical.bottleFeeding !== "SI"}
                     value={historical.feedingFrequency ?? ""}
                     onChange={(event) => setField("feedingFrequency", event.target.value)}
                     className="nutri-input"
@@ -485,13 +513,13 @@ export const HistoricalForm = () => {
                                     checked
                                       ? "border-nutri-primary bg-nutri-primary/10"
                                       : "border-nutri-light-grey bg-nutri-white",
-                                    !isPatientSelected && "cursor-not-allowed opacity-60"
+                                    !isFormEnabled && "cursor-not-allowed opacity-60"
                                   )}
                                 >
                                   <input
                                     type="checkbox"
                                     checked={checked}
-                                    disabled={!isPatientSelected}
+                                    disabled={!isFormEnabled}
                                     onChange={(event) =>
                                       setFoodFrequency(
                                         group.id,
@@ -524,7 +552,7 @@ export const HistoricalForm = () => {
                 value={historical.mealsPerDay}
                 options={MEALS_PER_DAY_OPTIONS}
                 columnsClassName="grid-cols-3"
-                disabled={!isPatientSelected}
+                disabled={!isFormEnabled}
                 onChange={(value) =>
                   setField("mealsPerDay", value as HistoricalFormState["mealsPerDay"])
                 }
@@ -537,12 +565,12 @@ export const HistoricalForm = () => {
                   </label>
                   <button
                     type="button"
-                    disabled={!isPatientSelected}
+                    disabled={!isFormEnabled}
                     onClick={applySuggestedSchedule}
                     className={cn(
                       "rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors",
                       "border-nutri-primary/30 bg-nutri-white text-nutri-primary hover:bg-nutri-primary/10",
-                      !isPatientSelected && "cursor-not-allowed opacity-60"
+                      !isFormEnabled && "cursor-not-allowed opacity-60"
                     )}
                   >
                     Aplicar horario sugerido
@@ -557,7 +585,7 @@ export const HistoricalForm = () => {
                       </label>
                       <input
                         type="time"
-                        disabled={!isPatientSelected}
+                        disabled={!isFormEnabled}
                         value={mealSchedule[slot.id] ?? ""}
                         onChange={(event) => setMealTime(slot.id, event.target.value)}
                         className="nutri-input"
@@ -580,7 +608,7 @@ export const HistoricalForm = () => {
                 value={historical.appetiteLevel}
                 options={APPETITE_OPTIONS}
                 columnsClassName="grid-cols-1 sm:grid-cols-3"
-                disabled={!isPatientSelected}
+                disabled={!isFormEnabled}
                 onChange={(value) =>
                   setField("appetiteLevel", value as HistoricalFormState["appetiteLevel"])
                 }
@@ -592,10 +620,10 @@ export const HistoricalForm = () => {
                 </label>
                 <input
                   type="number"
-                  min={0}
-                  max={20}
+                  min={1}
+                  max={12}
                   step={1}
-                  disabled={!isPatientSelected}
+                  disabled={!isFormEnabled}
                   value={historical.waterGlassesPerDay ?? ""}
                   onChange={(event) => handleWaterInput(event.target.value)}
                   className={cn("nutri-input", waterGlassesError && "border-nutri-secondary")}
@@ -624,7 +652,7 @@ export const HistoricalForm = () => {
                 options={RECENT_ILLNESSES_OPTIONS}
                 exclusiveOptions={["NINGUNA"]}
                 columnsClassName="grid-cols-1"
-                disabled={!isPatientSelected}
+                disabled={!isFormEnabled}
                 onChange={(value) => setField("recentIllnesses", value)}
               />
 
@@ -632,7 +660,7 @@ export const HistoricalForm = () => {
                 <label className="text-sm font-semibold text-nutri-dark-grey">OTROS</label>
                 <input
                   type="text"
-                  disabled={!isPatientSelected || !hasOtherIllnessSelected}
+                  disabled={!isFormEnabled || !hasOtherIllnessSelected}
                   value={historical.recentIllnessesOther ?? ""}
                   onChange={(event) => setField("recentIllnessesOther", event.target.value)}
                   className={cn(
@@ -655,7 +683,7 @@ export const HistoricalForm = () => {
               value={historical.vaccinationStatus}
               options={VACCINATION_OPTIONS}
               columnsClassName="grid-cols-1 sm:grid-cols-3"
-              disabled={!isPatientSelected}
+              disabled={!isFormEnabled}
               onChange={(value) =>
                 setField(
                   "vaccinationStatus",
@@ -674,13 +702,13 @@ export const HistoricalForm = () => {
               <label className="text-sm font-semibold text-nutri-dark-grey">
                 Horas promedio de sueno por dia
               </label>
-              <input
-                type="number"
-                min={0}
-                max={24}
-                step="0.5"
-                disabled={!isPatientSelected}
-                value={historical.sleepAverageHours ?? ""}
+                <input
+                  type="number"
+                  min={8}
+                  max={16}
+                  step="0.5"
+                  disabled={!isFormEnabled}
+                  value={historical.sleepAverageHours ?? ""}
                 onChange={(event) => handleSleepAverageInput(event.target.value)}
                 className={cn("nutri-input max-w-sm", sleepAverageError && "border-nutri-secondary")}
                 placeholder="Medida en horas (hrs)"
@@ -695,7 +723,7 @@ export const HistoricalForm = () => {
               value={historical.sleepQuality}
               options={SLEEP_QUALITY_OPTIONS}
               columnsClassName="grid-cols-1"
-              disabled={!isPatientSelected}
+              disabled={!isFormEnabled}
               onChange={(value) =>
                 setField("sleepQuality", value as HistoricalFormState["sleepQuality"])
               }
@@ -707,7 +735,7 @@ export const HistoricalForm = () => {
                 <label className="text-sm font-medium text-nutri-dark-grey">Hora de acostarse</label>
                 <input
                   type="time"
-                  disabled={!isPatientSelected}
+                  disabled={!isFormEnabled}
                   value={historical.bedtime ?? ""}
                   onChange={(event) => setField("bedtime", event.target.value)}
                   className="nutri-input max-w-sm"
@@ -717,7 +745,7 @@ export const HistoricalForm = () => {
                 <label className="text-sm font-medium text-nutri-dark-grey">Hora de levantarse</label>
                 <input
                   type="time"
-                  disabled={!isPatientSelected}
+                  disabled={!isFormEnabled}
                   value={historical.wakeupTime ?? ""}
                   onChange={(event) => setField("wakeupTime", event.target.value)}
                   className="nutri-input max-w-sm"
@@ -739,7 +767,7 @@ export const HistoricalForm = () => {
             {canShowNext && (
               <Button
                 variant="outline"
-                disabled={!isPatientSelected || !canGoNext}
+                disabled={!isFormEnabled || !canGoNext}
                 onClick={() => setCurrentStep(currentStep + 1)}
               >
                 Punto siguiente
@@ -752,10 +780,11 @@ export const HistoricalForm = () => {
           steps={HISTORICAL_STEPS}
           currentStep={currentStep}
           maxUnlockedStep={maxUnlockedStep}
-          disabled={!isPatientSelected}
+          disabled={!isFormEnabled}
           onStepChange={setCurrentStep}
         />
       </div>
     </section>
   );
 };
+

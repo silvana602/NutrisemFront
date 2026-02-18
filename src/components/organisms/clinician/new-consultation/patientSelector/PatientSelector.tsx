@@ -5,6 +5,13 @@ import { SearchBar } from "@/components/molecules/SearchBar";
 import { db, seedOnce } from "@/mocks/db";
 import { Button } from "@/components/ui/Button";
 import { useConsultationStore } from "@/store/useConsultationStore";
+import {
+    calculateAgeInMonths,
+    formatPediatricAge,
+    isTargetPediatricAge,
+    PEDIATRIC_MAX_AGE_MONTHS,
+    PEDIATRIC_MIN_AGE_MONTHS,
+} from "@/lib/pediatricAge";
 import type { Patient } from "@/types";
 
 // Inicializa mock DB (idempotente)
@@ -25,17 +32,35 @@ export const PatientSelector: React.FC = () => {
     const clearAnthropometric = useConsultationStore((s) => s.clearAnthropometric);
 
     const patients = db.patients;
+    const eligiblePatients = useMemo(
+        () =>
+            patients.filter((patient) =>
+                isTargetPediatricAge(calculateAgeInMonths(patient.birthDate))
+            ),
+        [patients]
+    );
+
     const selectedPatient = useMemo(
         () => patients.find((p) => p.patientId === selectedPatientId) ?? null,
         [patients, selectedPatientId]
     );
+    const selectedPatientAgeMonths = useMemo(
+        () =>
+            selectedPatient
+                ? calculateAgeInMonths(selectedPatient.birthDate)
+                : null,
+        [selectedPatient]
+    );
+    const isSelectedPatientInTargetAge =
+        selectedPatientAgeMonths !== null &&
+        isTargetPediatricAge(selectedPatientAgeMonths);
 
     const filteredPatients = useMemo(() => {
         if (query.trim().length < 3) return [];
 
         const q = normalize(query);
 
-        return patients.filter((patient) => {
+        return eligiblePatients.filter((patient) => {
             const fullName = normalize(
                 `${patient.firstName} ${patient.lastName}`
             );
@@ -43,7 +68,7 @@ export const PatientSelector: React.FC = () => {
 
             return fullName.includes(q) || ci.includes(q);
         });
-    }, [query, patients]);
+    }, [query, eligiblePatients]);
 
     const clearPatientAnthropometricDraft = () => {
         clearAnthropometric();
@@ -102,6 +127,10 @@ export const PatientSelector: React.FC = () => {
             <h3 className="text-sm font-medium text-[var(--color-nutri-black)]">
                 Buscar Paciente registrado
             </h3>
+            <p className="mt-1 text-xs text-[var(--color-nutri-dark-grey)]">
+                Consulta pediatrica orientada a pacientes de {PEDIATRIC_MIN_AGE_MONTHS} a{" "}
+                {PEDIATRIC_MAX_AGE_MONTHS} meses.
+            </p>
 
             <div onKeyDown={handleKeyDown}>
                 <SearchBar
@@ -141,6 +170,9 @@ export const PatientSelector: React.FC = () => {
                             <p className="text-xs text-[var(--color-nutri-dark-grey)]">
                                 CI: {patient.identityNumber}
                             </p>
+                            <p className="text-xs text-[var(--color-nutri-dark-grey)]">
+                                Edad: {formatPediatricAge(calculateAgeInMonths(patient.birthDate))}
+                            </p>
                         </li>
                     ))}
                 </ul>
@@ -163,6 +195,18 @@ export const PatientSelector: React.FC = () => {
                             <p className="text-base font-semibold text-[var(--color-nutri-primary)]">
                                 {selectedPatient.firstName} {selectedPatient.lastName}
                             </p>
+                            <p className="text-xs text-[var(--color-nutri-dark-grey)]">
+                                Edad:{" "}
+                                {selectedPatientAgeMonths !== null
+                                    ? formatPediatricAge(selectedPatientAgeMonths)
+                                    : "Sin dato"}
+                            </p>
+                            {!isSelectedPatientInTargetAge && (
+                                <p className="text-xs font-medium text-nutri-secondary">
+                                    Fuera del rango objetivo (6 meses - 5 anios). Selecciona otro
+                                    paciente para esta consulta.
+                                </p>
+                            )}
                         </div>
 
                         <Button

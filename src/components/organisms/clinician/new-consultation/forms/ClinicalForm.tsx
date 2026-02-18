@@ -6,10 +6,18 @@ import { cn } from "@/lib/utils";
 import { validateRange } from "@/utils/validators";
 import { MultiSelectOptionGroup, SingleSelectOptionGroup } from "./shared/OptionGroups";
 import { StepDots } from "./shared/StepDots";
+import { db, seedOnce } from "@/mocks/db";
+import {
+  calculateAgeInMonths,
+  formatPediatricAge,
+  isTargetPediatricAge,
+} from "@/lib/pediatricAge";
 import {
   useConsultationStore,
   type ClinicalFormState,
 } from "@/store/useConsultationStore";
+
+seedOnce();
 
 type MultiValueInput = string[] | string | null | undefined;
 
@@ -88,6 +96,17 @@ export const ClinicalForm = () => {
     useConsultationStore();
 
   const isPatientSelected = Boolean(selectedPatientId);
+  const selectedPatient = useMemo(
+    () => db.patients.find((patient) => patient.patientId === selectedPatientId) ?? null,
+    [selectedPatientId]
+  );
+  const selectedPatientAgeMonths = useMemo(
+    () => (selectedPatient ? calculateAgeInMonths(selectedPatient.birthDate) : null),
+    [selectedPatient]
+  );
+  const isTargetAgeSelected =
+    selectedPatientAgeMonths !== null && isTargetPediatricAge(selectedPatientAgeMonths);
+  const isFormEnabled = isPatientSelected && isTargetAgeSelected;
 
   const activityValues = normalizeMultiValues(clinical.activityLevel as MultiValueInput);
   const apathyValues = normalizeMultiValues(clinical.apathy as MultiValueInput);
@@ -112,12 +131,12 @@ export const ClinicalForm = () => {
     field: K,
     value: ClinicalFormState[K]
   ) => {
-    if (!isPatientSelected) return;
+    if (!isFormEnabled) return;
     setClinical(toFieldPatch(field, value));
   };
 
   const handleVitalInput = (field: VitalField, rawValue: string) => {
-    if (!isPatientSelected) return;
+    if (!isFormEnabled) return;
 
     const trimmed = rawValue.trim();
     if (!trimmed) {
@@ -134,15 +153,15 @@ export const ClinicalForm = () => {
 
   const temperatureError =
     clinical.temperatureCelsius !== undefined
-      ? validateRange(clinical.temperatureCelsius, 30, 45, "Temperatura")
+      ? validateRange(clinical.temperatureCelsius, 35, 41, "Temperatura")
       : null;
   const heartRateError =
     clinical.heartRate !== undefined
-      ? validateRange(clinical.heartRate, 40, 240, "Frecuencia cardiaca")
+      ? validateRange(clinical.heartRate, 70, 190, "Frecuencia cardiaca")
       : null;
   const respiratoryRateError =
     clinical.respiratoryRate !== undefined
-      ? validateRange(clinical.respiratoryRate, 8, 80, "Frecuencia respiratoria")
+      ? validateRange(clinical.respiratoryRate, 18, 60, "Frecuencia respiratoria")
       : null;
 
   const bloodPressureValue = clinical.bloodPressure?.trim() ?? "";
@@ -179,7 +198,7 @@ export const ClinicalForm = () => {
   );
 
   const isClinicalComplete =
-    isPatientSelected &&
+    isFormEnabled &&
     isGeneralComplete &&
     isPhysicalComplete &&
     isDigestiveComplete &&
@@ -212,12 +231,12 @@ export const ClinicalForm = () => {
   }, [clinical, setClinical]);
 
   const maxUnlockedStep = useMemo(() => {
-    if (!isPatientSelected) return 0;
+    if (!isFormEnabled) return 0;
     if (!isGeneralComplete) return 0;
     if (!isPhysicalComplete) return 1;
     if (!isDigestiveComplete) return 2;
     return 3;
-  }, [isPatientSelected, isGeneralComplete, isPhysicalComplete, isDigestiveComplete]);
+  }, [isFormEnabled, isGeneralComplete, isPhysicalComplete, isDigestiveComplete]);
 
   const currentStep = Math.min(rawStep, maxUnlockedStep);
   const canGoBack = currentStep > 0;
@@ -233,8 +252,17 @@ export const ClinicalForm = () => {
           Selecciona un paciente para registrar sus datos clinicos.
         </p>
       )}
+      {isPatientSelected && !isTargetAgeSelected && (
+        <p className="rounded-lg border border-nutri-secondary/40 bg-nutri-off-white px-4 py-3 text-sm text-nutri-dark-grey">
+          El registro clinico esta parametrizado para pacientes de 6 meses a 5 anios. Edad del
+          paciente seleccionado:{" "}
+          {selectedPatientAgeMonths !== null
+            ? formatPediatricAge(selectedPatientAgeMonths)
+            : "Sin dato"}.
+        </p>
+      )}
 
-      <div className={cn("space-y-5", !isPatientSelected && "opacity-60")}>
+      <div className={cn("space-y-5", !isFormEnabled && "opacity-60")}>
         <header className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/70 px-4 py-3">
           <p className="text-sm font-semibold text-nutri-dark-grey">
             {CLINICAL_STEPS[currentStep].title}
@@ -248,7 +276,7 @@ export const ClinicalForm = () => {
               values={activityValues}
               options={ACTIVITY_OPTIONS}
               exclusiveOptions={["INACTIVO"]}
-              disabled={!isPatientSelected}
+              disabled={!isFormEnabled}
               onChange={(value) => setField("activityLevel", value)}
             />
 
@@ -257,7 +285,7 @@ export const ClinicalForm = () => {
               values={apathyValues}
               options={MOOD_OPTIONS}
               exclusiveOptions={["NORMAL"]}
-              disabled={!isPatientSelected}
+              disabled={!isFormEnabled}
               onChange={(value) => setField("apathy", value)}
             />
 
@@ -265,7 +293,7 @@ export const ClinicalForm = () => {
               <label className="text-sm font-semibold text-nutri-dark-grey">Observaciones</label>
               <textarea
                 rows={3}
-                disabled={!isPatientSelected}
+                disabled={!isFormEnabled}
                 value={clinical.generalObservations ?? ""}
                 onChange={(event) => setField("generalObservations", event.target.value)}
                 className="nutri-input min-h-24 resize-y"
@@ -282,7 +310,7 @@ export const ClinicalForm = () => {
               values={hairValues}
               options={HAIR_OPTIONS}
               exclusiveOptions={["NORMAL"]}
-              disabled={!isPatientSelected}
+              disabled={!isFormEnabled}
               onChange={(value) => setField("hairCondition", value)}
             />
 
@@ -291,7 +319,7 @@ export const ClinicalForm = () => {
               values={skinValues}
               options={SKIN_OPTIONS}
               exclusiveOptions={["NORMAL"]}
-              disabled={!isPatientSelected}
+              disabled={!isFormEnabled}
               onChange={(value) => setField("skinCondition", value)}
             />
 
@@ -300,7 +328,7 @@ export const ClinicalForm = () => {
               values={edemaValues}
               options={EDEMA_OPTIONS}
               exclusiveOptions={["NO PRESENTA"]}
-              disabled={!isPatientSelected}
+              disabled={!isFormEnabled}
               onChange={(value) => setField("edema", value)}
             />
 
@@ -309,7 +337,7 @@ export const ClinicalForm = () => {
               values={dentitionValues}
               options={DENTITION_OPTIONS}
               exclusiveOptions={["NORMAL"]}
-              disabled={!isPatientSelected}
+              disabled={!isFormEnabled}
               onChange={(value) => setField("dentition", value)}
             />
 
@@ -317,7 +345,7 @@ export const ClinicalForm = () => {
               <label className="text-sm font-semibold text-nutri-dark-grey">Observaciones</label>
               <textarea
                 rows={3}
-                disabled={!isPatientSelected}
+                disabled={!isFormEnabled}
                 value={clinical.physicalObservations ?? ""}
                 onChange={(event) => setField("physicalObservations", event.target.value)}
                 className="nutri-input min-h-24 resize-y"
@@ -334,7 +362,7 @@ export const ClinicalForm = () => {
               value={clinical.diarrhea}
               options={YES_NO_OPTIONS}
               columnsClassName="grid-cols-2 sm:grid-cols-4"
-              disabled={!isPatientSelected}
+              disabled={!isFormEnabled}
               onChange={(value) => setField("diarrhea", value)}
             />
 
@@ -343,7 +371,7 @@ export const ClinicalForm = () => {
               value={clinical.vomiting}
               options={YES_NO_OPTIONS}
               columnsClassName="grid-cols-2 sm:grid-cols-4"
-              disabled={!isPatientSelected}
+              disabled={!isFormEnabled}
               onChange={(value) => setField("vomiting", value)}
             />
 
@@ -352,7 +380,7 @@ export const ClinicalForm = () => {
               values={dehydrationValues}
               options={DEHYDRATION_OPTIONS}
               exclusiveOptions={["NO PRESENTA"]}
-              disabled={!isPatientSelected}
+              disabled={!isFormEnabled}
               onChange={(value) => setField("dehydration", value)}
             />
 
@@ -360,7 +388,7 @@ export const ClinicalForm = () => {
               <label className="text-sm font-semibold text-nutri-dark-grey">Observaciones</label>
               <textarea
                 rows={3}
-                disabled={!isPatientSelected}
+                disabled={!isFormEnabled}
                 value={clinical.digestiveObservations ?? ""}
                 onChange={(event) => setField("digestiveObservations", event.target.value)}
                 className="nutri-input min-h-24 resize-y"
@@ -388,11 +416,11 @@ export const ClinicalForm = () => {
                 <input
                   type="number"
                   step="0.1"
-                  disabled={!isPatientSelected}
+                  disabled={!isFormEnabled}
                   value={clinical.temperatureCelsius ?? ""}
                   onChange={(event) => handleVitalInput("temperatureCelsius", event.target.value)}
                   className={cn("nutri-input", temperatureError && "border-nutri-secondary")}
-                  placeholder="Medido en grados celsius (°C)"
+                  placeholder="Rango pediatrico esperado: 35.0 a 41.0 C"
                 />
                 {temperatureError && (
                   <p className="text-xs font-medium text-nutri-secondary">{temperatureError}</p>
@@ -400,7 +428,7 @@ export const ClinicalForm = () => {
               </div>
               <input
                 type="text"
-                disabled={!isPatientSelected}
+                disabled={!isFormEnabled}
                 value={clinical.temperatureObservation ?? ""}
                 onChange={(event) => setField("temperatureObservation", event.target.value)}
                 className="nutri-input"
@@ -416,11 +444,11 @@ export const ClinicalForm = () => {
                 <input
                   type="number"
                   step="1"
-                  disabled={!isPatientSelected}
+                  disabled={!isFormEnabled}
                   value={clinical.heartRate ?? ""}
                   onChange={(event) => handleVitalInput("heartRate", event.target.value)}
                   className={cn("nutri-input", heartRateError && "border-nutri-secondary")}
-                  placeholder="Medida de latidos por minuto (lpm)"
+                  placeholder="Rango pediatrico esperado: 70 a 190 lpm"
                 />
                 {heartRateError && (
                   <p className="text-xs font-medium text-nutri-secondary">{heartRateError}</p>
@@ -428,7 +456,7 @@ export const ClinicalForm = () => {
               </div>
               <input
                 type="text"
-                disabled={!isPatientSelected}
+                disabled={!isFormEnabled}
                 value={clinical.heartRateObservation ?? ""}
                 onChange={(event) => setField("heartRateObservation", event.target.value)}
                 className="nutri-input"
@@ -444,11 +472,11 @@ export const ClinicalForm = () => {
                 <input
                   type="number"
                   step="1"
-                  disabled={!isPatientSelected}
+                  disabled={!isFormEnabled}
                   value={clinical.respiratoryRate ?? ""}
                   onChange={(event) => handleVitalInput("respiratoryRate", event.target.value)}
                   className={cn("nutri-input", respiratoryRateError && "border-nutri-secondary")}
-                  placeholder="Medida de respiros por minuto (rpm)"
+                  placeholder="Rango pediatrico esperado: 18 a 60 rpm"
                 />
                 {respiratoryRateError && (
                   <p className="text-xs font-medium text-nutri-secondary">
@@ -458,7 +486,7 @@ export const ClinicalForm = () => {
               </div>
               <input
                 type="text"
-                disabled={!isPatientSelected}
+                disabled={!isFormEnabled}
                 value={clinical.respiratoryRateObservation ?? ""}
                 onChange={(event) =>
                   setField("respiratoryRateObservation", event.target.value)
@@ -475,7 +503,7 @@ export const ClinicalForm = () => {
               <div className="space-y-1.5">
                 <input
                   type="text"
-                  disabled={!isPatientSelected}
+                  disabled={!isFormEnabled}
                   value={clinical.bloodPressure ?? ""}
                   onChange={(event) => setField("bloodPressure", event.target.value)}
                   className={cn("nutri-input", bloodPressureError && "border-nutri-secondary")}
@@ -490,7 +518,7 @@ export const ClinicalForm = () => {
               </div>
               <input
                 type="text"
-                disabled={!isPatientSelected}
+                disabled={!isFormEnabled}
                 value={clinical.bloodPressureObservation ?? ""}
                 onChange={(event) => setField("bloodPressureObservation", event.target.value)}
                 className="nutri-input"
@@ -512,7 +540,7 @@ export const ClinicalForm = () => {
             {canShowNext && (
               <Button
                 variant="outline"
-                disabled={!isPatientSelected || !canGoNext}
+                disabled={!isFormEnabled || !canGoNext}
                 onClick={() => setCurrentStep(currentStep + 1)}
               >
                 Punto siguiente
@@ -525,10 +553,11 @@ export const ClinicalForm = () => {
           steps={CLINICAL_STEPS}
           currentStep={currentStep}
           maxUnlockedStep={maxUnlockedStep}
-          disabled={!isPatientSelected}
+          disabled={!isFormEnabled}
           onStepChange={setCurrentStep}
         />
       </div>
     </section>
   );
 };
+
