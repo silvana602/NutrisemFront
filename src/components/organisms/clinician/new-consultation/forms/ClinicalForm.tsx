@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { validateRange } from "@/utils/validators";
+import { MultiSelectOptionGroup, SingleSelectOptionGroup } from "./shared/OptionGroups";
+import { StepDots } from "./shared/StepDots";
 import {
   useConsultationStore,
   type ClinicalFormState,
@@ -72,126 +74,6 @@ function normalizeMultiValues(value: MultiValueInput): string[] {
 function sameValues(a: string[], b: string[]): boolean {
   if (a.length !== b.length) return false;
   return a.every((value, index) => value === b[index]);
-}
-
-function MultiOptionGroup({
-  label,
-  values,
-  options,
-  exclusiveOptions = [],
-  disabled,
-  onChange,
-}: {
-  label: string;
-  values?: string[] | string;
-  options: readonly string[];
-  exclusiveOptions?: readonly string[];
-  disabled?: boolean;
-  onChange: (value: string[]) => void;
-}) {
-  const selectedValues = normalizeMultiValues(values);
-  const hasExclusiveSelected = selectedValues.some((value) =>
-    exclusiveOptions.includes(value)
-  );
-
-  const toggleValue = (value: string) => {
-    const isSelected = selectedValues.includes(value);
-    if (isSelected) {
-      onChange(selectedValues.filter((item) => item !== value));
-      return;
-    }
-
-    if (exclusiveOptions.includes(value)) {
-      onChange([value]);
-      return;
-    }
-
-    const withoutExclusives = selectedValues.filter(
-      (item) => !exclusiveOptions.includes(item)
-    );
-    onChange([...withoutExclusives, value]);
-  };
-
-  return (
-    <fieldset className="space-y-3">
-      <legend className="text-sm font-semibold text-nutri-dark-grey">{label}</legend>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {options.map((option) => {
-          const checked = selectedValues.includes(option);
-          const optionDisabled =
-            disabled || (hasExclusiveSelected && !exclusiveOptions.includes(option));
-
-          return (
-            <label
-              key={option}
-              className={cn(
-                "inline-flex items-center gap-2 rounded-lg border px-2.5 py-2 text-xs font-medium sm:text-sm",
-                checked
-                  ? "border-nutri-primary bg-nutri-primary/10 text-nutri-primary"
-                  : "border-nutri-light-grey bg-nutri-white text-nutri-dark-grey",
-                optionDisabled && "cursor-not-allowed opacity-60"
-              )}
-            >
-              <input
-                type="checkbox"
-                checked={checked}
-                disabled={optionDisabled}
-                className="h-4 w-4 rounded border-nutri-light-grey accent-nutri-primary"
-                onChange={() => toggleValue(option)}
-              />
-              <span>{option}</span>
-            </label>
-          );
-        })}
-      </div>
-    </fieldset>
-  );
-}
-
-function SingleOptionGroup({
-  label,
-  value,
-  options,
-  disabled,
-  onChange,
-}: {
-  label: string;
-  value?: string;
-  options: readonly string[];
-  disabled?: boolean;
-  onChange: (value: string | undefined) => void;
-}) {
-  return (
-    <fieldset className="space-y-3">
-      <legend className="text-sm font-semibold text-nutri-dark-grey">{label}</legend>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {options.map((option) => {
-          const checked = value === option;
-          return (
-            <label
-              key={option}
-              className={cn(
-                "inline-flex items-center gap-2 rounded-lg border px-2.5 py-2 text-xs font-medium sm:text-sm",
-                checked
-                  ? "border-nutri-primary bg-nutri-primary/10 text-nutri-primary"
-                  : "border-nutri-light-grey bg-nutri-white text-nutri-dark-grey",
-                disabled && "cursor-not-allowed opacity-60"
-              )}
-            >
-              <input
-                type="checkbox"
-                checked={checked}
-                disabled={disabled}
-                className="h-4 w-4 rounded border-nutri-light-grey accent-nutri-primary"
-                onChange={(event) => onChange(event.target.checked ? option : undefined)}
-              />
-              <span>{option}</span>
-            </label>
-          );
-        })}
-      </div>
-    </fieldset>
-  );
 }
 
 function toFieldPatch<K extends keyof ClinicalFormState>(
@@ -338,7 +220,9 @@ export const ClinicalForm = () => {
   }, [isPatientSelected, isGeneralComplete, isPhysicalComplete, isDigestiveComplete]);
 
   const currentStep = Math.min(rawStep, maxUnlockedStep);
-  const canGoBack = isPatientSelected && currentStep > 0;
+  const canGoBack = currentStep > 0;
+  const canShowNext = currentStep < CLINICAL_STEPS.length - 1;
+  const canGoNext = currentStep < maxUnlockedStep;
 
   return (
     <section className="space-y-6 rounded-xl bg-nutri-white p-4 sm:p-6">
@@ -359,7 +243,7 @@ export const ClinicalForm = () => {
 
         {currentStep === 0 && (
           <div className="space-y-6 rounded-lg border border-nutri-dark-grey/40 bg-nutri-white p-4 sm:p-5">
-            <MultiOptionGroup
+            <MultiSelectOptionGroup
               label="Nivel de actividad"
               values={activityValues}
               options={ACTIVITY_OPTIONS}
@@ -368,7 +252,7 @@ export const ClinicalForm = () => {
               onChange={(value) => setField("activityLevel", value)}
             />
 
-            <MultiOptionGroup
+            <MultiSelectOptionGroup
               label="Presencia de desanimo"
               values={apathyValues}
               options={MOOD_OPTIONS}
@@ -393,7 +277,7 @@ export const ClinicalForm = () => {
 
         {currentStep === 1 && (
           <div className="space-y-6 rounded-lg border border-nutri-dark-grey/40 bg-nutri-white p-4 sm:p-5">
-            <MultiOptionGroup
+            <MultiSelectOptionGroup
               label="Cabello"
               values={hairValues}
               options={HAIR_OPTIONS}
@@ -402,7 +286,7 @@ export const ClinicalForm = () => {
               onChange={(value) => setField("hairCondition", value)}
             />
 
-            <MultiOptionGroup
+            <MultiSelectOptionGroup
               label="Piel"
               values={skinValues}
               options={SKIN_OPTIONS}
@@ -411,7 +295,7 @@ export const ClinicalForm = () => {
               onChange={(value) => setField("skinCondition", value)}
             />
 
-            <MultiOptionGroup
+            <MultiSelectOptionGroup
               label="Edema"
               values={edemaValues}
               options={EDEMA_OPTIONS}
@@ -420,7 +304,7 @@ export const ClinicalForm = () => {
               onChange={(value) => setField("edema", value)}
             />
 
-            <MultiOptionGroup
+            <MultiSelectOptionGroup
               label="Denticion y sistema oseo"
               values={dentitionValues}
               options={DENTITION_OPTIONS}
@@ -445,23 +329,25 @@ export const ClinicalForm = () => {
 
         {currentStep === 2 && (
           <div className="space-y-6 rounded-lg border border-nutri-dark-grey/40 bg-nutri-white p-4 sm:p-5">
-            <SingleOptionGroup
+            <SingleSelectOptionGroup
               label="Presencia de diarrea"
               value={clinical.diarrhea}
               options={YES_NO_OPTIONS}
+              columnsClassName="grid-cols-2 sm:grid-cols-4"
               disabled={!isPatientSelected}
               onChange={(value) => setField("diarrhea", value)}
             />
 
-            <SingleOptionGroup
+            <SingleSelectOptionGroup
               label="Presencia de vomitos"
               value={clinical.vomiting}
               options={YES_NO_OPTIONS}
+              columnsClassName="grid-cols-2 sm:grid-cols-4"
               disabled={!isPatientSelected}
               onChange={(value) => setField("vomiting", value)}
             />
 
-            <MultiOptionGroup
+            <MultiSelectOptionGroup
               label="Signos de deshidratacion"
               values={dehydrationValues}
               options={DEHYDRATION_OPTIONS}
@@ -614,7 +500,7 @@ export const ClinicalForm = () => {
           </div>
         )}
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center justify-between gap-3">
           <div>
             {canGoBack && (
               <Button variant="outline" onClick={() => setCurrentStep(currentStep - 1)}>
@@ -622,32 +508,26 @@ export const ClinicalForm = () => {
               </Button>
             )}
           </div>
-          <div />
+          <div>
+            {canShowNext && (
+              <Button
+                variant="outline"
+                disabled={!isPatientSelected || !canGoNext}
+                onClick={() => setCurrentStep(currentStep + 1)}
+              >
+                Punto siguiente
+              </Button>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center justify-center gap-2 pt-1">
-          {CLINICAL_STEPS.map((step, index) => {
-            const isActive = index === currentStep;
-            const isUnlocked = index <= maxUnlockedStep;
-            return (
-              <button
-                key={step.id}
-                type="button"
-                aria-label={`Ir al punto ${index + 1}`}
-                disabled={!isUnlocked || !isPatientSelected}
-                onClick={() => setCurrentStep(index)}
-                className={cn(
-                  "h-3.5 w-3.5 rounded-full border transition-colors",
-                  isActive
-                    ? "border-nutri-primary bg-nutri-primary"
-                    : isUnlocked
-                      ? "border-nutri-secondary bg-nutri-white hover:bg-nutri-secondary/25"
-                      : "cursor-not-allowed border-nutri-light-grey bg-nutri-light-grey/70"
-                )}
-              />
-            );
-          })}
-        </div>
+        <StepDots
+          steps={CLINICAL_STEPS}
+          currentStep={currentStep}
+          maxUnlockedStep={maxUnlockedStep}
+          disabled={!isPatientSelected}
+          onStepChange={setCurrentStep}
+        />
       </div>
     </section>
   );

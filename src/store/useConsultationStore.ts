@@ -41,6 +41,57 @@ export interface ClinicalFormState {
   observations?: string;
 }
 
+export interface HistoricalFormState {
+  breastfeeding?: string;
+  bottleFeeding?: string;
+  feedingFrequency?: string;
+  complementaryFeedingStartMonths?: number;
+  foodFrequencyByGroup?: Partial<Record<HistoricalFoodGroupId, HistoricalFoodFrequency>>;
+  mealsPerDay?: "1-2" | "3" | "4 O MAS";
+  mealSchedule?: Partial<Record<HistoricalMealSlotId, string>>;
+  habitualSchedule?: string;
+  appetiteLevel?: "BAJO" | "NORMAL" | "ALTO";
+  waterGlassesPerDay?: number;
+  recentIllnesses?: string[];
+  recentIllnessesOther?: string;
+  vaccinationStatus?: "COMPLETO" | "INCOMPLETO" | "DESCONOCIDO";
+  sleepAverageHours?: number;
+  sleepQuality?:
+    | "BUENA (DESCANSA BIEN, SIN DESPERTARES FRECUENTES)"
+    | "REGULAR (SE DESPIERTA VARIAS VECES)"
+    | "MALA (DIFICULTAD PARA DORMIR O SUENO INTERRUMPIDO)";
+  bedtime?: string;
+  wakeupTime?: string;
+}
+
+export type HistoricalFoodFrequency =
+  | "DIARIO"
+  | "3-4 VECES/SEMANA"
+  | "1-2 VECES/SEMANA"
+  | "RARA VEZ / NUNCA";
+
+export type HistoricalFoodGroupId =
+  | "cerealsTubers"
+  | "fruits"
+  | "vegetables"
+  | "dairy"
+  | "meatsProteins"
+  | "legumes"
+  | "ultraProcessed"
+  | "eggs"
+  | "fishSeafood"
+  | "water"
+  | "sugaryDrinks"
+  | "fastFoodFried";
+
+export type HistoricalMealSlotId =
+  | "breakfast"
+  | "midMorningSnack"
+  | "lunch"
+  | "afternoonSnack"
+  | "dinner"
+  | "nightSnack";
+
 interface ConsultationStore {
   selectedPatientId: string | null;
   currentStep: ConsultationStep;
@@ -48,11 +99,14 @@ interface ConsultationStore {
 
   anthropometric: AnthropometricFormState;
   clinical: ClinicalFormState;
+  historical: HistoricalFormState;
 
   isAnthropometricValid: boolean;
   isClinicalValid: boolean;
+  isHistoricalValid: boolean;
   setAnthropometricValidity: (valid: boolean) => void;
   setClinicalValidity: (valid: boolean) => void;
+  setHistoricalValidity: (valid: boolean) => void;
   setSelectedPatientId: (patientId: string | null) => void;
   clearAnthropometric: () => void;
 
@@ -62,6 +116,7 @@ interface ConsultationStore {
 
   setAnthropometric: (data: Partial<AnthropometricFormState>) => void;
   setClinical: (data: Partial<ClinicalFormState>) => void;
+  setHistorical: (data: Partial<HistoricalFormState>) => void;
 
   reset: () => void;
 }
@@ -83,8 +138,10 @@ const INITIAL_STATE = {
   completedSteps: [] as ConsultationStep[],
   anthropometric: {} as AnthropometricFormState,
   clinical: {} as ClinicalFormState,
+  historical: {} as HistoricalFormState,
   isAnthropometricValid: false,
   isClinicalValid: false,
+  isHistoricalValid: false,
 };
 
 export const useConsultationStore = create<ConsultationStore>()(
@@ -94,6 +151,7 @@ export const useConsultationStore = create<ConsultationStore>()(
 
       setAnthropometricValidity: (valid) => set({ isAnthropometricValid: valid }),
       setClinicalValidity: (valid) => set({ isClinicalValid: valid }),
+      setHistoricalValidity: (valid) => set({ isHistoricalValid: valid }),
 
       setSelectedPatientId: (patientId) =>
         set((state) => {
@@ -107,8 +165,10 @@ export const useConsultationStore = create<ConsultationStore>()(
             completedSteps: [],
             anthropometric: {},
             clinical: {},
+            historical: {},
             isAnthropometricValid: false,
             isClinicalValid: false,
+            isHistoricalValid: false,
           };
         }),
 
@@ -164,6 +224,11 @@ export const useConsultationStore = create<ConsultationStore>()(
           clinical: { ...state.clinical, ...data },
         })),
 
+      setHistorical: (data) =>
+        set((state) => ({
+          historical: { ...state.historical, ...data },
+        })),
+
       reset: () => set({ ...INITIAL_STATE }),
     }),
     {
@@ -172,6 +237,7 @@ export const useConsultationStore = create<ConsultationStore>()(
         selectedPatientId: state.selectedPatientId,
         anthropometric: state.anthropometric,
         clinical: state.clinical,
+        historical: state.historical,
       }),
     }
   )

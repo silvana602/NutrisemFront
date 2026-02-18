@@ -1,104 +1,90 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 import { CONSULTATION_TABS, ConsultationTabId } from "./tabs.constants";
 import { AnthropometricForm } from "../forms/AnthropometricForm";
 import { ClinicalForm } from "../forms/ClinicalForm";
+import { HistoricalForm } from "../forms/HistoricalForm";
 import { Tabs } from "@/components/ui/Tabs";
 import { Button } from "@/components/ui/Button";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { useConsultationStore } from "@/store/useConsultationStore";
 
 export const ConsultationTabs: React.FC = () => {
   const selectedPatientId = useConsultationStore((s) => s.selectedPatientId);
   const isAnthropometricValid = useConsultationStore((s) => s.isAnthropometricValid);
   const isClinicalValid = useConsultationStore((s) => s.isClinicalValid);
+  const isHistoricalValid = useConsultationStore((s) => s.isHistoricalValid);
 
   const [activeTab, setActiveTab] = useState<ConsultationTabId>("anthropometric");
-  const [unlocked, setUnlocked] = useState({
-    clinical: false,
-    historical: false,
-  });
-
-  useEffect(() => {
-    if (!selectedPatientId) {
-      setUnlocked({ clinical: false, historical: false });
-      setActiveTab("anthropometric");
-      return;
-    }
-
-    if (!isAnthropometricValid) {
-      setUnlocked({ clinical: false, historical: false });
-      setActiveTab("anthropometric");
-      return;
-    }
-
-    if (!isClinicalValid) {
-      setUnlocked((prev) => ({ ...prev, historical: false }));
-      if (activeTab === "historical") {
-        setActiveTab("clinical");
-      }
-    }
-  }, [selectedPatientId, isAnthropometricValid, isClinicalValid, activeTab]);
+  const [isSaveConfirmOpen, setIsSaveConfirmOpen] = useState(false);
+  const isClinicalUnlocked = Boolean(selectedPatientId && isAnthropometricValid);
+  const isHistoricalUnlocked = Boolean(isClinicalUnlocked && isClinicalValid);
 
   const canAccessTab = (tabId: ConsultationTabId) => {
     if (tabId === "anthropometric") return true;
-    if (tabId === "clinical") return unlocked.clinical;
-    return unlocked.historical;
+    if (tabId === "clinical") return isClinicalUnlocked;
+    return isHistoricalUnlocked;
   };
 
-  const tabs = useMemo(
-    () =>
-      CONSULTATION_TABS.map((tab) => ({
-        ...tab,
-        disabled: !canAccessTab(tab.id),
-      })),
-    [unlocked]
-  );
+  const tabs = CONSULTATION_TABS.map((tab) => ({
+    ...tab,
+    disabled: !canAccessTab(tab.id),
+  }));
+
+  const safeActiveTab: ConsultationTabId = (() => {
+    if (!selectedPatientId) return "anthropometric";
+    if (activeTab === "historical" && !isHistoricalUnlocked) {
+      return isClinicalUnlocked ? "clinical" : "anthropometric";
+    }
+    if (activeTab === "clinical" && !isClinicalUnlocked) return "anthropometric";
+    return activeTab;
+  })();
 
   const goNext = () => {
-    if (activeTab === "anthropometric" && isAnthropometricValid) {
-      setUnlocked((prev) => ({ ...prev, clinical: true }));
+    if (safeActiveTab === "anthropometric" && isAnthropometricValid) {
       setActiveTab("clinical");
       return;
     }
 
-    if (activeTab === "clinical" && isClinicalValid) {
-      setUnlocked((prev) => ({ ...prev, historical: true }));
+    if (safeActiveTab === "clinical" && isClinicalValid) {
       setActiveTab("historical");
     }
   };
 
   const goBack = () => {
-    if (activeTab === "clinical") {
+    if (safeActiveTab === "clinical") {
       setActiveTab("anthropometric");
       return;
     }
 
-    if (activeTab === "historical") {
+    if (safeActiveTab === "historical") {
       setActiveTab("clinical");
     }
   };
 
-  const showBack = activeTab === "clinical" || activeTab === "historical";
+  const showBack = safeActiveTab === "clinical" || safeActiveTab === "historical";
   const showNext =
-    (activeTab === "anthropometric" && isAnthropometricValid) ||
-    (activeTab === "clinical" && isClinicalValid);
+    (safeActiveTab === "anthropometric" && isAnthropometricValid) ||
+    (safeActiveTab === "clinical" && isClinicalValid);
+  const showSave = safeActiveTab === "historical" && isHistoricalValid;
+
+  const handleConfirmSave = () => {
+    setIsSaveConfirmOpen(false);
+  };
 
   return (
     <section className="w-full">
-      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={(tab) => canAccessTab(tab) && setActiveTab(tab)} />
+      <Tabs
+        tabs={tabs}
+        activeTab={safeActiveTab}
+        onTabChange={(tab) => canAccessTab(tab) && setActiveTab(tab)}
+      />
 
       <div className="mt-6">
-        {activeTab === "anthropometric" && <AnthropometricForm />}
-        {activeTab === "clinical" && <ClinicalForm />}
-        {activeTab === "historical" && (
-          <section className="space-y-6 rounded-xl bg-nutri-white p-6">
-            <h3 className="text-lg font-semibold text-nutri-primary">Datos Historicos</h3>
-            <p className="text-sm text-[var(--color-nutri-dark-grey)]">
-              Pendiente: formulario de datos historicos.
-            </p>
-          </section>
-        )}
+        {safeActiveTab === "anthropometric" && <AnthropometricForm />}
+        {safeActiveTab === "clinical" && <ClinicalForm />}
+        {safeActiveTab === "historical" && <HistoricalForm />}
       </div>
 
       <div className="mt-8 flex items-center justify-between">
@@ -116,8 +102,24 @@ export const ConsultationTabs: React.FC = () => {
               Siguiente
             </Button>
           )}
+
+          {showSave && (
+            <Button variant="primary" onClick={() => setIsSaveConfirmOpen(true)}>
+              Guardar consulta
+            </Button>
+          )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={isSaveConfirmOpen}
+        title="Advertencia de seguridad"
+        message="Se guardaran los cambios de todo el formulario. Verifica que la informacion sea correcta antes de confirmar."
+        onCancel={() => setIsSaveConfirmOpen(false)}
+        onConfirm={handleConfirmSave}
+        confirmLabel="Guardar"
+        cancelLabel="Cancelar"
+      />
     </section>
   );
 };

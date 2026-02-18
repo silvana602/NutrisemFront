@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Heading } from "@/components/atoms/Heading";
-import { Button } from "@/components/ui/Button";
 
 export const NewConsultationHeader: React.FC = () => {
     const now = new Date();
@@ -27,7 +26,7 @@ export const NewConsultationHeader: React.FC = () => {
                 {/* Title */}
                 <Heading>Nueva Consulta</Heading>
 
-                {/* Right section: date/time + actions */}
+                {/* Right section: date/time */}
                 <div className="flex flex-col gap-3 sm:items-end">
                     {/* Date & Time */}
                     <div
@@ -35,17 +34,6 @@ export const NewConsultationHeader: React.FC = () => {
                     >
                         <p>Fecha de consulta: {formattedDate}</p>
                         <p>Hora de consulta: {formattedTime}</p>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-3">
-                        <Button variant="secondary">
-                            Cancelar
-                        </Button>
-
-                        <Button variant="primary">
-                            Guardar consulta
-                        </Button>
                     </div>
                 </div>
             </div>
