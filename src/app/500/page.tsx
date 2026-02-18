@@ -1,26 +1,23 @@
 "use client";
 
-import { ArrowLeft, Home } from "lucide-react";
+import { Home, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ErrorPageTemplate } from "@/components/ui/ErrorPageTemplate";
 import { resolveHomePathFromSession } from "@/lib/auth/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 
-const NOT_FOUND_MESSAGE =
-  "\u00A1Emergencia! La ambulancia tom\u00F3 un camino equivocado y no encontramos el destino.";
+const SERVER_ERROR_MESSAGE =
+  "Error de Laboratorio. Algo salio mal con la mezcla de datos. Por favor, intenta recargar el sistema m\u00E1s tarde";
 
-export default function NotFound() {
+export default function InternalServerErrorPage() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  const handleBack = () => {
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back();
-      return;
+  const handleReload = () => {
+    if (typeof window !== "undefined") {
+      window.location.reload();
     }
-
-    router.push(resolveHomePathFromSession({ user, accessToken }));
   };
 
   const handleGoHome = () => {
@@ -29,16 +26,16 @@ export default function NotFound() {
 
   return (
     <ErrorPageTemplate
-      code="404"
-      title="RUTA DE EMERGENCIA EXTRAVIADA"
-      message={NOT_FOUND_MESSAGE}
-      imagePath="/images/errors/404.png"
-      imageAlt="Error 404 Nutrisem"
+      code="500"
+      title="ERROR INTERNO DEL SISTEMA"
+      message={SERVER_ERROR_MESSAGE}
+      imagePath="/images/errors/500.png"
+      imageAlt="Error 500 Nutrisem"
       actions={[
         {
-          label: "Volver Atras",
-          onClick: handleBack,
-          icon: ArrowLeft,
+          label: "Recargar",
+          onClick: handleReload,
+          icon: RotateCcw,
           variant: "outline",
         },
         {

@@ -4,8 +4,9 @@ import { UserRole } from "@/types/user";
 
 const SESSION_COOKIE = "accessToken";
 
-const PUBLIC_ROUTES = ["/", "/login", "/register", "/auth/login", "/auth/register", "/auth/registro"] as const;
+const PUBLIC_ROUTES = ["/", "/401", "/login", "/register", "/auth/login", "/auth/register", "/auth/registro"] as const;
 const PROTECTED_PREFIXES = ["/dashboard"] as const;
+const UNAUTHORIZED_PATH = "/401";
 
 const ROLE_ROUTES: Record<UserRole, string[]> = {
   [UserRole.admin]: [
@@ -42,8 +43,15 @@ function isPublic(pathname: string) {
   });
 }
 
+function buildUnauthorizedUrl(req: NextRequest, nextPath: string) {
+  const unauthorizedUrl = new URL(UNAUTHORIZED_PATH, req.url);
+  unauthorizedUrl.searchParams.set("next", nextPath);
+  return unauthorizedUrl;
+}
+
 export function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
+  const pathWithQuery = pathname + (search || "");
 
   if (isPublic(pathname)) return NextResponse.next();
   if (!isProtected(pathname)) return NextResponse.next();
@@ -51,23 +59,19 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get(SESSION_COOKIE)?.value;
 
   if (!token) {
-    const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("next", pathname + (search || ""));
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(buildUnauthorizedUrl(req, pathWithQuery));
   }
 
   const decoded = decodeToken<{ role?: UserRole; exp?: number }>(token);
   const role = decoded?.role;
 
   if (!role || !Object.values(UserRole).includes(role)) {
-    const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("next", pathname);
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(buildUnauthorizedUrl(req, pathWithQuery));
   }
 
   const expMs = decoded.exp ? decoded.exp * 1000 : null;
   if (!expMs || Date.now() >= expMs) {
-    const res = NextResponse.redirect(new URL("/login", req.url));
+    const res = NextResponse.redirect(buildUnauthorizedUrl(req, pathWithQuery));
     res.cookies.delete(SESSION_COOKIE);
     return res;
   }

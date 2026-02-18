@@ -6,10 +6,10 @@ import { ErrorPageTemplate } from "@/components/ui/ErrorPageTemplate";
 import { resolveHomePathFromSession } from "@/lib/auth/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 
-const NOT_FOUND_MESSAGE =
-  "\u00A1Emergencia! La ambulancia tom\u00F3 un camino equivocado y no encontramos el destino.";
+const FORBIDDEN_MESSAGE =
+  "Acceso Denegado. Tu perfil actual no tiene los permisos necesarios para consultar este expediente.";
 
-export default function NotFound() {
+export default function ForbiddenPage() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -29,11 +29,11 @@ export default function NotFound() {
 
   return (
     <ErrorPageTemplate
-      code="404"
-      title="RUTA DE EMERGENCIA EXTRAVIADA"
-      message={NOT_FOUND_MESSAGE}
-      imagePath="/images/errors/404.png"
-      imageAlt="Error 404 Nutrisem"
+      code="403"
+      title="ACCESO RESTRINGIDO"
+      message={FORBIDDEN_MESSAGE}
+      imagePath="/images/errors/403.png"
+      imageAlt="Error 403 Nutrisem"
       actions={[
         {
           label: "Volver Atras",
