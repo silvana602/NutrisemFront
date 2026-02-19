@@ -1329,18 +1329,30 @@ async function printReportHtmlFromHiddenFrame(reportHtml: string): Promise<void>
 export const DiagnosisDocumentContent: React.FC = () => {
   const searchParams = useSearchParams();
   const highlightedPatientId = searchParams.get("patientId");
+  const highlightedResultId = searchParams.get("resultId");
+  const highlightedTab = searchParams.get("tab");
+  const highlightedStep = Number(searchParams.get("step"));
+
+  const normalizedHighlightedTab: DiagnosisTabId =
+    highlightedTab === "results" ? "results" : "summary";
+  const normalizedHighlightedStep =
+    Number.isInteger(highlightedStep) &&
+    highlightedStep >= 0 &&
+    highlightedStep < RESULTS_STEPS.length
+      ? highlightedStep
+      : 0;
 
   const snapshot = useConsultationStore((s) => s.lastSavedConsultation);
 
-  const [activeTab, setActiveTab] = useState<DiagnosisTabId>("summary");
+  const [activeTab, setActiveTab] = useState<DiagnosisTabId>(normalizedHighlightedTab);
   const [query, setQuery] = useState("");
   const [consultationDateFilter, setConsultationDateFilter] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(
     highlightedPatientId
   );
   const [highlightedIndex, setHighlightedIndex] = useState(0);
-  const [resultsStep, setResultsStep] = useState(0);
-  const [selectedResultId, setSelectedResultId] = useState<string | null>(null);
+  const [resultsStep, setResultsStep] = useState(normalizedHighlightedStep);
+  const [selectedResultId, setSelectedResultId] = useState<string | null>(highlightedResultId);
   const [expandedGrowthIndicatorId, setExpandedGrowthIndicatorId] = useState<GrowthIndicatorId | null>(
     null
   );
@@ -1517,6 +1529,23 @@ export const DiagnosisDocumentContent: React.FC = () => {
     if (!selectedResultId) return null;
     return selectedPatientResults.find((item) => item.id === selectedResultId) ?? null;
   }, [selectedPatientResults, selectedResultId]);
+
+  useEffect(() => {
+    if (!highlightedPatientId) return;
+
+    setExpandedGrowthIndicatorId(null);
+    setSelectedPatientId(highlightedPatientId);
+    setSelectedResultId(highlightedResultId);
+    setActiveTab(normalizedHighlightedTab);
+    setResultsStep(normalizedHighlightedStep);
+    setQuery("");
+    setHighlightedIndex(0);
+  }, [
+    highlightedPatientId,
+    highlightedResultId,
+    normalizedHighlightedTab,
+    normalizedHighlightedStep,
+  ]);
 
   const snapshotForSummary = useMemo(() => {
     if (!snapshot) return null;

@@ -17,48 +17,41 @@ export const Pagination: React.FC<PaginationProps> = ({
   const canNext = page < totalPages;
 
   return (
-    <div className="flex items-center justify-center gap-3 sm:gap-4 py-2 pb-0">
-      
-      {/* Botón anterior */}
+    <div className="flex items-center justify-center gap-3 py-2 sm:gap-4">
       <button
+        type="button"
         onClick={() => canPrev && onChange(page - 1)}
         disabled={!canPrev}
         className="
-          flex items-center justify-center
-          h-9 w-9 sm:h-10 sm:w-10
+          flex h-9 w-9 items-center justify-center
           rounded-full border border-nutri-light-grey
-          text-nutri-dark-grey hover:bg-nutri-off-white transition
-          disabled:opacity-40 disabled:cursor-not-allowed
+          text-nutri-dark-grey transition hover:bg-nutri-off-white
+          disabled:cursor-not-allowed disabled:opacity-40
+          sm:h-10 sm:w-10
         "
       >
         <MdChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
       </button>
 
-      {/* Número de páginas */}
-      <span
-        className="
-          text-xs sm:text-sm
-          font-medium text-nutri-dark-grey
-        "
-      >
+      <span className="text-xs font-medium text-nutri-dark-grey sm:text-sm">
         <span className="block sm:hidden">
           {page} / {totalPages}
         </span>
         <span className="hidden sm:block">
-          Página {page} de {totalPages}
+          Pagina {page} de {totalPages}
         </span>
       </span>
 
-      {/* Botón siguiente */}
       <button
+        type="button"
         onClick={() => canNext && onChange(page + 1)}
         disabled={!canNext}
         className="
-          flex items-center justify-center
-          h-9 w-9 sm:h-10 sm:w-10
+          flex h-9 w-9 items-center justify-center
           rounded-full border border-nutri-light-grey
-          text-nutri-dark-grey hover:bg-nutri-off-white transition
-          disabled:opacity-40 disabled:cursor-not-allowed
+          text-nutri-dark-grey transition hover:bg-nutri-off-white
+          disabled:cursor-not-allowed disabled:opacity-40
+          sm:h-10 sm:w-10
         "
       >
         <MdChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -66,3 +59,4 @@ export const Pagination: React.FC<PaginationProps> = ({
     </div>
   );
 };
+

@@ -1,10 +1,14 @@
 "use client";
 
+import { Button } from "@/components/ui/Button";
+
 interface FilterBarProps {
   gender: string;
   age: string;
   onGenderChange: (value: string) => void;
   onAgeChange: (value: string) => void;
+  onClearFilters?: () => void;
+  clearButtonLabel?: string;
 }
 
 export function FilterBar({
@@ -12,10 +16,12 @@ export function FilterBar({
   age,
   onGenderChange,
   onAgeChange,
+  onClearFilters,
+  clearButtonLabel = "Limpiar filtros",
 }: FilterBarProps) {
   return (
-    <div className="mt-2 flex w-full flex-col gap-4 sm:mt-4 sm:flex-row sm:flex-wrap sm:items-end">
-      <div className="flex w-full flex-col sm:w-auto">
+    <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-end">
+      <div className="flex w-full flex-col sm:max-w-[220px] sm:flex-1">
         <label className="mb-1 text-sm font-semibold text-nutri-dark-grey">Edad</label>
 
         <select
@@ -32,7 +38,7 @@ export function FilterBar({
         </select>
       </div>
 
-      <div className="flex w-full flex-col sm:w-auto">
+      <div className="flex w-full flex-col sm:max-w-[220px] sm:flex-1">
         <label className="mb-1 text-sm font-semibold text-nutri-dark-grey">Sexo</label>
 
         <select
@@ -45,6 +51,17 @@ export function FilterBar({
           <option value="F">Femenino</option>
         </select>
       </div>
+
+      {onClearFilters && (
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full sm:w-auto sm:min-w-[220px]"
+          onClick={onClearFilters}
+        >
+          {clearButtonLabel}
+        </Button>
+      )}
     </div>
   );
 }
