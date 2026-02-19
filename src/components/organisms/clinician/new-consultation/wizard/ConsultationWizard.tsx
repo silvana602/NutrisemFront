@@ -17,12 +17,13 @@ export const ConsultationWizard = () => {
         nextStep,
         prevStep,
         isAnthropometricValid,
+        isClinicalValid,
         /* isClinicalValid,
         isHistoryValid, */
     } = useConsultationStore();
 
     // Orden de pasos
-    const steps: ConsultationStep[] = ["anthropometric", "clinical"];
+    const steps: ConsultationStep[] = ["anthropometric", "clinical", "historical"];
 
     // Mapear cada step a su componente
     const stepComponents: Record<ConsultationStep, ReactNode> = {
@@ -32,12 +33,18 @@ export const ConsultationWizard = () => {
                 Pendiente: Datos Clinicos
             </p>
         ),
+        historical: (
+            <p className="text-sm text-[var(--color-nutri-dark-grey)]">
+                Pendiente: Datos Historicos
+            </p>
+        ),
     };
 
     // Validaciones por step
     const stepValidity: Record<ConsultationStep, boolean> = {
         anthropometric: isAnthropometricValid,
-        clinical: true,
+        clinical: isClinicalValid,
+        historical: true,
     };
 
     const currentIndex = steps.indexOf(currentStep);

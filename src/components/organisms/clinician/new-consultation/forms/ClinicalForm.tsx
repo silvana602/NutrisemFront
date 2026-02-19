@@ -13,6 +13,10 @@ import {
   isTargetPediatricAge,
 } from "@/lib/pediatricAge";
 import {
+  getBloodPressureRangeByAgeMonths,
+  getPediatricVitalRanges,
+} from "@/lib/pediatricVitals";
+import {
   useConsultationStore,
   type ClinicalFormState,
 } from "@/store/useConsultationStore";
@@ -22,6 +26,7 @@ seedOnce();
 type MultiValueInput = string[] | string | null | undefined;
 
 const LEGACY_MULTI_FIELDS = [
+  "alarmSigns",
   "activityLevel",
   "apathy",
   "hairCondition",
@@ -64,6 +69,19 @@ const DENTITION_OPTIONS = [
 
 const YES_NO_OPTIONS = ["SI", "NO"] as const;
 const DEHYDRATION_OPTIONS = ["LEVE", "MODERADA", "SEVERA", "NO PRESENTA"] as const;
+const INFORMANT_OPTIONS = ["MADRE", "PADRE", "CUIDADOR", "OTRO"] as const;
+const PREMATURITY_OPTIONS = ["SI", "NO", "DESCONOCIDO"] as const;
+const BILATERAL_EDEMA_GRADE_OPTIONS = ["0", "+", "++", "+++"] as const;
+const ALARM_SIGN_OPTIONS = [
+  "FIEBRE PERSISTENTE",
+  "RECHAZO TOTAL DE ALIMENTOS",
+  "VOMITOS REPETIDOS",
+  "LETARGIA",
+  "DIARREA CON SANGRE",
+  "DIFICULTAD RESPIRATORIA",
+  "CONVULSIONES",
+  "NINGUNA",
+] as const;
 
 type VitalField = "temperatureCelsius" | "heartRate" | "respiratoryRate";
 
@@ -107,7 +125,19 @@ export const ClinicalForm = () => {
   const isTargetAgeSelected =
     selectedPatientAgeMonths !== null && isTargetPediatricAge(selectedPatientAgeMonths);
   const isFormEnabled = isPatientSelected && isTargetAgeSelected;
+  const vitalRanges = useMemo(
+    () => getPediatricVitalRanges(selectedPatientAgeMonths),
+    [selectedPatientAgeMonths]
+  );
+  const bloodPressureRanges = useMemo(
+    () => getBloodPressureRangeByAgeMonths(selectedPatientAgeMonths),
+    [selectedPatientAgeMonths]
+  );
+  const bloodPressureRaw = clinical.bloodPressure;
+  const bloodPressureSystolic = clinical.bloodPressureSystolic;
+  const bloodPressureDiastolic = clinical.bloodPressureDiastolic;
 
+  const alarmSignsValues = normalizeMultiValues(clinical.alarmSigns as MultiValueInput);
   const activityValues = normalizeMultiValues(clinical.activityLevel as MultiValueInput);
   const apathyValues = normalizeMultiValues(clinical.apathy as MultiValueInput);
   const hairValues = normalizeMultiValues(clinical.hairCondition as MultiValueInput);
@@ -135,6 +165,24 @@ export const ClinicalForm = () => {
     setClinical(toFieldPatch(field, value));
   };
 
+  const setBloodPressureValues = (
+    systolic?: number,
+    diastolic?: number
+  ) => {
+    if (!isFormEnabled) return;
+
+    const formatted =
+      systolic !== undefined && diastolic !== undefined
+        ? `${systolic}/${diastolic}`
+        : undefined;
+
+    setClinical({
+      bloodPressureSystolic: systolic,
+      bloodPressureDiastolic: diastolic,
+      bloodPressure: formatted,
+    });
+  };
+
   const handleVitalInput = (field: VitalField, rawValue: string) => {
     if (!isFormEnabled) return;
 
@@ -151,33 +199,146 @@ export const ClinicalForm = () => {
     setField(field, value);
   };
 
+  const handleIntegerInput = <
+    K extends "birthWeightKg" | "gestationalAgeWeeks",
+  >(
+    field: K,
+    rawValue: string
+  ) => {
+    if (!isFormEnabled) return;
+
+    const trimmed = rawValue.trim();
+    if (!trimmed) {
+      setField(field, undefined as ClinicalFormState[K]);
+      return;
+    }
+
+    const normalized = trimmed.replace(",", ".");
+    const value = Number(normalized);
+    if (Number.isNaN(value)) return;
+    if (field === "gestationalAgeWeeks" && !Number.isInteger(value)) return;
+
+    setField(field, value as ClinicalFormState[K]);
+  };
+
+  const handleBloodPressureInput = (
+    field: "bloodPressureSystolic" | "bloodPressureDiastolic",
+    rawValue: string
+  ) => {
+    if (!isFormEnabled) return;
+
+    const trimmed = rawValue.trim();
+    const parsedValue = trimmed ? Number.parseInt(trimmed, 10) : undefined;
+    if (trimmed && Number.isNaN(parsedValue)) return;
+
+    const nextSystolic =
+      field === "bloodPressureSystolic" ? parsedValue : clinical.bloodPressureSystolic;
+    const nextDiastolic =
+      field === "bloodPressureDiastolic" ? parsedValue : clinical.bloodPressureDiastolic;
+
+    setBloodPressureValues(nextSystolic, nextDiastolic);
+  };
+
   const temperatureError =
     clinical.temperatureCelsius !== undefined
-      ? validateRange(clinical.temperatureCelsius, 35, 41, "Temperatura")
+      ? validateRange(
+          clinical.temperatureCelsius,
+          vitalRanges.temperature.min,
+          vitalRanges.temperature.max,
+          "Temperatura"
+        )
       : null;
   const heartRateError =
     clinical.heartRate !== undefined
-      ? validateRange(clinical.heartRate, 70, 190, "Frecuencia cardiaca")
+      ? validateRange(
+          clinical.heartRate,
+          vitalRanges.heartRate.min,
+          vitalRanges.heartRate.max,
+          "Frecuencia cardiaca"
+        )
       : null;
   const respiratoryRateError =
     clinical.respiratoryRate !== undefined
-      ? validateRange(clinical.respiratoryRate, 18, 60, "Frecuencia respiratoria")
+      ? validateRange(
+          clinical.respiratoryRate,
+          vitalRanges.respiratoryRate.min,
+          vitalRanges.respiratoryRate.max,
+          "Frecuencia respiratoria"
+        )
       : null;
 
-  const bloodPressureValue = clinical.bloodPressure?.trim() ?? "";
-  const bloodPressureError =
-    bloodPressureValue && !/^\d{2,3}(?:\/\d{2,3})?$/.test(bloodPressureValue)
-      ? "Formato esperado: 100/60 o 95"
+  const birthWeightError =
+    clinical.birthWeightKg !== undefined
+      ? validateRange(clinical.birthWeightKg, 0.5, 6.5, "Peso al nacer")
       : null;
+  const gestationalAgeError =
+    clinical.gestationalAgeWeeks !== undefined
+      ? validateRange(clinical.gestationalAgeWeeks, 24, 44, "Edad gestacional")
+      : null;
+
+  const isSystolicProvided = clinical.bloodPressureSystolic !== undefined;
+  const isDiastolicProvided = clinical.bloodPressureDiastolic !== undefined;
+  const bloodPressurePairError =
+    isSystolicProvided !== isDiastolicProvided
+      ? "Completa sistolica y diastolica para registrar la presion arterial."
+      : null;
+
+  const bloodPressureSystolicError =
+    clinical.bloodPressureSystolic !== undefined
+      ? validateRange(
+          clinical.bloodPressureSystolic,
+          bloodPressureRanges.systolic.min,
+          bloodPressureRanges.systolic.max,
+          "Presion sistolica"
+        )
+      : null;
+  const bloodPressureDiastolicError =
+    clinical.bloodPressureDiastolic !== undefined
+      ? validateRange(
+          clinical.bloodPressureDiastolic,
+          bloodPressureRanges.diastolic.min,
+          bloodPressureRanges.diastolic.max,
+          "Presion diastolica"
+        )
+      : null;
+  const bloodPressureOrderError =
+    clinical.bloodPressureSystolic !== undefined &&
+    clinical.bloodPressureDiastolic !== undefined &&
+    clinical.bloodPressureSystolic <= clinical.bloodPressureDiastolic
+      ? "La sistolica debe ser mayor que la diastolica."
+      : null;
+
+  const mainReasonError = clinical.mainConsultationReason?.trim()
+    ? null
+    : "Motivo principal de consulta es obligatorio.";
+  const informantNameError = clinical.informantName?.trim()
+    ? null
+    : "Nombre del informante es obligatorio.";
+  const informantRelationshipError = clinical.informantRelationship?.trim()
+    ? null
+    : "Parentesco del informante es obligatorio.";
+
+  const isInformantComplete = Boolean(
+    clinical.informantType &&
+      clinical.informantName?.trim() &&
+      clinical.informantRelationship?.trim()
+  );
 
   const isGeneralComplete = Boolean(
-    activityValues.length && apathyValues.length
+    activityValues.length &&
+      apathyValues.length &&
+      alarmSignsValues.length &&
+      clinical.mainConsultationReason?.trim() &&
+      isInformantComplete &&
+      !birthWeightError &&
+      !gestationalAgeError
   );
 
   const isPhysicalComplete = Boolean(
     hairValues.length &&
       skinValues.length &&
       edemaValues.length &&
+      clinical.bilateralEdemaGrade &&
       dentitionValues.length
   );
 
@@ -185,7 +346,11 @@ export const ClinicalForm = () => {
     clinical.diarrhea && clinical.vomiting && dehydrationValues.length
   );
 
-  const isBloodPressureValid = !bloodPressureValue || !bloodPressureError;
+  const isBloodPressureValid =
+    !bloodPressurePairError &&
+    !bloodPressureSystolicError &&
+    !bloodPressureDiastolicError &&
+    !bloodPressureOrderError;
 
   const isVitalsComplete = Boolean(
     clinical.temperatureCelsius !== undefined &&
@@ -230,6 +395,47 @@ export const ClinicalForm = () => {
     }
   }, [clinical, setClinical]);
 
+  useEffect(() => {
+    if (!isFormEnabled) return;
+
+    if (
+      bloodPressureSystolic !== undefined ||
+      bloodPressureDiastolic !== undefined
+    ) {
+      const formatted =
+        bloodPressureSystolic !== undefined && bloodPressureDiastolic !== undefined
+          ? `${bloodPressureSystolic}/${bloodPressureDiastolic}`
+          : undefined;
+
+      if ((bloodPressureRaw ?? "") !== (formatted ?? "")) {
+        setClinical({ bloodPressure: formatted });
+      }
+
+      return;
+    }
+
+    const legacyValue = bloodPressureRaw?.trim();
+    if (!legacyValue) return;
+
+    const legacyMatch = legacyValue.match(/^(\d{2,3})\/(\d{2,3})$/);
+    if (!legacyMatch) return;
+
+    const parsedSystolic = Number.parseInt(legacyMatch[1], 10);
+    const parsedDiastolic = Number.parseInt(legacyMatch[2], 10);
+    if (Number.isNaN(parsedSystolic) || Number.isNaN(parsedDiastolic)) return;
+
+    setClinical({
+      bloodPressureSystolic: parsedSystolic,
+      bloodPressureDiastolic: parsedDiastolic,
+    });
+  }, [
+    bloodPressureRaw,
+    bloodPressureSystolic,
+    bloodPressureDiastolic,
+    isFormEnabled,
+    setClinical,
+  ]);
+
   const maxUnlockedStep = useMemo(() => {
     if (!isFormEnabled) return 0;
     if (!isGeneralComplete) return 0;
@@ -271,6 +477,174 @@ export const ClinicalForm = () => {
 
         {currentStep === 0 && (
           <div className="space-y-6 rounded-lg border border-nutri-dark-grey/40 bg-nutri-white p-4 sm:p-5">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-nutri-dark-grey">
+                Motivo principal de consulta
+              </label>
+              <input
+                type="text"
+                maxLength={140}
+                disabled={!isFormEnabled}
+                value={clinical.mainConsultationReason ?? ""}
+                onChange={(event) =>
+                  setField("mainConsultationReason", event.target.value)
+                }
+                className={cn("nutri-input", mainReasonError && "border-nutri-secondary")}
+                placeholder="Ej: Poca ganancia de peso en el ultimo mes"
+              />
+              {mainReasonError && (
+                <p className="text-xs font-medium text-nutri-secondary">{mainReasonError}</p>
+              )}
+            </div>
+
+            <SingleSelectOptionGroup
+              label="Quien brinda la informacion"
+              value={clinical.informantType}
+              options={INFORMANT_OPTIONS}
+              columnsClassName="grid-cols-2 lg:grid-cols-4"
+              disabled={!isFormEnabled}
+              onChange={(value) =>
+                setField("informantType", value as ClinicalFormState["informantType"])
+              }
+            />
+            {!clinical.informantType && (
+              <p className="text-xs font-medium text-nutri-secondary">
+                Selecciona quien brinda la informacion.
+              </p>
+            )}
+
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-nutri-dark-grey">
+                  Nombre de quien brinda la informacion
+                </label>
+                <input
+                  type="text"
+                  disabled={!isFormEnabled}
+                  value={clinical.informantName ?? ""}
+                  onChange={(event) => setField("informantName", event.target.value)}
+                  className={cn(
+                    "nutri-input",
+                    informantNameError && "border-nutri-secondary"
+                  )}
+                  placeholder="Nombre completo"
+                />
+                {informantNameError && (
+                  <p className="text-xs font-medium text-nutri-secondary">
+                    {informantNameError}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-nutri-dark-grey">
+                  Parentesco
+                </label>
+                <input
+                  type="text"
+                  disabled={!isFormEnabled}
+                  value={clinical.informantRelationship ?? ""}
+                  onChange={(event) =>
+                    setField("informantRelationship", event.target.value)
+                  }
+                  className={cn(
+                    "nutri-input",
+                    informantRelationshipError && "border-nutri-secondary"
+                  )}
+                  placeholder="Ej: madre, padre, tia, cuidador"
+                />
+                {informantRelationshipError && (
+                  <p className="text-xs font-medium text-nutri-secondary">
+                    {informantRelationshipError}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <MultiSelectOptionGroup
+              label="Senales de alarma actuales"
+              values={alarmSignsValues}
+              options={ALARM_SIGN_OPTIONS}
+              exclusiveOptions={["NINGUNA"]}
+              columnsClassName="grid-cols-1 sm:grid-cols-2"
+              disabled={!isFormEnabled}
+              onChange={(value) => setField("alarmSigns", value)}
+            />
+            {!alarmSignsValues.length && (
+              <p className="text-xs font-medium text-nutri-secondary">
+                Selecciona al menos una opcion (puedes usar NINGUNA).
+              </p>
+            )}
+
+            <div className="space-y-4 rounded-lg border border-nutri-light-grey bg-nutri-off-white/40 p-3">
+              <p className="text-sm font-semibold text-nutri-dark-grey">
+                Antecedentes perinatales
+              </p>
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-nutri-dark-grey">
+                    Peso al nacer (kg)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min={0.5}
+                    max={6.5}
+                    disabled={!isFormEnabled}
+                    value={clinical.birthWeightKg ?? ""}
+                    onChange={(event) =>
+                      handleIntegerInput("birthWeightKg", event.target.value)
+                    }
+                    className={cn("nutri-input", birthWeightError && "border-nutri-secondary")}
+                    placeholder="Opcional"
+                  />
+                  {birthWeightError && (
+                    <p className="text-xs font-medium text-nutri-secondary">
+                      {birthWeightError}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-nutri-dark-grey">
+                    Edad gestacional al nacer (semanas)
+                  </label>
+                  <input
+                    type="number"
+                    step={1}
+                    min={24}
+                    max={44}
+                    disabled={!isFormEnabled}
+                    value={clinical.gestationalAgeWeeks ?? ""}
+                    onChange={(event) =>
+                      handleIntegerInput("gestationalAgeWeeks", event.target.value)
+                    }
+                    className={cn(
+                      "nutri-input",
+                      gestationalAgeError && "border-nutri-secondary"
+                    )}
+                    placeholder="Opcional"
+                  />
+                  {gestationalAgeError && (
+                    <p className="text-xs font-medium text-nutri-secondary">
+                      {gestationalAgeError}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <SingleSelectOptionGroup
+                label="Prematuridad"
+                value={clinical.prematurity}
+                options={PREMATURITY_OPTIONS}
+                columnsClassName="grid-cols-1 sm:grid-cols-3"
+                disabled={!isFormEnabled}
+                onChange={(value) =>
+                  setField("prematurity", value as ClinicalFormState["prematurity"])
+                }
+              />
+            </div>
+
             <MultiSelectOptionGroup
               label="Nivel de actividad"
               values={activityValues}
@@ -330,6 +704,20 @@ export const ClinicalForm = () => {
               exclusiveOptions={["NO PRESENTA"]}
               disabled={!isFormEnabled}
               onChange={(value) => setField("edema", value)}
+            />
+
+            <SingleSelectOptionGroup
+              label="Edema bilateral con grado"
+              value={clinical.bilateralEdemaGrade}
+              options={BILATERAL_EDEMA_GRADE_OPTIONS}
+              columnsClassName="grid-cols-2 sm:grid-cols-4"
+              disabled={!isFormEnabled}
+              onChange={(value) =>
+                setField(
+                  "bilateralEdemaGrade",
+                  value as ClinicalFormState["bilateralEdemaGrade"]
+                )
+              }
             />
 
             <MultiSelectOptionGroup
@@ -420,7 +808,9 @@ export const ClinicalForm = () => {
                   value={clinical.temperatureCelsius ?? ""}
                   onChange={(event) => handleVitalInput("temperatureCelsius", event.target.value)}
                   className={cn("nutri-input", temperatureError && "border-nutri-secondary")}
-                  placeholder="Rango pediatrico esperado: 35.0 a 41.0 C"
+                  placeholder={`Rango pediatrico esperado: ${vitalRanges.temperature.min.toFixed(
+                    1
+                  )} a ${vitalRanges.temperature.max.toFixed(1)} C`}
                 />
                 {temperatureError && (
                   <p className="text-xs font-medium text-nutri-secondary">{temperatureError}</p>
@@ -448,7 +838,7 @@ export const ClinicalForm = () => {
                   value={clinical.heartRate ?? ""}
                   onChange={(event) => handleVitalInput("heartRate", event.target.value)}
                   className={cn("nutri-input", heartRateError && "border-nutri-secondary")}
-                  placeholder="Rango pediatrico esperado: 70 a 190 lpm"
+                  placeholder={`Rango pediatrico esperado: ${vitalRanges.heartRate.min} a ${vitalRanges.heartRate.max} lpm`}
                 />
                 {heartRateError && (
                   <p className="text-xs font-medium text-nutri-secondary">{heartRateError}</p>
@@ -476,7 +866,7 @@ export const ClinicalForm = () => {
                   value={clinical.respiratoryRate ?? ""}
                   onChange={(event) => handleVitalInput("respiratoryRate", event.target.value)}
                   className={cn("nutri-input", respiratoryRateError && "border-nutri-secondary")}
-                  placeholder="Rango pediatrico esperado: 18 a 60 rpm"
+                  placeholder={`Rango pediatrico esperado: ${vitalRanges.respiratoryRate.min} a ${vitalRanges.respiratoryRate.max} rpm`}
                 />
                 {respiratoryRateError && (
                   <p className="text-xs font-medium text-nutri-secondary">
@@ -500,21 +890,57 @@ export const ClinicalForm = () => {
               <label className="pt-2 text-sm font-semibold text-nutri-dark-grey">
                 Presion arterial
               </label>
-              <div className="space-y-1.5">
-                <input
-                  type="text"
-                  disabled={!isFormEnabled}
-                  value={clinical.bloodPressure ?? ""}
-                  onChange={(event) => setField("bloodPressure", event.target.value)}
-                  className={cn("nutri-input", bloodPressureError && "border-nutri-secondary")}
-                  placeholder="Medido en milimetros de mercurio (mmHg)"
-                />
-                {bloodPressureError && (
-                  <p className="text-xs font-medium text-nutri-secondary">{bloodPressureError}</p>
-                )}
+              <div className="space-y-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <input
+                    type="number"
+                    min={bloodPressureRanges.systolic.min}
+                    max={bloodPressureRanges.systolic.max}
+                    step={1}
+                    disabled={!isFormEnabled}
+                    value={clinical.bloodPressureSystolic ?? ""}
+                    onChange={(event) =>
+                      handleBloodPressureInput("bloodPressureSystolic", event.target.value)
+                    }
+                    className={cn(
+                      "nutri-input",
+                      (bloodPressureSystolicError || bloodPressurePairError) &&
+                        "border-nutri-secondary"
+                    )}
+                    placeholder={`Sistolica (${bloodPressureRanges.systolic.min}-${bloodPressureRanges.systolic.max})`}
+                  />
+                  <input
+                    type="number"
+                    min={bloodPressureRanges.diastolic.min}
+                    max={bloodPressureRanges.diastolic.max}
+                    step={1}
+                    disabled={!isFormEnabled}
+                    value={clinical.bloodPressureDiastolic ?? ""}
+                    onChange={(event) =>
+                      handleBloodPressureInput("bloodPressureDiastolic", event.target.value)
+                    }
+                    className={cn(
+                      "nutri-input",
+                      (bloodPressureDiastolicError || bloodPressurePairError) &&
+                        "border-nutri-secondary"
+                    )}
+                    placeholder={`Diastolica (${bloodPressureRanges.diastolic.min}-${bloodPressureRanges.diastolic.max})`}
+                  />
+                </div>
                 <p className="text-xs text-nutri-dark-grey/80">
-                  Campo opcional. Puedes dejarlo vacio cuando no corresponda.
+                  Referencia por edad: {bloodPressureRanges.ageGroup}. Campo opcional.
                 </p>
+                {(bloodPressurePairError ||
+                  bloodPressureSystolicError ||
+                  bloodPressureDiastolicError ||
+                  bloodPressureOrderError) && (
+                  <p className="text-xs font-medium text-nutri-secondary">
+                    {bloodPressurePairError ??
+                      bloodPressureSystolicError ??
+                      bloodPressureDiastolicError ??
+                      bloodPressureOrderError}
+                  </p>
+                )}
               </div>
               <input
                 type="text"

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { createPortal } from "react-dom";
 import { Backdrop } from "@/components/ui/Backdrop";
 import { Button } from "@/components/ui/Button";
@@ -32,14 +32,8 @@ export default function ConfirmDialog({
   disableCancel = false,
   disableBackdropClose = false,
 }: ConfirmDialogProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
-
-  if (!open || !mounted) return null;
+  if (!open) return null;
+  if (typeof window === "undefined") return null;
 
   return createPortal(
     <>

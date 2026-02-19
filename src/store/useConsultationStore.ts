@@ -1,7 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { db, seedOnce } from "@/mocks/db";
+import { calculateAgeInMonths } from "@/lib/pediatricAge";
+import { calculatePediatricBmiZScoreAndPercentile } from "@/lib/pediatricGrowth";
 
-export type ConsultationStep = "anthropometric" | "clinical";
+seedOnce();
+
+export type ConsultationStep = "anthropometric" | "clinical" | "historical";
 
 export interface AnthropometricFormState {
   weightKg?: number;
@@ -15,6 +20,14 @@ export interface AnthropometricFormState {
 
 export interface ClinicalFormState {
   ageYears?: number; // legado
+  mainConsultationReason?: string;
+  informantType?: "MADRE" | "PADRE" | "CUIDADOR" | "OTRO";
+  informantName?: string;
+  informantRelationship?: string;
+  alarmSigns?: string[];
+  birthWeightKg?: number;
+  gestationalAgeWeeks?: number;
+  prematurity?: "SI" | "NO" | "DESCONOCIDO";
   activityLevel?: string[];
   apathy?: string[];
   generalObservations?: string;
@@ -22,6 +35,7 @@ export interface ClinicalFormState {
   hairCondition?: string[];
   skinCondition?: string[];
   edema?: string[];
+  bilateralEdemaGrade?: "0" | "+" | "++" | "+++";
   dentition?: string[];
   physicalObservations?: string;
 
@@ -36,6 +50,8 @@ export interface ClinicalFormState {
   heartRateObservation?: string;
   respiratoryRate?: number;
   respiratoryRateObservation?: string;
+  bloodPressureSystolic?: number;
+  bloodPressureDiastolic?: number;
   bloodPressure?: string;
   bloodPressureObservation?: string;
   observations?: string;
@@ -50,11 +66,30 @@ export interface HistoricalFormState {
   mealsPerDay?: "1-2" | "3" | "4 O MAS";
   mealSchedule?: Partial<Record<HistoricalMealSlotId, string>>;
   habitualSchedule?: string;
+  recall24h?: Partial<Record<HistoricalRecallSlotId, string>>;
+  addedSugarSalt?: "SI" | "NO";
+  addedSugarSaltFrequency?: string;
   appetiteLevel?: "BAJO" | "NORMAL" | "ALTO";
   waterGlassesPerDay?: number;
+  foodAllergiesOrIntolerances?: string;
+  currentSupplementation?: string[];
+  currentSupplementationOther?: string;
+  dewormingLastDate?: string;
+  currentMedications?: string;
   recentIllnesses?: string[];
   recentIllnessesOther?: string;
   vaccinationStatus?: "COMPLETO" | "INCOMPLETO" | "DESCONOCIDO";
+  safeWaterAccess?: "SI" | "NO";
+  basicSanitation?: "SI" | "NO";
+  foodInsecurityConcern?: "SI" | "NO";
+  foodInsecurityMealSkip?: "SI" | "NO";
+  primaryCaregiver?:
+    | "MADRE"
+    | "PADRE"
+    | "ABUELOS"
+    | "OTRO FAMILIAR"
+    | "CUIDADOR";
+  daycareAttendance?: "SI" | "NO";
   sleepAverageHours?: number;
   sleepQuality?:
     | "BUENA (DESCANSA BIEN, SIN DESPERTARES FRECUENTES)"
@@ -91,6 +126,8 @@ export type HistoricalMealSlotId =
   | "afternoonSnack"
   | "dinner"
   | "nightSnack";
+
+export type HistoricalRecallSlotId = "breakfast" | "lunch" | "dinner" | "snacks";
 
 export interface SavedConsultationSnapshot {
   savedAt: string;
@@ -132,16 +169,7 @@ interface ConsultationStore {
   reset: () => void;
 }
 
-function calculateZScoreAndPercentile(bmi: number) {
-  const mean = 16;
-  const sd = 2;
-  const zScore = Number(((bmi - mean) / sd).toFixed(2));
-  const percentile = Math.min(99, Math.max(1, Math.round(50 + zScore * 15)));
-
-  return { zScore, percentile };
-}
-
-const STEP_ORDER: ConsultationStep[] = ["anthropometric", "clinical"];
+const STEP_ORDER: ConsultationStep[] = ["anthropometric", "clinical", "historical"];
 
 const INITIAL_STATE = {
   selectedPatientId: null,
@@ -223,9 +251,29 @@ export const useConsultationStore = create<ConsultationStore>()(
           if (next.weightKg && next.heightM && next.heightM > 0) {
             const bmi = next.weightKg / (next.heightM * next.heightM);
             next.bmi = Number(bmi.toFixed(2));
-            const { zScore, percentile } = calculateZScoreAndPercentile(next.bmi);
-            next.zScore = zScore;
-            next.percentile = percentile;
+
+            const patient = state.selectedPatientId
+              ? db.patients.find((item) => item.patientId === state.selectedPatientId) ?? null
+              : null;
+
+            if (patient) {
+              const ageMonths = calculateAgeInMonths(patient.birthDate);
+              const { zScore, percentile } = calculatePediatricBmiZScoreAndPercentile(
+                next.bmi,
+                ageMonths,
+                patient.gender
+              );
+
+              next.zScore = zScore;
+              next.percentile = percentile;
+            } else {
+              next.zScore = undefined;
+              next.percentile = undefined;
+            }
+          } else {
+            next.bmi = undefined;
+            next.zScore = undefined;
+            next.percentile = undefined;
           }
 
           return { anthropometric: next };
@@ -252,6 +300,7 @@ export const useConsultationStore = create<ConsultationStore>()(
           anthropometric: { ...state.anthropometric },
           clinical: {
             ...state.clinical,
+            alarmSigns: state.clinical.alarmSigns ? [...state.clinical.alarmSigns] : undefined,
             activityLevel: state.clinical.activityLevel
               ? [...state.clinical.activityLevel]
               : undefined,
@@ -275,6 +324,10 @@ export const useConsultationStore = create<ConsultationStore>()(
               : undefined,
             mealSchedule: state.historical.mealSchedule
               ? { ...state.historical.mealSchedule }
+              : undefined,
+            recall24h: state.historical.recall24h ? { ...state.historical.recall24h } : undefined,
+            currentSupplementation: state.historical.currentSupplementation
+              ? [...state.historical.currentSupplementation]
               : undefined,
             recentIllnesses: state.historical.recentIllnesses
               ? [...state.historical.recentIllnesses]

@@ -15,6 +15,7 @@ import {
   type HistoricalFoodFrequency,
   type HistoricalFoodGroupId,
   type HistoricalMealSlotId,
+  type HistoricalRecallSlotId,
   type HistoricalFormState,
 } from "@/store/useConsultationStore";
 import { MultiSelectOptionGroup, SingleSelectOptionGroup } from "./shared/OptionGroups";
@@ -51,6 +52,28 @@ const SLEEP_QUALITY_OPTIONS = [
   "REGULAR (SE DESPIERTA VARIAS VECES)",
   "MALA (DIFICULTAD PARA DORMIR O SUENO INTERRUMPIDO)",
 ] as const;
+const PRIMARY_CAREGIVER_OPTIONS = [
+  "MADRE",
+  "PADRE",
+  "ABUELOS",
+  "OTRO FAMILIAR",
+  "CUIDADOR",
+] as const;
+const SUPPLEMENT_OPTIONS = [
+  "HIERRO",
+  "VITAMINA A",
+  "VITAMINA D",
+  "ZINC",
+  "OTROS",
+  "NINGUNO",
+] as const;
+
+const DIET_RECALL_SLOTS: readonly { id: HistoricalRecallSlotId; label: string }[] = [
+  { id: "breakfast", label: "Desayuno" },
+  { id: "lunch", label: "Almuerzo" },
+  { id: "dinner", label: "Cena" },
+  { id: "snacks", label: "Snacks/colaciones" },
+];
 
 const MEAL_SLOTS: readonly { id: HistoricalMealSlotId; label: string }[] = [
   { id: "breakfast", label: "Desayuno" },
@@ -124,6 +147,11 @@ export const HistoricalForm = () => {
   const rawStep = stepByPatient[stepKey] ?? 0;
   const foodFrequencyByGroup = historical.foodFrequencyByGroup ?? {};
   const mealSchedule = historical.mealSchedule ?? {};
+  const recall24h = historical.recall24h ?? {};
+  const supplementationValues = useMemo(
+    () => historical.currentSupplementation ?? [],
+    [historical.currentSupplementation]
+  );
   const recentIllnesses = useMemo(
     () => historical.recentIllnesses ?? [],
     [historical.recentIllnesses]
@@ -187,6 +215,19 @@ export const HistoricalForm = () => {
   const applySuggestedSchedule = () => {
     if (!isFormEnabled) return;
     setField("mealSchedule", { ...SUGGESTED_SCHEDULE });
+  };
+
+  const setDietRecall = (slotId: HistoricalRecallSlotId, value: string) => {
+    if (!isFormEnabled) return;
+
+    const nextRecall = { ...recall24h };
+    if (value.trim()) {
+      nextRecall[slotId] = value;
+    } else {
+      delete nextRecall[slotId];
+    }
+
+    setField("recall24h", nextRecall);
   };
 
   const handleWaterInput = (rawValue: string) => {
@@ -258,6 +299,32 @@ export const HistoricalForm = () => {
 
   useEffect(() => {
     if (!isFormEnabled) return;
+    if (historical.addedSugarSalt === "SI") return;
+    if (!historical.addedSugarSaltFrequency) return;
+
+    setHistorical({ addedSugarSaltFrequency: "" });
+  }, [
+    historical.addedSugarSalt,
+    historical.addedSugarSaltFrequency,
+    isFormEnabled,
+    setHistorical,
+  ]);
+
+  useEffect(() => {
+    if (!isFormEnabled) return;
+    if (supplementationValues.includes("OTROS")) return;
+    if (!historical.currentSupplementationOther) return;
+
+    setHistorical({ currentSupplementationOther: "" });
+  }, [
+    supplementationValues,
+    historical.currentSupplementationOther,
+    isFormEnabled,
+    setHistorical,
+  ]);
+
+  useEffect(() => {
+    if (!isFormEnabled) return;
     if (recentIllnesses.includes("OTROS")) return;
     if (!historical.recentIllnessesOther) return;
 
@@ -309,10 +376,29 @@ export const HistoricalForm = () => {
       ? `Completa al menos ${requiredMealsCount} horarios segun la cantidad de comidas.`
       : null;
 
+  const recallCompletedCount = DIET_RECALL_SLOTS.filter((slot) =>
+    Boolean(recall24h[slot.id]?.trim())
+  ).length;
+  const isRecall24hComplete = recallCompletedCount === DIET_RECALL_SLOTS.length;
+  const recall24hError = isRecall24hComplete
+    ? null
+    : "Completa desayuno, almuerzo, cena y snacks del recordatorio 24h.";
+
+  const isAddedSugarSaltComplete = Boolean(
+    historical.addedSugarSalt &&
+      (historical.addedSugarSalt !== "SI" ||
+        Boolean(historical.addedSugarSaltFrequency?.trim()))
+  );
+  const addedSugarSaltError = !isAddedSugarSaltComplete
+    ? "Indica si se agrega azucar/sal y, si aplica, su frecuencia."
+    : null;
+
   const isStepTwoComplete = Boolean(
     isFoodMatrixComplete &&
       historical.mealsPerDay &&
       isMealScheduleComplete &&
+      isRecall24hComplete &&
+      isAddedSugarSaltComplete &&
       historical.appetiteLevel &&
       historical.waterGlassesPerDay !== undefined &&
       !waterGlassesError
@@ -329,8 +415,34 @@ export const HistoricalForm = () => {
       : "Selecciona al menos una opcion de enfermedades recientes."
     : null;
 
+  const hasOtherSupplementSelected = supplementationValues.includes("OTROS");
+  const isSupplementationComplete = Boolean(
+    supplementationValues.length &&
+      (!hasOtherSupplementSelected || historical.currentSupplementationOther?.trim())
+  );
+  const supplementationError = !isSupplementationComplete
+    ? hasOtherSupplementSelected
+      ? "Especifica el suplemento en OTROS."
+      : "Selecciona al menos una opcion de suplementacion (o NINGUNO)."
+    : null;
+
+  const isSocialDeterminantsComplete = Boolean(
+    historical.safeWaterAccess &&
+      historical.basicSanitation &&
+      historical.foodInsecurityConcern &&
+      historical.foodInsecurityMealSkip &&
+      historical.primaryCaregiver &&
+      historical.daycareAttendance
+  );
+  const socialDeterminantsError = isSocialDeterminantsComplete
+    ? null
+    : "Completa acceso a agua, saneamiento, inseguridad alimentaria y cuidado principal.";
+
   const isStepThreeComplete = Boolean(
-    isRecentIllnessesComplete && historical.vaccinationStatus
+    isRecentIllnessesComplete &&
+      historical.vaccinationStatus &&
+      isSupplementationComplete &&
+      isSocialDeterminantsComplete
   );
 
   const isStepFourComplete = Boolean(
@@ -603,6 +715,61 @@ export const HistoricalForm = () => {
                 </p>
               </div>
 
+              <div className="space-y-3 rounded-lg border border-nutri-light-grey bg-nutri-off-white/40 p-3">
+                <p className="text-sm font-semibold text-nutri-dark-grey">
+                  Recordatorio de 24 horas simplificado
+                </p>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {DIET_RECALL_SLOTS.map((slot) => (
+                    <div key={slot.id} className="space-y-1.5">
+                      <label className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/80">
+                        {slot.label}
+                      </label>
+                      <input
+                        type="text"
+                        disabled={!isFormEnabled}
+                        value={recall24h[slot.id] ?? ""}
+                        onChange={(event) => setDietRecall(slot.id, event.target.value)}
+                        className="nutri-input"
+                        placeholder="Alimentos y porcion aproximada"
+                      />
+                    </div>
+                  ))}
+                </div>
+                {recall24hError && (
+                  <p className="text-xs font-medium text-nutri-secondary">{recall24hError}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <SingleSelectOptionGroup
+                  label="Azucar/sal anadida en preparaciones del nino"
+                  value={historical.addedSugarSalt}
+                  options={YES_NO_OPTIONS}
+                  columnsClassName="grid-cols-2"
+                  disabled={!isFormEnabled}
+                  onChange={(value) =>
+                    setField(
+                      "addedSugarSalt",
+                      value as HistoricalFormState["addedSugarSalt"]
+                    )
+                  }
+                />
+                <input
+                  type="text"
+                  disabled={!isFormEnabled || historical.addedSugarSalt !== "SI"}
+                  value={historical.addedSugarSaltFrequency ?? ""}
+                  onChange={(event) => setField("addedSugarSaltFrequency", event.target.value)}
+                  className="nutri-input"
+                  placeholder="Frecuencia: ej. 3 veces por semana"
+                />
+                {addedSugarSaltError && (
+                  <p className="text-xs font-medium text-nutri-secondary">
+                    {addedSugarSaltError}
+                  </p>
+                )}
+              </div>
+
               <SingleSelectOptionGroup
                 label="Apetito habitual"
                 value={historical.appetiteLevel}
@@ -691,6 +858,177 @@ export const HistoricalForm = () => {
                 )
               }
             />
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-nutri-dark-grey">
+                Alergias/intolerancias alimentarias
+              </label>
+              <input
+                type="text"
+                disabled={!isFormEnabled}
+                value={historical.foodAllergiesOrIntolerances ?? ""}
+                onChange={(event) =>
+                  setField("foodAllergiesOrIntolerances", event.target.value)
+                }
+                className="nutri-input"
+                placeholder="Ej: alergia a proteina de leche de vaca"
+              />
+            </div>
+
+            <div className="space-y-3 rounded-lg border border-nutri-light-grey bg-nutri-off-white/40 p-3">
+              <MultiSelectOptionGroup
+                label="Suplementacion actual"
+                values={supplementationValues}
+                options={SUPPLEMENT_OPTIONS}
+                exclusiveOptions={["NINGUNO"]}
+                columnsClassName="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                disabled={!isFormEnabled}
+                onChange={(value) => setField("currentSupplementation", value)}
+              />
+              <input
+                type="text"
+                disabled={!isFormEnabled || !supplementationValues.includes("OTROS")}
+                value={historical.currentSupplementationOther ?? ""}
+                onChange={(event) =>
+                  setField("currentSupplementationOther", event.target.value)
+                }
+                className={cn(
+                  "nutri-input",
+                  supplementationValues.includes("OTROS") &&
+                    !historical.currentSupplementationOther?.trim() &&
+                    "border-nutri-secondary"
+                )}
+                placeholder="Especificar suplemento en OTROS"
+              />
+              {supplementationError && (
+                <p className="text-xs font-medium text-nutri-secondary">
+                  {supplementationError}
+                </p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-nutri-dark-grey">
+                  Desparasitacion (ultima fecha)
+                </label>
+                <input
+                  type="date"
+                  disabled={!isFormEnabled}
+                  value={historical.dewormingLastDate ?? ""}
+                  onChange={(event) => setField("dewormingLastDate", event.target.value)}
+                  className="nutri-input"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-nutri-dark-grey">
+                  Medicamentos actuales
+                </label>
+                <input
+                  type="text"
+                  disabled={!isFormEnabled}
+                  value={historical.currentMedications ?? ""}
+                  onChange={(event) => setField("currentMedications", event.target.value)}
+                  className="nutri-input"
+                  placeholder="Ej: antibiotico, antipiretico, ninguno"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4 rounded-lg border border-nutri-light-grey bg-nutri-off-white/40 p-3">
+              <p className="text-sm font-semibold text-nutri-dark-grey">Entorno del hogar</p>
+
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <SingleSelectOptionGroup
+                  label="Acceso a agua segura"
+                  value={historical.safeWaterAccess}
+                  options={YES_NO_OPTIONS}
+                  columnsClassName="grid-cols-2"
+                  disabled={!isFormEnabled}
+                  onChange={(value) =>
+                    setField("safeWaterAccess", value as HistoricalFormState["safeWaterAccess"])
+                  }
+                />
+
+                <SingleSelectOptionGroup
+                  label="Saneamiento basico"
+                  value={historical.basicSanitation}
+                  options={YES_NO_OPTIONS}
+                  columnsClassName="grid-cols-2"
+                  disabled={!isFormEnabled}
+                  onChange={(value) =>
+                    setField("basicSanitation", value as HistoricalFormState["basicSanitation"])
+                  }
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <SingleSelectOptionGroup
+                  label="Inseguridad alimentaria: en el ultimo mes falto comida en casa?"
+                  value={historical.foodInsecurityConcern}
+                  options={YES_NO_OPTIONS}
+                  columnsClassName="grid-cols-2"
+                  disabled={!isFormEnabled}
+                  onChange={(value) =>
+                    setField(
+                      "foodInsecurityConcern",
+                      value as HistoricalFormState["foodInsecurityConcern"]
+                    )
+                  }
+                />
+
+                <SingleSelectOptionGroup
+                  label="Inseguridad alimentaria: algun cuidador redujo/omitio comidas por falta de alimentos?"
+                  value={historical.foodInsecurityMealSkip}
+                  options={YES_NO_OPTIONS}
+                  columnsClassName="grid-cols-2"
+                  disabled={!isFormEnabled}
+                  onChange={(value) =>
+                    setField(
+                      "foodInsecurityMealSkip",
+                      value as HistoricalFormState["foodInsecurityMealSkip"]
+                    )
+                  }
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <SingleSelectOptionGroup
+                  label="Cuidador principal"
+                  value={historical.primaryCaregiver}
+                  options={PRIMARY_CAREGIVER_OPTIONS}
+                  columnsClassName="grid-cols-1 sm:grid-cols-2"
+                  disabled={!isFormEnabled}
+                  onChange={(value) =>
+                    setField(
+                      "primaryCaregiver",
+                      value as HistoricalFormState["primaryCaregiver"]
+                    )
+                  }
+                />
+
+                <SingleSelectOptionGroup
+                  label="Asiste a guarderia"
+                  value={historical.daycareAttendance}
+                  options={YES_NO_OPTIONS}
+                  columnsClassName="grid-cols-2"
+                  disabled={!isFormEnabled}
+                  onChange={(value) =>
+                    setField(
+                      "daycareAttendance",
+                      value as HistoricalFormState["daycareAttendance"]
+                    )
+                  }
+                />
+              </div>
+
+              {socialDeterminantsError && (
+                <p className="text-xs font-medium text-nutri-secondary">
+                  {socialDeterminantsError}
+                </p>
+              )}
+            </div>
           </div>
         )}
 

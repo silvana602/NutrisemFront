@@ -8,6 +8,7 @@ import { FilterBar } from "../../molecules/FilterBar";
 import { PatientsTable } from "../../molecules/PatientsTable";
 import { Pagination } from "../../atoms/Pagination";
 import { calculateAge } from "@/lib/utils";
+import { calculateAgeInMonths } from "@/lib/pediatricAge";
 
 import { seedOnce, db } from "@/mocks/db";
 import type { Guardian, History } from "@/types";
@@ -18,6 +19,7 @@ export type PatientRow = {
   guardian: string;
   ci: string;
   age: number;
+  ageMonths: number;
   sex: "M" | "F";
   lastConsult: string;
 };
@@ -63,6 +65,7 @@ export const PatientsListContent: React.FC = () => {
         guardian: guardian ? `${guardian.firstName} ${guardian.lastName}` : "-",
         ci: p.identityNumber,
         age: calculateAge(p.birthDate),
+        ageMonths: calculateAgeInMonths(p.birthDate),
         sex: p.gender === "male" ? "M" : "F",
         lastConsult: lastHistory
           ? lastHistory.creationDate.toLocaleDateString()
@@ -78,9 +81,11 @@ export const PatientsListContent: React.FC = () => {
       if (q && !r.name.toLowerCase().includes(q) && !r.ci.includes(q)) return false;
       if (sexFilter !== "all" && r.sex !== sexFilter) return false;
       if (ageFilter !== "all") {
-        const [min, max] =
-          ageFilter === "16+" ? [16, Infinity] : ageFilter.split("-").map(Number);
-        if (r.age < min || r.age > max) return false;
+        const [rawMin, rawMax] = ageFilter.replace("m", "").split("-");
+        const min = Number(rawMin);
+        const max = Number(rawMax);
+        if (!Number.isFinite(min) || !Number.isFinite(max)) return false;
+        if (r.ageMonths < min || r.ageMonths > max) return false;
       }
       return true;
     });

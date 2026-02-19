@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useConsultationStore } from "@/store/useConsultationStore";
 import { validateRange } from "@/utils/validators";
 import { ValidatedInput } from "@/components/ui/ValidatedInput";
@@ -48,14 +48,14 @@ export const AnthropometricForm = () => {
     setAnthropometricValidity,
   } = useConsultationStore();
 
-  const [values, setValues] = useState<Partial<Record<EditableAnthroField, string>>>(
-    toEditableValues(anthropometric)
-  );
-  const [errors, setErrors] = useState<Partial<Record<EditableAnthroField, string>>>(
-    {}
-  );
+  const patientKey = selectedPatientId ?? "__no-patient__";
+  const [valuesByPatient, setValuesByPatient] = useState<
+    Record<string, Partial<Record<EditableAnthroField, string>>>
+  >({});
+  const [errorsByPatient, setErrorsByPatient] = useState<
+    Record<string, Partial<Record<EditableAnthroField, string>>>
+  >({});
 
-  const previousPatientIdRef = useRef<string | null>(selectedPatientId);
   const isPatientSelected = Boolean(selectedPatientId);
   const selectedPatient = useMemo(
     () => db.patients.find((patient) => patient.patientId === selectedPatientId) ?? null,
@@ -68,14 +68,8 @@ export const AnthropometricForm = () => {
   const isTargetAgeSelected =
     selectedPatientAgeMonths !== null && isTargetPediatricAge(selectedPatientAgeMonths);
   const isFormEnabled = isPatientSelected && isTargetAgeSelected;
-
-  useEffect(() => {
-    if (previousPatientIdRef.current === selectedPatientId) return;
-
-    previousPatientIdRef.current = selectedPatientId;
-    setValues(toEditableValues(useConsultationStore.getState().anthropometric));
-    setErrors({});
-  }, [selectedPatientId]);
+  const values = valuesByPatient[patientKey] ?? toEditableValues(anthropometric);
+  const errors = errorsByPatient[patientKey] ?? {};
 
   const handleChange = (
     key: EditableAnthroField,
@@ -86,11 +80,23 @@ export const AnthropometricForm = () => {
   ) => {
     if (!isFormEnabled) return;
 
-    setValues((prev) => ({ ...prev, [key]: rawValue }));
+    setValuesByPatient((prev) => ({
+      ...prev,
+      [patientKey]: {
+        ...(prev[patientKey] ?? toEditableValues(anthropometric)),
+        [key]: rawValue,
+      },
+    }));
 
     const trimmed = rawValue.trim();
     if (!trimmed) {
-      setErrors((prev) => ({ ...prev, [key]: "Campo requerido" }));
+      setErrorsByPatient((prev) => ({
+        ...prev,
+        [patientKey]: {
+          ...(prev[patientKey] ?? {}),
+          [key]: "Campo requerido",
+        },
+      }));
       setAnthropometric({ [key]: undefined });
       return;
     }
@@ -99,13 +105,25 @@ export const AnthropometricForm = () => {
     const value = parseFloat(normalized);
 
     if (isNaN(value)) {
-      setErrors((prev) => ({ ...prev, [key]: "Numero invalido" }));
+      setErrorsByPatient((prev) => ({
+        ...prev,
+        [patientKey]: {
+          ...(prev[patientKey] ?? {}),
+          [key]: "Numero invalido",
+        },
+      }));
       setAnthropometric({ [key]: undefined });
       return;
     }
 
     const error = validateRange(value, min, max, label);
-    setErrors((prev) => ({ ...prev, [key]: error ?? undefined }));
+    setErrorsByPatient((prev) => ({
+      ...prev,
+      [patientKey]: {
+        ...(prev[patientKey] ?? {}),
+        [key]: error ?? undefined,
+      },
+    }));
 
     if (!error) {
       setAnthropometric({ [key]: value });
