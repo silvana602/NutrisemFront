@@ -1,30 +1,21 @@
 "use client";
 
 import { ArrowLeft, Home } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { ErrorPageTemplate } from "@/components/ui/ErrorPageTemplate";
-import { resolveHomePathFromSession } from "@/lib/auth/navigation";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useErrorPageActions } from "@/hooks/useErrorPageActions";
 
 const NOT_FOUND_MESSAGE =
   "\u00A1Emergencia! La ambulancia tom\u00F3 un camino equivocado y no encontramos el destino.";
 
 export default function NotFound() {
-  const router = useRouter();
-  const user = useAuthStore((state) => state.user);
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const { goBackOrHome, goHome } = useErrorPageActions();
 
   const handleBack = () => {
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back();
-      return;
-    }
-
-    router.push(resolveHomePathFromSession({ user, accessToken }));
+    goBackOrHome();
   };
 
   const handleGoHome = () => {
-    router.push(resolveHomePathFromSession({ user, accessToken }));
+    goHome();
   };
 
   return (

@@ -1,46 +1,45 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import AlertDialog from "@/components/ui/AlertDialog";
 import Avatar from "@/components/ui/Avatar";
+import { logoutClient } from "@/lib/auth/client";
+import { resolveDashboardPathByRole } from "@/lib/auth/roleRouting";
+import { cn } from "@/lib/utils";
+import { db } from "@/mocks/db";
 import { useAuthStore } from "@/store/useAuthStore";
 import { UserRole } from "@/types/user";
-import AlertDialog from "@/components/ui/AlertDialog";
-import { db } from "@/mocks/db";
-import { cn } from "@/lib/utils";
-import { logoutClient } from "@/lib/auth/client";
 
 export default function UserMenu() {
   const router = useRouter();
-
-  const user = useAuthStore((s) => s.user);
-  const activeRole = useAuthStore((s) => s.activeRole);
-  const setActiveRole = useAuthStore((s) => s.setActiveRole);
-  const logout = useAuthStore((s) => s.clearSession);
+  const user = useAuthStore((state) => state.user);
+  const activeRole = useAuthStore((state) => state.activeRole);
+  const setActiveRole = useAuthStore((state) => state.setActiveRole);
+  const clearSession = useAuthStore((state) => state.clearSession);
 
   const [open, setOpen] = useState(false);
-
-  // 🔴 NUEVO: alertas separadas
   const [showPatientAlert, setShowPatientAlert] = useState(false);
   const [showClinicianAlert, setShowClinicianAlert] = useState(false);
-
-  const ref = useRef<HTMLDivElement | null>(null);
-  const btnRef = useRef<HTMLButtonElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const close = useCallback(() => setOpen(false), []);
 
   useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
+    const handleClick = (event: MouseEvent) => {
       if (
-        !ref.current?.contains(e.target as Node) &&
-        !btnRef.current?.contains(e.target as Node)
+        !menuRef.current?.contains(event.target as Node) &&
+        !buttonRef.current?.contains(event.target as Node)
       ) {
         close();
       }
     };
 
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        close();
+      }
     };
 
     document.addEventListener("mousedown", handleClick);
@@ -54,34 +53,22 @@ export default function UserMenu() {
 
   if (!user) return null;
 
-  /* =========================
-     VALIDACIONES DE ACCESO
-  ========================= */
-
   const canAccessPatientPanel = () =>
-    db.patients.some((p) => p.userId === user.userId);
+    db.patients.some((patient) => patient.userId === user.userId);
 
-  // 🔴 NUEVO
-  const canAccessClinicianPanel = () =>
-    Boolean(useAuthStore.getState().clinician);
-
-  /* =========================
-     ACCIONES
-  ========================= */
+  const canAccessClinicianPanel = () => Boolean(useAuthStore.getState().clinician);
 
   const onLogout = async () => {
-    await logoutClient(logout);
+    await logoutClient(clearSession);
     router.replace("/");
   };
 
-  const switchPanel = (role: UserRole, path: string) => {
-    // 🔴 VALIDACIÓN PACIENTE
+  const switchPanel = (role: UserRole) => {
     if (role === UserRole.patient && !canAccessPatientPanel()) {
       setShowPatientAlert(true);
       return;
     }
 
-    // 🔴 VALIDACIÓN CLINICIAN
     if (role === UserRole.clinician && !canAccessClinicianPanel()) {
       setShowClinicianAlert(true);
       return;
@@ -89,81 +76,61 @@ export default function UserMenu() {
 
     setActiveRole(role);
     close();
-    router.push(path);
+    router.push(resolveDashboardPathByRole(role));
   };
 
   const isAdmin = user.role === UserRole.admin;
   const isClinician = user.role === UserRole.clinician;
 
   return (
-    <div ref={ref} className="relative">
-      {/* Trigger */}
+    <div ref={menuRef} className="relative">
       <button
-        ref={btnRef}
-        onClick={() => setOpen((v) => !v)}
-        className="
-          flex items-center gap-2
-          rounded-xl
-          bg-[var(--color-nutri-white)]
-          px-2 py-1
-          shadow-sm
-          hover:shadow-md
-          transition-shadow
-        "
+        ref={buttonRef}
+        onClick={() => setOpen((previous) => !previous)}
+        className="flex items-center gap-2 rounded-xl bg-[var(--color-nutri-white)] px-2 py-1 shadow-sm transition-shadow hover:shadow-md"
       >
         <Avatar name={`${user.firstName} ${user.lastName}`} size={32} />
       </button>
 
-      {/* Menu */}
       {open && (
         <div className="absolute right-0 z-50 mt-2 w-[min(18rem,calc(100vw-1rem))] rounded-xl border border-nutri-light-grey bg-nutri-white/95 shadow-sm">
-          {/* ADMIN */}
           {isAdmin && (
             <>
               <MenuButton
                 active={activeRole === UserRole.admin}
-                onClick={() => switchPanel(UserRole.admin, "/dashboard/admin")}
+                onClick={() => switchPanel(UserRole.admin)}
               >
-                Panel de Administración
+                Panel de Administracion
               </MenuButton>
 
               <MenuButton
                 active={activeRole === UserRole.clinician}
-                onClick={() =>
-                  switchPanel(UserRole.clinician, "/dashboard/clinician")
-                }
+                onClick={() => switchPanel(UserRole.clinician)}
               >
                 Panel del Salubrista
               </MenuButton>
 
               <MenuButton
                 active={activeRole === UserRole.patient}
-                onClick={() =>
-                  switchPanel(UserRole.patient, "/dashboard/patient")
-                }
+                onClick={() => switchPanel(UserRole.patient)}
               >
                 Panel de Paciente
               </MenuButton>
             </>
           )}
 
-          {/* CLINICIAN */}
           {isClinician && (
             <>
               <MenuButton
                 active={activeRole === UserRole.clinician}
-                onClick={() =>
-                  switchPanel(UserRole.clinician, "/dashboard/clinician")
-                }
+                onClick={() => switchPanel(UserRole.clinician)}
               >
                 Mi Panel Profesional
               </MenuButton>
 
               <MenuButton
                 active={activeRole === UserRole.patient}
-                onClick={() =>
-                  switchPanel(UserRole.patient, "/dashboard/patient")
-                }
+                onClick={() => switchPanel(UserRole.patient)}
               >
                 Mi Panel Personal
               </MenuButton>
@@ -172,17 +139,15 @@ export default function UserMenu() {
 
           <div className="my-2 h-px bg-nutri-light-grey" />
 
-          {/* LOGOUT */}
           <button
             onClick={onLogout}
             className="mx-3 my-1 flex w-[calc(100%-1.5rem)] items-center rounded-xl px-6 py-3 text-left text-sm font-medium text-nutri-dark-grey transition-all duration-150 hover:bg-nutri-off-white"
           >
-            Cerrar sesión
+            Cerrar sesion
           </button>
         </div>
       )}
 
-      {/* ALERTA PACIENTE */}
       <AlertDialog
         open={showPatientAlert}
         title="Paciente no registrado"
@@ -190,7 +155,6 @@ export default function UserMenu() {
         onClose={() => setShowPatientAlert(false)}
       />
 
-      {/* 🔴 ALERTA CLINICIAN */}
       <AlertDialog
         open={showClinicianAlert}
         title="Salubrista no registrado"
@@ -201,9 +165,6 @@ export default function UserMenu() {
   );
 }
 
-/* =========================
-   MenuButton
-========================= */
 function MenuButton({
   onClick,
   children,

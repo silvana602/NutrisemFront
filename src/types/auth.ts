@@ -1,39 +1,33 @@
-// Importamos tus tipos reales
-import type { User } from "./user";
 import type { Clinician } from "./clinician";
+import type { User } from "./user";
 
-// Respuesta estándar de autenticación en Nutrisem
-export interface AuthResponse {
-    accessToken: string | null;
-    user: User;        // Usuario del sistema (admin o clinician)
-    clinician?: Clinician; // Solo si el rol es clinician
+export interface AuthSessionResponse {
+  user: User;
+  clinician?: Clinician | null;
 }
 
-// DTO para login
+// Mantiene compatibilidad con codigo legacy que aun usa accessToken.
+export interface AuthResponse extends AuthSessionResponse {
+  accessToken?: string | null;
+}
+
 export interface LoginDto {
-    identityCard: string;     // CI
-    password: string;  // contraseña
+  identityCard: string;
+  password: string;
 }
 
-// DTO para registro SOLO DE CLINICIANS
 export interface RegisterClinicianDto {
-    // Datos de User
-    password: string;      // contraseña
-    roleId: string;        // rol asignado (clinician)
-
-    // Datos de Profile
-    firstName: string;     // nombres
-    lastName: string;      // apellidos
-    identityCard: string;  // CI
-    phone: string;         // teléfono
-    address: string;       // dirección
-
-    // Datos de clinician
-    professionalId: string; // matrícula profesional
-    profession: string;     // profesión
-    specialty: string;      // especialidad
-    residence: string;      // residencia
-    institution: string;    // institución
-
-    confirmPassword: string;
+  password: string;
+  roleId: string;
+  firstName: string;
+  lastName: string;
+  identityCard: string;
+  phone: string;
+  address: string;
+  professionalId: string;
+  profession: string;
+  specialty: string;
+  residence: string;
+  institution: string;
+  confirmPassword: string;
 }

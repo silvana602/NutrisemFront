@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
+import {
+  ACCESS_TOKEN_COOKIE_NAME,
+  REFRESH_TOKEN_COOKIE_NAME,
+} from "@/lib/auth/constants";
 
 export async function POST() {
   try {
     const res = NextResponse.json({ ok: true });
     const isProd = process.env.NODE_ENV === "production";
 
-    res.cookies.set("accessToken", "", {
+    res.cookies.set(ACCESS_TOKEN_COOKIE_NAME, "", {
       httpOnly: true,
       sameSite: "lax",
       secure: isProd,
@@ -13,7 +17,7 @@ export async function POST() {
       path: "/",
     });
 
-    res.cookies.set("refreshToken", "", {
+    res.cookies.set(REFRESH_TOKEN_COOKIE_NAME, "", {
       httpOnly: true,
       sameSite: "lax",
       secure: isProd,

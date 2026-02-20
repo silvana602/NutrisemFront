@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sign } from "jsonwebtoken";
 import { db, seedOnce, getUserByCI } from "@/mocks/db";
 import { delay } from "@/mocks/utils";
-import type { AuthResponse } from "@/types/auth";
 import { UserRole } from "@/types";
+import type { Clinician } from "@/types/clinician";
+import {
+  ACCESS_TOKEN_COOKIE_NAME,
+  ACCESS_TOKEN_TTL_SECONDS,
+  REFRESH_TOKEN_COOKIE_NAME,
+  REFRESH_TOKEN_TTL_SECONDS,
+} from "@/lib/auth/constants";
+import { createAccessToken } from "@/lib/auth/token";
 
 seedOnce();
 
@@ -14,32 +20,6 @@ type LoginErrorBody = {
   field?: LoginField;
   fieldErrors?: Partial<Record<LoginField, string>>;
 };
-
-const ACCESS_TOKEN_TTL_SECONDS = 60 * 60;
-const REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7;
-
-function getJwtSecret(): string {
-  const configuredSecret = process.env.JWT_SECRET;
-
-  if (configuredSecret) {
-    return configuredSecret;
-  }
-
-  if (process.env.NODE_ENV !== "production") {
-    return "nutrisem-dev-only-secret";
-  }
-
-  throw new Error("JWT_SECRET no configurado en produccion");
-}
-
-function createAccessToken(userId: string, role: UserRole): string {
-  return sign({ role }, getJwtSecret(), {
-    subject: userId,
-    expiresIn: ACCESS_TOKEN_TTL_SECONDS,
-    issuer: "nutrisem",
-    audience: "nutrisem-web",
-  });
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -112,22 +92,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(body, { status: 401 });
     }
 
-    let clinicianData: AuthResponse["clinician"] = undefined;
+    let clinicianData: Clinician | null = null;
     if (user.role === UserRole.clinician) {
-      clinicianData = db.clinicians.find((h) => h.userId === user.userId);
+      clinicianData = db.clinicians.find((h) => h.userId === user.userId) ?? null;
     }
 
-    const accessToken = createAccessToken(user.userId, user.role);
+    const accessToken = await createAccessToken(user.userId, user.role);
 
-    const res = NextResponse.json<AuthResponse>({
-      accessToken,
+    const res = NextResponse.json({
       user,
-      clinician: clinicianData,
+      clinician: clinicianData ?? null,
     });
 
     const isProd = process.env.NODE_ENV === "production";
 
-    res.cookies.set("accessToken", accessToken, {
+    res.cookies.set(ACCESS_TOKEN_COOKIE_NAME, accessToken, {
       httpOnly: true,
       sameSite: "lax",
       secure: isProd,
@@ -135,7 +114,7 @@ export async function POST(req: NextRequest) {
       path: "/",
     });
 
-    res.cookies.set("refreshToken", `mock-refresh-${user.userId}`, {
+    res.cookies.set(REFRESH_TOKEN_COOKIE_NAME, `mock-refresh-${user.userId}`, {
       httpOnly: true,
       sameSite: "lax",
       secure: isProd,

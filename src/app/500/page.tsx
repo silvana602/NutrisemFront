@@ -1,18 +1,14 @@
 "use client";
 
 import { Home, RotateCcw } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { ErrorPageTemplate } from "@/components/ui/ErrorPageTemplate";
-import { resolveHomePathFromSession } from "@/lib/auth/navigation";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useErrorPageActions } from "@/hooks/useErrorPageActions";
 
 const SERVER_ERROR_MESSAGE =
   "Error de Laboratorio. Algo salio mal con la mezcla de datos. Por favor, intenta recargar el sistema m\u00E1s tarde";
 
 export default function InternalServerErrorPage() {
-  const router = useRouter();
-  const user = useAuthStore((state) => state.user);
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const { goHome } = useErrorPageActions();
 
   const handleReload = () => {
     if (typeof window !== "undefined") {
@@ -21,7 +17,7 @@ export default function InternalServerErrorPage() {
   };
 
   const handleGoHome = () => {
-    router.push(resolveHomePathFromSession({ user, accessToken }));
+    goHome();
   };
 
   return (

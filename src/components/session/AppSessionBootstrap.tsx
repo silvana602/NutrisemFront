@@ -1,17 +1,37 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useAuthStore } from "@/store/useAuthStore";
-import type { User } from "@/types/user";
 import type { Clinician } from "@/types/clinician";
+import type { User } from "@/types/user";
+import { useAuthStore } from "@/store/useAuthStore";
+
+type SessionResponse = {
+  user: User;
+  clinician?: Clinician | null;
+};
+
+async function fetchCurrentSession() {
+  const response = await fetch("/api/auth/me", {
+    method: "GET",
+    credentials: "include",
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const payload = (await response.json()) as SessionResponse;
+  if (!payload.user) return null;
+
+  return payload;
+}
 
 export default function AppSessionBootstrap() {
-  const hydrated = useAuthStore((s) => s.hydrated);
-  const setHydrated = useAuthStore((s) => s.setHydrated);
-
-  const setSession = useAuthStore((s) => s.setSession);
-  const clearSession = useAuthStore((s) => s.clearSession);
-
+  const hydrated = useAuthStore((state) => state.hydrated);
+  const setHydrated = useAuthStore((state) => state.setHydrated);
+  const setSession = useAuthStore((state) => state.setSession);
+  const clearSession = useAuthStore((state) => state.clearSession);
   const triedRef = useRef(false);
 
   useEffect(() => {
@@ -20,25 +40,18 @@ export default function AppSessionBootstrap() {
 
     (async () => {
       try {
-        const rawSession = localStorage.getItem("session");
+        const session = await fetchCurrentSession();
 
-        if (rawSession) {
-          const session = JSON.parse(rawSession) as {
-            accessToken: string | null;
-            user: User;
-            clinician?: Clinician | null;
-          };
-
+        if (session) {
           setSession({
-            accessToken: session.accessToken,
             user: session.user,
             clinician: session.clinician ?? null,
           });
         } else {
           clearSession();
         }
-      } catch (e) {
-        console.warn("Error en AppSessionBootstrap:", e);
+      } catch (error: unknown) {
+        console.warn("Error en AppSessionBootstrap:", error);
         clearSession();
       } finally {
         setHydrated(true);

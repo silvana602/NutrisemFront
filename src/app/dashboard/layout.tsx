@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import Sidebar from "@/components/layout/sidebar/Sidebar";
 import { LoadingButton } from "@/components/ui/Spinner";
@@ -25,13 +25,7 @@ function getRouteRole(pathname: string): UserRole | null {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { user, hydrated } = useAuthStore();
-
-  const search = searchParams?.toString() ?? "";
-  const pathWithQuery = pathname
-    ? `${pathname}${search ? `?${search}` : ""}`
-    : "/dashboard";
   const routeRole = getRouteRole(pathname ?? "");
   const hasRoleMismatch = Boolean(user && routeRole && user.role !== routeRole);
 
@@ -39,6 +33,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     if (!hydrated) return;
 
     if (!user) {
+      const pathWithQuery =
+        typeof window !== "undefined"
+          ? `${window.location.pathname}${window.location.search}`
+          : pathname ?? "/dashboard";
       router.replace(`/401?next=${encodeURIComponent(pathWithQuery)}`);
       return;
     }
@@ -46,7 +44,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     if (routeRole && user.role !== routeRole) {
       router.replace("/403");
     }
-  }, [hydrated, user, routeRole, router, pathWithQuery]);
+  }, [hydrated, user, routeRole, router, pathname]);
 
   if (!hydrated) {
     return (

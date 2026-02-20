@@ -1,8 +1,8 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { REFRESH_TOKEN_COOKIE_NAME } from "@/lib/auth/constants";
 
-// Ajusta si tu backend usa otro nombre de cookie para refresh
-export const REFRESH_COOKIE_NAME = "refreshToken";
+export const REFRESH_COOKIE_NAME = REFRESH_TOKEN_COOKIE_NAME;
 
 /**
  * Devuelve true si detectamos una sesión (ej. por refresh token en cookie HttpOnly).

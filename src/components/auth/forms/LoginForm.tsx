@@ -3,267 +3,90 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/Button";
-import { validateDocumentNumber, validateRequired } from "@/utils/validators";
-import type { User } from "@/types/user";
-import type { Clinician } from "@/types/clinician";
-
-type LoginField = "ci" | "password";
-type LoginErrors = Partial<Record<LoginField | "form", string>>;
-type LoginApiError = {
-  message?: string;
-  field?: string;
-  fieldErrors?: Partial<Record<LoginField, string>>;
-};
-type LoginSuccessResponse = {
-  accessToken: string;
-  user: User;
-  clinician?: Clinician | null;
-};
-
-type RememberedPasswords = Record<string, string>;
-
-const REMEMBERED_PASSWORDS_KEY = "nutrisem.rememberedPasswords";
-const LAST_REMEMBERED_CI_KEY = "nutrisem.lastRememberedCi";
-
-function readRememberedPasswords(): RememberedPasswords {
-  if (typeof window === "undefined") return {};
-
-  try {
-    const raw = localStorage.getItem(REMEMBERED_PASSWORDS_KEY);
-    if (!raw) return {};
-
-    const parsed = JSON.parse(raw) as unknown;
-    if (!parsed || typeof parsed !== "object") return {};
-
-    const remembered: RememberedPasswords = {};
-    for (const [key, value] of Object.entries(parsed as Record<string, unknown>)) {
-      if (
-        typeof key === "string" &&
-        key.trim() !== "" &&
-        typeof value === "string" &&
-        value !== ""
-      ) {
-        remembered[key] = value;
-      }
-    }
-
-    return remembered;
-  } catch {
-    return {};
-  }
-}
-
-function writeRememberedPasswords(passwords: RememberedPasswords) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(REMEMBERED_PASSWORDS_KEY, JSON.stringify(passwords));
-}
-
-function isLoginField(field: unknown): field is LoginField {
-  return field === "ci" || field === "password";
-}
-
-function mapApiErrors(payload: LoginApiError | null): Partial<LoginErrors> {
-  if (!payload) return {};
-
-  const mapped: Partial<LoginErrors> = {};
-
-  if (payload.fieldErrors) {
-    for (const [field, message] of Object.entries(payload.fieldErrors)) {
-      if (isLoginField(field) && typeof message === "string" && message) {
-        mapped[field] = message;
-      }
-    }
-  }
-
-  if (
-    isLoginField(payload.field) &&
-    typeof payload.message === "string" &&
-    payload.message
-  ) {
-    mapped[payload.field] = payload.message;
-  }
-
-  return mapped;
-}
-
-function validateLoginField(field: LoginField, value: string): string | null {
-  if (field === "ci") {
-    const requiredError = validateRequired(value, "La CI");
-    if (requiredError) return requiredError;
-    return validateDocumentNumber(value);
-  }
-
-  return validateRequired(value, "La contrasena");
-}
+import { useLoginMutation } from "@/hooks/auth/useLoginMutation";
+import {
+  useLoginFormValidation,
+  type LoginField,
+} from "@/hooks/auth/useLoginFormValidation";
+import {
+  clearRememberedCi,
+  readRememberedCi,
+  writeRememberedCi,
+} from "@/lib/auth/sessionStorageAdapter";
+import { resolveDashboardPathByRole } from "@/lib/auth/roleRouting";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export function LoginForm() {
-  const { setSession } = useAuthStore();
   const router = useRouter();
+  const currentUser = useAuthStore((state) => state.user);
+  const setSession = useAuthStore((state) => state.setSession);
+  const { loading, login } = useLoginMutation();
+  const {
+    errors,
+    touched,
+    setTouched,
+    clearAllErrors,
+    clearFormError,
+    validateField,
+    validateForm,
+    applyApiErrors,
+    setFormError,
+  } = useLoginFormValidation();
 
-  const [ci, setCi] = useState("");
+  const [ci, setCi] = useState(() => readRememberedCi());
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberPassword, setRememberPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<LoginErrors>({});
-  const [touched, setTouched] = useState<Partial<Record<LoginField, boolean>>>(
-    {}
-  );
+  const [rememberCi, setRememberCi] = useState(() => readRememberedCi() !== "");
 
   useEffect(() => {
-    const rememberedPasswords = readRememberedPasswords();
-    const lastRememberedCi = localStorage.getItem(LAST_REMEMBERED_CI_KEY) ?? "";
-    const rememberedPassword = rememberedPasswords[lastRememberedCi];
+    if (!currentUser) return;
+    router.replace(resolveDashboardPathByRole(currentUser.role));
+  }, [currentUser, router]);
 
-    if (!lastRememberedCi || !rememberedPassword) return;
-
-    setCi(lastRememberedCi);
-    setPassword(rememberedPassword);
-    setRememberPassword(true);
-  }, []);
-
-  const applyRememberedPassword = (nextCi: string) => {
-    const normalizedCi = nextCi.trim();
-    if (!normalizedCi) return;
-
-    const rememberedPassword = readRememberedPasswords()[normalizedCi];
-    if (!rememberedPassword) return;
-
-    setPassword(rememberedPassword);
-    setRememberPassword(true);
-    setErrors((prev) => ({
-      ...prev,
-      password: undefined,
-      form: undefined,
+  const handleFieldBlur = (field: LoginField, value: string) => {
+    setTouched((previous) => ({
+      ...previous,
+      [field]: true,
     }));
+    validateField(field, value);
   };
 
-  const setFieldError = (field: LoginField, value: string) => {
-    const fieldError = validateLoginField(field, value);
-    setErrors((prev) => ({
-      ...prev,
-      [field]: fieldError ?? undefined,
-    }));
-  };
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    clearAllErrors();
 
-  const validateForm = () => {
-    const ciError = validateLoginField("ci", ci);
-    const passwordError = validateLoginField("password", password);
-
-    setTouched({ ci: true, password: true });
-    setErrors((prev) => ({
-      ...prev,
-      ci: ciError ?? undefined,
-      password: passwordError ?? undefined,
-    }));
-
-    return !ciError && !passwordError;
-  };
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    setErrors((prev) => ({
-      ...prev,
-      ci: undefined,
-      password: undefined,
-      form: undefined,
-    }));
-    if (!validateForm()) return;
-
-    setLoading(true);
-
-    try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "/api";
-      const normalizedCi = ci.trim();
-      const res = await fetch(`${baseUrl}/auth/login`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ci: normalizedCi, password }),
-      });
-
-      if (!res.ok) {
-        let payload: LoginApiError | null = null;
-
-        try {
-          payload = (await res.json()) as LoginApiError;
-        } catch {
-          payload = null;
-        }
-
-        const apiErrors = mapApiErrors(payload);
-        if (Object.keys(apiErrors).length > 0) {
-          setTouched({ ci: true, password: true });
-          setErrors((prev) => ({
-            ...prev,
-            form: undefined,
-            ...apiErrors,
-          }));
-          return;
-        }
-
-        throw new Error(payload?.message ?? "No se pudo iniciar sesion");
-      }
-
-      const data = (await res.json()) as Partial<LoginSuccessResponse>;
-
-      if (!data.accessToken || !data.user) {
-        throw new Error("Respuesta de login invalida");
-      }
-
-      const sessionData = {
-        accessToken: data.accessToken,
-        user: data.user,
-        clinician: data.clinician || null,
-      };
-
-      setSession(sessionData);
-      localStorage.setItem("session", JSON.stringify(sessionData));
-      localStorage.setItem("accessToken", sessionData.accessToken);
-
-      if (normalizedCi) {
-        const rememberedPasswords = readRememberedPasswords();
-
-        if (rememberPassword && password) {
-          rememberedPasswords[normalizedCi] = password;
-          writeRememberedPasswords(rememberedPasswords);
-          localStorage.setItem(LAST_REMEMBERED_CI_KEY, normalizedCi);
-        } else {
-          if (normalizedCi in rememberedPasswords) {
-            delete rememberedPasswords[normalizedCi];
-            writeRememberedPasswords(rememberedPasswords);
-          }
-
-          if (localStorage.getItem(LAST_REMEMBERED_CI_KEY) === normalizedCi) {
-            localStorage.removeItem(LAST_REMEMBERED_CI_KEY);
-          }
-        }
-      }
-
-      const dashboardPath = (() => {
-        switch (data.user.role) {
-          case "admin":
-            return "/dashboard/admin";
-          case "clinician":
-            return "/dashboard/clinician";
-          case "patient":
-            return "/dashboard/patient";
-          default:
-            return "/";
-        }
-      })();
-
-      router.push(dashboardPath);
-    } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : "Error inesperado";
-      setErrors((prev) => ({ ...prev, form: message }));
-    } finally {
-      setLoading(false);
+    if (!validateForm({ ci, password })) {
+      return;
     }
+
+    const normalizedCi = ci.trim();
+    const result = await login({
+      ci: normalizedCi,
+      password,
+    });
+
+    if (!result.ok) {
+      applyApiErrors(result.fieldErrors);
+
+      if (result.formError && Object.keys(result.fieldErrors).length === 0) {
+        setFormError(result.formError);
+      }
+      return;
+    }
+
+    setSession({
+      user: result.data.user,
+      clinician: result.data.clinician ?? null,
+    });
+
+    if (rememberCi) {
+      writeRememberedCi(normalizedCi);
+    } else {
+      clearRememberedCi();
+    }
+
+    router.push(resolveDashboardPathByRole(result.data.user.role));
   }
 
   return (
@@ -278,23 +101,19 @@ export function LoginForm() {
           type="text"
           value={ci}
           autoComplete="username"
-          onChange={(e) => {
-            const value = e.target.value;
+          onChange={(event) => {
+            const value = event.target.value;
             setCi(value);
-            applyRememberedPassword(value);
 
             if (touched.ci) {
-              setFieldError("ci", value);
+              validateField("ci", value);
             }
 
             if (errors.form) {
-              setErrors((prev) => ({ ...prev, form: undefined }));
+              clearFormError();
             }
           }}
-          onBlur={() => {
-            setTouched((prev) => ({ ...prev, ci: true }));
-            setFieldError("ci", ci);
-          }}
+          onBlur={() => handleFieldBlur("ci", ci)}
           aria-invalid={Boolean(errors.ci)}
           aria-describedby={errors.ci ? "login-ci-error" : undefined}
           maxLength={20}
@@ -322,22 +141,19 @@ export function LoginForm() {
             type={showPassword ? "text" : "password"}
             value={password}
             autoComplete="current-password"
-            onChange={(e) => {
-              const value = e.target.value;
+            onChange={(event) => {
+              const value = event.target.value;
               setPassword(value);
 
               if (touched.password) {
-                setFieldError("password", value);
+                validateField("password", value);
               }
 
               if (errors.form) {
-                setErrors((prev) => ({ ...prev, form: undefined }));
+                clearFormError();
               }
             }}
-            onBlur={() => {
-              setTouched((prev) => ({ ...prev, password: true }));
-              setFieldError("password", password);
-            }}
+            onBlur={() => handleFieldBlur("password", password)}
             aria-invalid={Boolean(errors.password)}
             aria-describedby={errors.password ? "login-password-error" : undefined}
             className="nutri-input pr-10"
@@ -345,7 +161,7 @@ export function LoginForm() {
           />
           <button
             type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
+            onClick={() => setShowPassword((previous) => !previous)}
             aria-label={showPassword ? "Ocultar contrasena" : "Mostrar contrasena"}
             className="absolute right-2.5 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-md p-1 text-nutri-secondary transition-colors hover:text-nutri-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nutri-secondary/35"
           >
@@ -368,11 +184,11 @@ export function LoginForm() {
       <label className="flex items-center gap-2 text-sm text-nutri-dark-grey">
         <input
           type="checkbox"
-          checked={rememberPassword}
-          onChange={(e) => setRememberPassword(e.target.checked)}
+          checked={rememberCi}
+          onChange={(event) => setRememberCi(event.target.checked)}
           className="h-4 w-4 cursor-pointer rounded border-nutri-light-grey accent-nutri-primary"
         />
-        <span>Recordar contrasena</span>
+        <span>Recordar CI en esta sesion</span>
       </label>
 
       {errors.form && (

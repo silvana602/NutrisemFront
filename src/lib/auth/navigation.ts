@@ -1,27 +1,8 @@
 type SessionLike = {
-  user: unknown;
-  accessToken: string | null;
+  user: unknown | null;
 };
 
-export function hasStoredSession() {
-  if (typeof window === "undefined") return false;
-
-  try {
-    const raw = localStorage.getItem("session");
-    if (!raw) return false;
-
-    const parsed = JSON.parse(raw) as {
-      accessToken?: string | null;
-      user?: unknown;
-    };
-
-    return Boolean(parsed.accessToken && parsed.user);
-  } catch {
-    return false;
-  }
-}
-
-export function resolveHomePathFromSession({ user, accessToken }: SessionLike) {
-  if (user && accessToken) return "/dashboard";
-  return hasStoredSession() ? "/dashboard" : "/";
+export function resolveHomePathFromSession({ user }: SessionLike) {
+  if (user) return "/dashboard";
+  return "/";
 }

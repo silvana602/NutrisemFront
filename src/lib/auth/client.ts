@@ -7,6 +7,7 @@ const LEGACY_SESSION_STORE_KEY = "nutrisem-session";
 function clearClientSessionStorage() {
   if (typeof window === "undefined") return;
 
+  // Limpia llaves legacy del esquema anterior basado en localStorage.
   localStorage.removeItem(SESSION_STORAGE_KEY);
   localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
   localStorage.removeItem(LEGACY_SESSION_STORE_KEY);

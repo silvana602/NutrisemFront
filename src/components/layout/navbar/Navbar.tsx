@@ -19,6 +19,7 @@ import { db } from "@/mocks/db";
 import { useAuthStore } from "@/store/useAuthStore";
 import { UserRole } from "@/types/user";
 import { logoutClient } from "@/lib/auth/client";
+import { resolveDashboardPathByRole } from "@/lib/auth/roleRouting";
 
 function buildNext(pathname: string | null, qs: string): string | "" {
   if (!pathname) return "";
@@ -67,7 +68,7 @@ export const Navbar = () => {
 
   const canAccessClinicianPanel = () => Boolean(clinician);
 
-  const switchPanel = (role: UserRole, path: string) => {
+  const switchPanel = (role: UserRole) => {
     if (!user) return;
 
     if (role === UserRole.patient && !canAccessPatientPanel()) {
@@ -82,7 +83,7 @@ export const Navbar = () => {
 
     setActiveRole(role);
     mobile.onClose();
-    router.push(path);
+    router.push(resolveDashboardPathByRole(role));
   };
 
   const onLogout = async () => {
@@ -194,7 +195,7 @@ export const Navbar = () => {
               {isAdmin && (
                 <>
                   <button
-                    onClick={() => switchPanel(UserRole.admin, "/dashboard/admin")}
+                    onClick={() => switchPanel(UserRole.admin)}
                     className={cn(
                       "block w-full rounded-lg px-4 py-2 text-left text-sm transition-colors",
                       currentRole === UserRole.admin
@@ -206,7 +207,7 @@ export const Navbar = () => {
                   </button>
 
                   <button
-                    onClick={() => switchPanel(UserRole.clinician, "/dashboard/clinician")}
+                    onClick={() => switchPanel(UserRole.clinician)}
                     className={cn(
                       "block w-full rounded-lg px-4 py-2 text-left text-sm transition-colors",
                       currentRole === UserRole.clinician
@@ -218,7 +219,7 @@ export const Navbar = () => {
                   </button>
 
                   <button
-                    onClick={() => switchPanel(UserRole.patient, "/dashboard/patient")}
+                    onClick={() => switchPanel(UserRole.patient)}
                     className={cn(
                       "block w-full rounded-lg px-4 py-2 text-left text-sm transition-colors",
                       currentRole === UserRole.patient
@@ -234,7 +235,7 @@ export const Navbar = () => {
               {isClinician && (
                 <>
                   <button
-                    onClick={() => switchPanel(UserRole.clinician, "/dashboard/clinician")}
+                    onClick={() => switchPanel(UserRole.clinician)}
                     className={cn(
                       "block w-full rounded-lg px-4 py-2 text-left text-sm transition-colors",
                       currentRole === UserRole.clinician
@@ -246,7 +247,7 @@ export const Navbar = () => {
                   </button>
 
                   <button
-                    onClick={() => switchPanel(UserRole.patient, "/dashboard/patient")}
+                    onClick={() => switchPanel(UserRole.patient)}
                     className={cn(
                       "block w-full rounded-lg px-4 py-2 text-left text-sm transition-colors",
                       currentRole === UserRole.patient

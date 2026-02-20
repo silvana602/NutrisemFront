@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nutrisem Front
 
-## Getting Started
+Aplicacion web de monitoreo nutricional pediatrico construida con Next.js (App Router), React y TypeScript.
 
-First, run the development server:
+## Requisitos
+
+- Node.js 20+
+- npm 11+
+
+## Package Manager Oficial
+
+Este repositorio usa **npm** como package manager oficial.
+
+## Variables de Entorno
+
+Crear `.env.local` con:
+
+```env
+NODE_ENV=development
+PORT=3000
+NEXT_PUBLIC_API_URL=http://localhost:3000/api
+# Recomendado en todos los entornos:
+JWT_SECRET=tu_secreto_seguro
+```
+
+Notas:
+- `JWT_SECRET` es obligatorio en produccion.
+- `NEXT_PUBLIC_API_URL` por defecto puede apuntar a `/api` en el mismo host.
+
+## Scripts
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm run start
+npm run lint
+npm run test
+npm run test:unit
+npm run test:integration
+npm run test:e2e
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Para e2e (primera vez):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npx playwright install chromium
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Flujo de Autenticacion
 
-## Learn More
+1. Login en `POST /api/auth/login`.
+2. El servidor valida credenciales y emite cookies `httpOnly`:
+   - `accessToken`
+   - `refreshToken`
+3. El cliente **no** guarda JWT en `localStorage`.
+4. En arranque, `AppSessionBootstrap` consulta `GET /api/auth/me` para hidratar usuario en store.
+5. `middleware.ts` verifica JWT de forma criptografica y valida permisos de ruta por rol.
+6. Logout en `POST /api/auth/logout` limpiando cookies en servidor.
 
-To learn more about Next.js, take a look at the following resources:
+## Estructura Principal
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```text
+src/
+  app/
+    (auth)/
+    api/auth/
+    dashboard/
+  components/
+    auth/
+    layout/
+    organisms/
+    ui/
+  hooks/
+    auth/
+  lib/
+    auth/
+  mocks/
+  store/
+  types/
+  utils/
+middleware.ts
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Testing
 
-## Deploy on Vercel
+- Unit tests: `tests/unit`
+- Integration tests: `tests/integration`
+- E2E tests: `tests/e2e`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Cobertura minima agregada:
+- validadores y utilidades de token seguro.
+- integracion de `POST /api/auth/login`.
+- flujo e2e de login con redireccion por rol.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Convenciones
+
+- Mantener componentes de UI enfocados en render y handlers minimos.
+- Mover logica reutilizable a `hooks/` y `lib/`.
+- Evitar persistir datos sensibles en storage del navegador.
