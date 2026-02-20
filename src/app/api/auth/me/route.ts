@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db, getUserById, seedOnce } from "@/mocks/db";
 import { UserRole } from "@/types/user";
 import { ACCESS_TOKEN_COOKIE_NAME } from "@/lib/auth/constants";
+import { sanitizeUser } from "@/lib/auth/sanitizeUser";
 import { verifyAccessToken } from "@/lib/auth/token";
 
 seedOnce();
@@ -40,7 +41,7 @@ export async function GET(req: NextRequest) {
         : null;
 
     return NextResponse.json({
-      user,
+      user: sanitizeUser(user),
       clinician,
     });
   } catch (error: unknown) {

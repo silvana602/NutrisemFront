@@ -9,6 +9,7 @@ import {
   REFRESH_TOKEN_COOKIE_NAME,
   REFRESH_TOKEN_TTL_SECONDS,
 } from "@/lib/auth/constants";
+import { sanitizeUser } from "@/lib/auth/sanitizeUser";
 import { createAccessToken } from "@/lib/auth/token";
 
 seedOnce();
@@ -100,7 +101,7 @@ export async function POST(req: NextRequest) {
     const accessToken = await createAccessToken(user.userId, user.role);
 
     const res = NextResponse.json({
-      user,
+      user: sanitizeUser(user),
       clinician: clinicianData ?? null,
     });
 
