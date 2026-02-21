@@ -10,9 +10,9 @@ import {
   type LoginField,
 } from "@/hooks/auth/useLoginFormValidation";
 import {
-  clearRememberedCi,
-  readRememberedCi,
-  writeRememberedCi,
+  clearRememberedCredentials,
+  readRememberedCredentials,
+  writeRememberedCredentials,
 } from "@/lib/auth/sessionStorageAdapter";
 import { resolveDashboardPathByRole } from "@/lib/auth/roleRouting";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -34,10 +34,14 @@ export function LoginForm() {
     setFormError,
   } = useLoginFormValidation();
 
-  const [ci, setCi] = useState(() => readRememberedCi());
-  const [password, setPassword] = useState("");
+  const [rememberedCredentials] = useState(() => readRememberedCredentials());
+  const [ci, setCi] = useState(() => rememberedCredentials.ci);
+  const [password, setPassword] = useState(() => rememberedCredentials.password);
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberCi, setRememberCi] = useState(() => readRememberedCi() !== "");
+  const [rememberCredentials, setRememberCredentials] = useState(
+    () =>
+      rememberedCredentials.ci !== "" || rememberedCredentials.password !== ""
+  );
 
   useEffect(() => {
     if (!currentUser) return;
@@ -80,10 +84,13 @@ export function LoginForm() {
       clinician: result.data.clinician ?? null,
     });
 
-    if (rememberCi) {
-      writeRememberedCi(normalizedCi);
+    if (rememberCredentials) {
+      writeRememberedCredentials({
+        ci: normalizedCi,
+        password,
+      });
     } else {
-      clearRememberedCi();
+      clearRememberedCredentials();
     }
 
     router.push(resolveDashboardPathByRole(result.data.user.role));
@@ -184,11 +191,11 @@ export function LoginForm() {
       <label className="flex items-center gap-2 text-sm text-nutri-dark-grey">
         <input
           type="checkbox"
-          checked={rememberCi}
-          onChange={(event) => setRememberCi(event.target.checked)}
+          checked={rememberCredentials}
+          onChange={(event) => setRememberCredentials(event.target.checked)}
           className="h-4 w-4 cursor-pointer rounded border-nutri-light-grey accent-nutri-primary"
         />
-        <span>Recordar CI en esta sesion</span>
+        <span>Recordar credenciales en esta sesion</span>
       </label>
 
       {errors.form && (
