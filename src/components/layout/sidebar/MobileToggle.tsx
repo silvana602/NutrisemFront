@@ -1,8 +1,7 @@
 "use client";
 
 import { forwardRef } from "react";
-import { CgClose } from "react-icons/cg";
-import { TiThMenu } from "react-icons/ti";
+import { Menu, X } from "lucide-react";
 
 const MobileToggle = forwardRef<HTMLButtonElement, {
     open: boolean;
@@ -17,7 +16,7 @@ const MobileToggle = forwardRef<HTMLButtonElement, {
         aria-label={open ? "Cerrar menú" : "Abrir menú"}
         onClick={onToggle}
     >
-        {open ? <CgClose size={22} /> : <TiThMenu size={28} />}
+        {open ? <X size={22} /> : <Menu size={24} />}
     </button>
 ));
 

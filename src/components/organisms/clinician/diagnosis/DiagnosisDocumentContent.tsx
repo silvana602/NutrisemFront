@@ -7,6 +7,8 @@ import { SearchBar } from "@/components/molecules/SearchBar";
 import { Tabs, type TabItem } from "@/components/ui/Tabs";
 import { Button } from "@/components/ui/Button";
 import { StepDots } from "../new-consultation/forms/shared/StepDots";
+import { DiagnosisRestrictedFoodsSection } from "@/features/clinician/diagnosis/recommendations/components";
+import { getDiagnosisRestrictedFoodGroups } from "@/features/clinician/diagnosis/recommendations/utils/diagnosisRecommendationRestrictions.utils";
 import {
   AnthropometricTrendChart,
   type AnthropometricPercentileProfile,
@@ -1667,6 +1669,9 @@ export const DiagnosisDocumentContent: React.FC = () => {
         persistedRecommendation?.dietaryRecommendation ??
         buildDefaultDietaryRecommendation(selectedConsultationResult.nutritionalStatus),
       foodRows: linkedFoods.length ? linkedFoods : fallbackFoods,
+      restrictedFoodGroups: getDiagnosisRestrictedFoodGroups(
+        selectedConsultationResult.nutritionalStatus
+      ),
       hasPersistedRecommendation: Boolean(persistedRecommendation),
     };
   }, [
@@ -2984,6 +2989,10 @@ export const DiagnosisDocumentContent: React.FC = () => {
                       </table>
                     </div>
                   </div>
+
+                  <DiagnosisRestrictedFoodsSection
+                    groups={recommendationData.restrictedFoodGroups}
+                  />
                 </>
               )}
             </article>

@@ -1,6 +1,6 @@
 "use client";
 
-import { MdChevronLeft, MdChevronRight } from "react-icons/md";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
   page: number;
@@ -30,7 +30,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           sm:h-10 sm:w-10
         "
       >
-        <MdChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+        <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
       </button>
 
       <span className="text-xs font-medium text-nutri-dark-grey sm:text-sm">
@@ -54,9 +54,8 @@ export const Pagination: React.FC<PaginationProps> = ({
           sm:h-10 sm:w-10
         "
       >
-        <MdChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
+        <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
       </button>
     </div>
   );
 };
-
