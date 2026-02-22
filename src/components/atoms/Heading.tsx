@@ -48,7 +48,7 @@ export function Heading({
 
       <Tag
         className={cn(
-          "text-2xl font-bold text-nutri-primary sm:text-3xl",
+          "nutri-heading text-2xl font-bold text-nutri-primary sm:text-3xl",
           eyebrow && "mt-2",
           className
         )}

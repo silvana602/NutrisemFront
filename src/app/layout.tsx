@@ -1,9 +1,22 @@
 import type { Metadata } from "next";
+import { Nunito_Sans, Sora } from "next/font/google";
 import "@/app/globals.css";
 
 import AppSessionBootstrap from "@/components/session/AppSessionBootstrap";
 import { Navbar } from "@/components/layout/navbar/Navbar";
 import { Footer } from "@/components/layout/footer/Footer";
+
+const uiFont = Nunito_Sans({
+  subsets: ["latin"],
+  variable: "--font-ui",
+  display: "swap",
+});
+
+const headingFont = Sora({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: { default: "Nutrisem", template: "%s | Nutrisem" },
@@ -16,7 +29,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" data-theme="light" suppressHydrationWarning>
+    <html
+      lang="es"
+      data-theme="light"
+      suppressHydrationWarning
+      className={`${uiFont.variable} ${headingFont.variable}`}
+    >
       <body className="min-h-dvh flex flex-col bg-nutri-off-white text-nutri-dark-grey">
         {/* 1. Anti-FOUC */}
         <script

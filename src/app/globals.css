@@ -5,6 +5,8 @@
   --foreground: #3e4a4f;
   --nutri-navbar-height: 4.5rem;
   --nutri-footer-height: 4.25rem;
+  --font-ui: "Segoe UI";
+  --font-heading: "Segoe UI";
 
   --nutri-radius-sm: 0.625rem;
   --nutri-radius-md: 0.875rem;
@@ -16,8 +18,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-ui);
+  --font-mono: var(--font-ui);
 
   --color-nutri-primary: #172A3A;
   --color-nutri-secondary: #567C8D;
@@ -37,9 +39,20 @@
     margin: 0;
     background: var(--color-nutri-off-white);
     color: var(--color-nutri-dark-grey);
-    font-family: var(--font-sans), "Segoe UI", Tahoma, sans-serif;
+    font-family: var(--font-ui), "Segoe UI", Tahoma, sans-serif;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .nutri-heading {
+    font-family: var(--font-heading), var(--font-ui), "Segoe UI", Tahoma, sans-serif;
+    letter-spacing: -0.01em;
   }
 }
 
