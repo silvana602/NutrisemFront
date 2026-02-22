@@ -1,15 +1,16 @@
 import { LoginForm } from "@/components/auth/forms/LoginForm";
+import { Heading } from "@/components/atoms/Heading";
 
 export default function LoginPage() {
   return (
     <div className="nutri-surface w-full p-6 sm:p-8">
-      <h1 className="text-center text-2xl font-semibold text-nutri-primary">
+      <Heading
+        align="center"
+        className="text-2xl font-semibold sm:text-2xl"
+        description="Bienvenid@ a Nutrisem. Por favor, introduzca sus credenciales para acceder a su cuenta."
+      >
         Iniciar sesion
-      </h1>
-
-      <p className="mt-1 text-center text-sm text-nutri-dark-grey">
-        Bienvenid@ a Nutrisem. Por favor, introduzca sus credenciales para acceder a su cuenta.
-      </p>
+      </Heading>
 
       <div className="mt-6">
         <LoginForm />

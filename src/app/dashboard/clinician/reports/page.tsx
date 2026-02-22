@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { PatientHistoryContent } from "@/components/organisms/clinician/histories/PatientHistoryContent";
 import { ReportsContent } from "@/components/organisms/clinician/reports/ReportsContent";
+import { Heading } from "@/components/atoms/Heading";
 import { TabItem, Tabs } from "@/components/ui/Tabs";
 
 type ReportsTabId = "historiales" | "reportes";
@@ -17,7 +18,13 @@ export default function HistorialesReportesPage() {
 
   return (
     <div className="w-full px-4 py-4 sm:px-6">
-      <h1 className="mb-6 text-3xl font-semibold text-nutri-dark-grey">Historial y Reportes</h1>
+      <Heading
+        containerClassName="mb-6"
+        eyebrow="Modulo clinician"
+        description="Consulta historiales clinicos y genera reportes desde un solo lugar."
+      >
+        Historial y reportes
+      </Heading>
 
       <Tabs tabs={REPORTS_TABS} activeTab={tab} onTabChange={setTab} className="mb-6" />
 

@@ -98,6 +98,11 @@ export const patientMenu: MenuItem[] = [
     matchExact: true,
   },
   {
+    label: "Educacion",
+    href: "/dashboard/patient/education",
+    icon: BookOpen,
+  },
+  {
     label: "Mi Progreso",
     href: "/dashboard/patient/progress",
     icon: HeartPulse,

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import type { LucideIcon } from "lucide-react";
+import { Heading } from "@/components/atoms/Heading";
 import { cn } from "@/lib/utils";
 
 type ErrorActionVariant = "outline" | "solid";
@@ -57,13 +58,13 @@ export function ErrorPageTemplate({
             {code}
           </p>
 
-          <h1 className="mt-2 text-2xl font-extrabold text-nutri-primary sm:text-3xl lg:text-4xl">
+          <Heading
+            className="mt-2 text-2xl font-extrabold sm:text-3xl lg:text-4xl"
+            description={message}
+            descriptionClassName="mt-3 max-w-xl text-sm leading-relaxed sm:text-base lg:text-lg"
+          >
             {title}
-          </h1>
-
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-nutri-dark-grey sm:text-base lg:text-lg">
-            {message}
-          </p>
+          </Heading>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
             {actions.map((action) => {

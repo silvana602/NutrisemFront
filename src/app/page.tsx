@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Activity, BarChart3, Users, FileText } from "lucide-react";
+import { Heading } from "@/components/atoms/Heading";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 
@@ -13,14 +14,14 @@ export default function LandingPage() {
       <section className="container mx-auto px-4 py-10 sm:py-14 md:py-24">
         <div className="grid items-center gap-12 md:grid-cols-2">
           <div>
-            <h1 className="mb-5 text-3xl font-bold text-nutri-dark-grey sm:text-4xl md:mb-6 md:text-5xl">
+            <Heading
+              className="mb-5 text-3xl font-bold text-nutri-dark-grey sm:text-4xl md:mb-6 md:text-5xl"
+              description="Plataforma integral para el seguimiento y diagnostico del estado nutricional de la poblacion boliviana, facilitando la deteccion temprana de malnutricion y promoviendo intervenciones oportunas."
+              descriptionClassName="mb-6 text-base text-nutri-dark-grey sm:text-lg md:mb-8"
+            >
               Sistema de Monitoreo Nutricional en Bolivia
-            </h1>
-            <p className="mb-6 text-base text-nutri-dark-grey sm:text-lg md:mb-8">
-              Plataforma integral para el seguimiento y diagnostico del estado
-              nutricional de la poblacion boliviana, facilitando la deteccion
-              temprana de malnutricion y promoviendo intervenciones oportunas.
-            </p>
+            </Heading>
+
             <div className="flex flex-col gap-4 sm:flex-row">
               <Button onClick={() => router.push("/login")}>Comenzar Ahora</Button>
               <Button variant="outline">Ver Tutorial</Button>

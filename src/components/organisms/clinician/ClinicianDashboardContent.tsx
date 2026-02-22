@@ -323,7 +323,11 @@ export const ClinicianDashboardContent: React.FC<Props> = ({ user }) => {
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
-      <Heading>
+      <Heading
+        variant="panel"
+        eyebrow="Inicio del profesional"
+        description="Aqui tienes un resumen rapido de alertas, consultas recientes y el ultimo paciente atendido."
+      >
         Bienvenid@, Dr(a) {user.firstName} {user.lastName}
       </Heading>
 

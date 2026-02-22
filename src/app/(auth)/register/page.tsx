@@ -1,12 +1,15 @@
+import { Heading } from "@/components/atoms/Heading";
+
 export default function RegisterPage() {
   return (
     <div className="nutri-surface p-8">
-      <h1 className="text-center text-2xl font-semibold text-nutri-primary">
+      <Heading
+        align="center"
+        className="text-2xl font-semibold sm:text-2xl"
+        description="El registro de nuevos usuarios se habilitara en una proxima version."
+      >
         Registro
-      </h1>
-      <p className="mt-2 text-center text-sm text-nutri-dark-grey">
-        El registro de nuevos usuarios se habilitara en una proxima version.
-      </p>
+      </Heading>
     </div>
   );
 }
