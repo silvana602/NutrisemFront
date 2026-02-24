@@ -4,6 +4,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { db, seedOnce } from "@/mocks/db";
 
 import {
+  PatientLatestDietaryRecommendation,
   PatientRecommendedFoodsTable,
   PatientRecommendationsEmptyState,
   PatientRecommendationsHero,
@@ -45,6 +46,13 @@ export default function PatientRecommendationsPage() {
           />
 
           <PatientRecommendedFoodsTable rows={viewModel.suggestedFoods} />
+
+          <PatientLatestDietaryRecommendation
+            dietaryRecommendation={viewModel.dietaryRecommendation}
+            dateLabel={viewModel.dateLabel}
+            nutritionalStatus={viewModel.nutritionalStatus}
+            totalSuggestedFoods={viewModel.suggestedFoods.length}
+          />
 
           <PatientRestrictedFoodsList groups={viewModel.restrictedGroups} />
         </>

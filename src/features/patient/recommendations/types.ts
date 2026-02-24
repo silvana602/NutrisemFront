@@ -4,13 +4,11 @@ export type RecommendedFoodRow = {
   foodId: string;
   foodName: string;
   category: string;
-  dailyAmount: string;
+  portion: string;
+  frequency: string;
+  benefits: string;
+  imageAlt: string;
   referenceAge: string;
-  energyKcal: number;
-  proteinG: number;
-  fatG: number;
-  carbohydratesG: number;
-  fiberG: number;
 };
 
 export type PatientRecommendationViewModel = {

@@ -47,14 +47,25 @@ export function RestrictedFoodsList({
               <h4 className="text-sm font-semibold text-nutri-dark-grey">{group.title}</h4>
             </header>
             <p className="mb-2 text-xs text-nutri-dark-grey/80">{group.subtitle}</p>
-            <ul className="space-y-1 text-sm text-nutri-dark-grey">
-              {group.items.map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="mt-[5px] h-1.5 w-1.5 shrink-0 rounded-full bg-nutri-dark-grey/70" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+
+            <div className="overflow-hidden rounded-lg border border-nutri-light-grey bg-nutri-white">
+              <table className="w-full table-fixed text-sm">
+                <thead className="bg-nutri-off-white">
+                  <tr className="text-left text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/80">
+                    <th className="px-3 py-2">Alimento restringido</th>
+                    <th className="px-3 py-2">Sustituto saludable</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {group.items.map((item) => (
+                    <tr key={item.food} className="border-t border-nutri-light-grey align-top">
+                      <td className="px-3 py-2 text-nutri-dark-grey">{item.food}</td>
+                      <td className="px-3 py-2 text-nutri-dark-grey">{item.healthySubstitute}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </section>
         ))}
       </div>

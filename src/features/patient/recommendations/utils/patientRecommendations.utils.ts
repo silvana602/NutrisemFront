@@ -7,12 +7,11 @@ import type {
   RecommendationFood,
   User,
 } from "@/types";
-
-import type {
-  PatientRecommendationViewModel,
-  RecommendedFoodRow,
-} from "../types";
 import { buildRestrictedFoodGroupsByNutritionalStatus } from "@/features/shared/nutrition";
+
+import type { PatientRecommendationViewModel } from "../types";
+import { formatDate } from "./patientRecommendationsFormatting.utils";
+import { buildPatientRecommendedFoodRows } from "./patientRecommendedFoods.utils";
 
 type BuildPatientRecommendationModelParams = {
   userId: string;
@@ -24,64 +23,6 @@ type BuildPatientRecommendationModelParams = {
   recommendationFoods: RecommendationFood[];
   foods: Food[];
 };
-
-const dateFormatter = new Intl.DateTimeFormat("es-BO", {
-  dateStyle: "medium",
-});
-
-function normalizeText(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
-function formatDate(value: Date | null): string {
-  if (!value) return "Sin fecha";
-  if (Number.isNaN(value.getTime())) return "Sin fecha";
-  return dateFormatter.format(value);
-}
-
-function formatCategoryLabel(category: string): string {
-  const normalized = normalizeText(category);
-  if (normalized.includes("fruit")) return "Fruta";
-  if (normalized.includes("vegetable")) return "Verdura";
-  if (normalized.includes("protein")) return "Proteina";
-  if (normalized.includes("grain")) return "Cereal";
-  if (normalized.includes("dairy")) return "Lacteo";
-  return category || "Sin categoria";
-}
-
-function buildRecommendedFoodRows(
-  recommendationId: string | null,
-  recommendationFoods: RecommendationFood[],
-  foods: Food[]
-): RecommendedFoodRow[] {
-  if (!recommendationId) return [];
-
-  const foodById = new Map(foods.map((item) => [item.foodId, item] as const));
-
-  return recommendationFoods
-    .filter((item) => item.recommendationId === recommendationId)
-    .map((item) => {
-      const food = foodById.get(item.foodId);
-      if (!food) return null;
-
-      return {
-        foodId: food.foodId,
-        foodName: food.foodName,
-        category: formatCategoryLabel(food.category),
-        dailyAmount: item.dailyAmount,
-        referenceAge: item.referenceAge,
-        energyKcal: food.energyKcal,
-        proteinG: food.proteinG,
-        fatG: food.fatG,
-        carbohydratesG: food.carbohydratesG,
-        fiberG: food.fiberG,
-      };
-    })
-    .filter((item): item is RecommendedFoodRow => item !== null);
-}
 
 export function buildPatientRecommendationViewModel(
   params: BuildPatientRecommendationModelParams
@@ -132,7 +73,7 @@ export function buildPatientRecommendationViewModel(
   const selectedConsultation =
     consultationById.get(selectedDiagnosis.consultationId) ?? null;
 
-  const suggestedFoods = buildRecommendedFoodRows(
+  const suggestedFoods = buildPatientRecommendedFoodRows(
     selectedRecommendation?.recommendationId ?? null,
     recommendationFoods,
     foods
