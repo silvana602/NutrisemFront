@@ -1,61 +1,130 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowLeft, BookOpenCheck, Lightbulb } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
-import { Heading } from "@/components/atoms/Heading";
-import { Card } from "@/components/ui/Card";
+import { db, seedOnce } from "@/mocks/db";
+import { calculateAgeInMonths } from "@/lib/pediatricAge";
 import { useAuthStore } from "@/store/useAuthStore";
+import {
+  PatientEducationArticleLibrary,
+  PatientEducationGuideBanner,
+  PatientEducationHero,
+  PatientEducationNutriTipsSection,
+  PatientEducationSearchPanel,
+} from "@/features/patient/education/components";
+import {
+  countVisibleArticles,
+  filterEducationCategories,
+  filterNutriTipVideos,
+  PATIENT_EDUCATION_CATEGORIES,
+  PATIENT_EDUCATION_TAGS,
+  PATIENT_NUTRI_TIPS_VIDEOS,
+  parsePatientEducationTagId,
+  resolveGuideOfMonthByAge,
+} from "@/features/patient/education/utils";
+import type { PatientEducationTagId } from "@/features/patient/education/types";
 
-const EDUCATION_TIPS: string[] = [
-  "Combina frutas de colores distintos para aumentar vitaminas en cada comida.",
-  "Prefiere agua frente a bebidas azucaradas durante el dia.",
-  "Incluye al menos una verdura en almuerzo y cena.",
-  "Procura 20 minutos de juego activo al aire libre todos los dias.",
-];
+seedOnce();
 
 export default function PatientEducationPage() {
+  const searchParams = useSearchParams();
   const user = useAuthStore((state) => state.user);
+  const queryParam = (searchParams.get("q") ?? "").trim();
+  const tagParam = parsePatientEducationTagId(searchParams.get("tag"));
+  const focusSectionId = (searchParams.get("focusSection") ?? "").trim();
+  const focusedArticleId = (searchParams.get("focusArticle") ?? "").trim();
+  const [query, setQuery] = useState(queryParam);
+  const [selectedTagId, setSelectedTagId] = useState<PatientEducationTagId | null>(tagParam);
+  const autoScrolledRef = useRef(false);
+
+  const patient = useMemo(() => {
+    if (!user) return null;
+    return db.patients.find((item) => item.userId === user.userId) ?? null;
+  }, [user]);
+
+  const ageMonths = patient ? calculateAgeInMonths(patient.birthDate) : null;
+  const guideOfMonth = useMemo(() => resolveGuideOfMonthByAge(ageMonths), [ageMonths]);
+
+  const filteredCategories = useMemo(
+    () =>
+      filterEducationCategories(PATIENT_EDUCATION_CATEGORIES, {
+        query,
+        selectedTagId,
+      }),
+    [query, selectedTagId]
+  );
+
+  const filteredVideos = useMemo(
+    () =>
+      filterNutriTipVideos(PATIENT_NUTRI_TIPS_VIDEOS, {
+        query,
+        selectedTagId,
+      }),
+    [query, selectedTagId]
+  );
+
+  const visibleArticles = useMemo(
+    () => countVisibleArticles(filteredCategories),
+    [filteredCategories]
+  );
+
+  const handleToggleTag = (tagId: PatientEducationTagId) => {
+    setSelectedTagId((currentTagId) => (currentTagId === tagId ? null : tagId));
+  };
+
+  const handleClearFilters = () => {
+    setQuery("");
+    setSelectedTagId(null);
+  };
+
+  const handleReadGuideNow = () => {
+    const targetSection = document.getElementById("biblioteca-educativa");
+    if (!targetSection) return;
+    targetSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  useEffect(() => {
+    if (autoScrolledRef.current) return;
+
+    const hashTargetId =
+      typeof window !== "undefined" ? window.location.hash.replace("#", "").trim() : "";
+    const targetElement =
+      (focusedArticleId ? document.getElementById(focusedArticleId) : null) ??
+      (hashTargetId ? document.getElementById(hashTargetId) : null) ??
+      (focusSectionId ? document.getElementById(focusSectionId) : null);
+
+    if (!targetElement) return;
+
+    targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    autoScrolledRef.current = true;
+  }, [focusedArticleId, focusSectionId, filteredCategories]);
+
   if (!user) return null;
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
-      <Heading
-        variant="panel"
-        eyebrow="Educacion nutricional"
-        description="Esta seccion te ayuda a entender el por que de cada recomendacion y como convertirla en un habito diario."
-      >
-        Aprende con pasos pequenos, {user.firstName}
-      </Heading>
+      <PatientEducationHero firstName={user.firstName} />
 
-      <Card className="p-5">
-        <header className="mb-4 flex items-center gap-2">
-          <BookOpenCheck size={18} className="text-nutri-primary" aria-hidden />
-          <h2 className="text-lg font-semibold text-nutri-primary">Ideas para hoy</h2>
-        </header>
+      <PatientEducationSearchPanel
+        query={query}
+        selectedTagId={selectedTagId}
+        tags={PATIENT_EDUCATION_TAGS}
+        visibleArticles={visibleArticles}
+        visibleVideos={filteredVideos.length}
+        onQueryChange={setQuery}
+        onToggleTag={handleToggleTag}
+        onClearFilters={handleClearFilters}
+      />
 
-        <div className="space-y-2">
-          {EDUCATION_TIPS.map((tip) => (
-            <div
-              key={tip}
-              className="rounded-xl border border-nutri-light-grey bg-nutri-off-white/70 px-3 py-2 text-sm text-nutri-dark-grey"
-            >
-              <p className="flex items-start gap-2">
-                <Lightbulb size={16} className="mt-0.5 shrink-0 text-amber-500" aria-hidden />
-                <span>{tip}</span>
-              </p>
-            </div>
-          ))}
-        </div>
-      </Card>
+      <PatientEducationGuideBanner guide={guideOfMonth} onReadNow={handleReadGuideNow} />
 
-      <Link
-        href="/dashboard/patient"
-        className="inline-flex items-center gap-2 rounded-lg border border-nutri-primary/20 bg-nutri-white px-4 py-2 text-sm font-semibold text-nutri-primary transition-colors hover:bg-nutri-off-white"
-      >
-        <ArrowLeft size={16} aria-hidden />
-        Volver al inicio
-      </Link>
+      <PatientEducationArticleLibrary
+        categories={filteredCategories}
+        focusedArticleId={focusedArticleId || null}
+      />
+
+      <PatientEducationNutriTipsSection videos={filteredVideos} />
     </div>
   );
 }

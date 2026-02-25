@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nutrisem">
+  <defs>
+    <linearGradient id="nutri-gradient" x1="10" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#172A3A" />
+      <stop offset="100%" stop-color="#567C8D" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#nutri-gradient)" />
+  <path
+    d="M18 46V18h7l19 21V18h8v28h-7L26 25v21h-8Z"
+    fill="#FBF9F1"
+  />
+</svg>

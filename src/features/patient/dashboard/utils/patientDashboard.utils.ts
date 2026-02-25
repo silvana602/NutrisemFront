@@ -207,6 +207,44 @@ export function buildEducationQuestion(foodName: string | null): string {
   return "Sabias por que es importante comer espinaca? Descubrelo aqui.";
 }
 
+const EDUCATION_QUICK_ACCESS_ARTICLE = {
+  title: "El plato arcoiris: Por que variar los colores?",
+  suggestedQuery: "plato arcoiris",
+  suggestedTagId: "recetas" as const,
+  targetSectionId: "biblioteca-educativa" as const,
+  targetArticleId: "education-article-rainbow-plate" as const,
+};
+
+type EducationQuickAccess = {
+  question: string;
+  suggestedQuery: typeof EDUCATION_QUICK_ACCESS_ARTICLE.suggestedQuery;
+  suggestedTagId: typeof EDUCATION_QUICK_ACCESS_ARTICLE.suggestedTagId;
+  targetSectionId: typeof EDUCATION_QUICK_ACCESS_ARTICLE.targetSectionId;
+  targetArticleId: typeof EDUCATION_QUICK_ACCESS_ARTICLE.targetArticleId;
+};
+
+export function buildEducationQuickAccess(foodName: string | null): EducationQuickAccess {
+  const normalizedFoodName = foodName?.trim().toLowerCase() ?? null;
+
+  if (normalizedFoodName) {
+    return {
+      question: `${EDUCATION_QUICK_ACCESS_ARTICLE.title} Aprende como incluir ${normalizedFoodName} en sus comidas.`,
+      suggestedQuery: EDUCATION_QUICK_ACCESS_ARTICLE.suggestedQuery,
+      suggestedTagId: EDUCATION_QUICK_ACCESS_ARTICLE.suggestedTagId,
+      targetSectionId: EDUCATION_QUICK_ACCESS_ARTICLE.targetSectionId,
+      targetArticleId: EDUCATION_QUICK_ACCESS_ARTICLE.targetArticleId,
+    };
+  }
+
+  return {
+    question: `${EDUCATION_QUICK_ACCESS_ARTICLE.title} Descubrelo aqui.`,
+    suggestedQuery: EDUCATION_QUICK_ACCESS_ARTICLE.suggestedQuery,
+    suggestedTagId: EDUCATION_QUICK_ACCESS_ARTICLE.suggestedTagId,
+    targetSectionId: EDUCATION_QUICK_ACCESS_ARTICLE.targetSectionId,
+    targetArticleId: EDUCATION_QUICK_ACCESS_ARTICLE.targetArticleId,
+  };
+}
+
 export function buildConsultationSnapshots(
   patientId: string,
   consultations: Consultation[],

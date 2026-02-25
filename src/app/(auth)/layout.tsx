@@ -3,7 +3,7 @@ import "@/app/globals.css";
 
 export const metadata: Metadata = {
   title: "Acceso | Nutrisem",
-  description: "Inicia sesion para acceder al sistema Nutrisem",
+  description: "Acceso a Nutrisem.",
 };
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {

@@ -3,13 +3,17 @@ import { ArrowRight } from "lucide-react";
 
 type PatientEducationBannerProps = {
   question: string;
+  href?: string;
 };
 
-export function PatientEducationBanner({ question }: PatientEducationBannerProps) {
+export function PatientEducationBanner({
+  question,
+  href = "/dashboard/patient/education",
+}: PatientEducationBannerProps) {
   return (
     <section>
       <Link
-        href="/dashboard/patient/education"
+        href={href}
         className="group flex flex-col justify-between gap-3 rounded-2xl border border-nutri-primary/10 bg-gradient-to-r from-nutri-primary to-nutri-secondary p-5 text-nutri-white shadow-sm transition-all hover:brightness-105 sm:flex-row sm:items-center"
       >
         <div className="min-w-0">

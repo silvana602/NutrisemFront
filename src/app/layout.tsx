@@ -18,9 +18,17 @@ const headingFont = Sora({
   display: "swap",
 });
 
+const APP_DESCRIPTION = "Plataforma de nutricion infantil.";
+const NUTRISEM_ICON_PATH = "/images/brand/nutrisem-icon.svg";
+
 export const metadata: Metadata = {
   title: { default: "Nutrisem", template: "%s | Nutrisem" },
-  description: "Sistema de monitoreo nutricional infantil para CECASEM",
+  description: APP_DESCRIPTION,
+  icons: {
+    icon: [{ url: NUTRISEM_ICON_PATH, type: "image/svg+xml" }],
+    shortcut: [NUTRISEM_ICON_PATH],
+    apple: [NUTRISEM_ICON_PATH],
+  },
 };
 
 export default function RootLayout({

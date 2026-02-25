@@ -12,7 +12,7 @@ import {
 } from "@/features/patient/dashboard/components";
 import {
   buildConsultationSnapshots,
-  buildEducationQuestion,
+  buildEducationQuickAccess,
   compareZoneProgress,
   getFirstSuggestedFoodName,
   getProgressCopy,
@@ -54,7 +54,14 @@ export default function PatientDashboardPage() {
     db.recommendationFoods,
     db.foods
   );
-  const educationQuestion = buildEducationQuestion(suggestedFoodName);
+  const educationQuickAccess = buildEducationQuickAccess(suggestedFoodName);
+  const educationSearchParams = new URLSearchParams({
+    tag: educationQuickAccess.suggestedTagId,
+    q: educationQuickAccess.suggestedQuery,
+    focusSection: educationQuickAccess.targetSectionId,
+    focusArticle: educationQuickAccess.targetArticleId,
+  }).toString();
+  const educationHref = `/dashboard/patient/education?${educationSearchParams}#${educationQuickAccess.targetArticleId}`;
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
@@ -76,7 +83,10 @@ export default function PatientDashboardPage() {
         dateLabel={latestSnapshot?.dateLabel ?? null}
       />
 
-      <PatientEducationBanner question={educationQuestion} />
+      <PatientEducationBanner
+        question={educationQuickAccess.question}
+        href={educationHref}
+      />
     </div>
   );
 }
