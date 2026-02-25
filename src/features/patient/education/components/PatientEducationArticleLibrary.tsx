@@ -56,9 +56,9 @@ export function PatientEducationArticleLibrary({
                     key={article.articleId}
                     id={`education-article-${article.articleId}`}
                     className={cn(
-                      "rounded-xl border border-nutri-light-grey bg-nutri-off-white/60 p-3",
+                      "nutri-platform-surface-soft p-3",
                       focusedArticleId === `education-article-${article.articleId}` &&
-                        "border-nutri-secondary/40 bg-nutri-white ring-2 ring-nutri-secondary/35"
+                        "border-nutri-secondary/45 ring-2 ring-nutri-secondary/35"
                     )}
                   >
                     <p className="text-sm font-semibold text-nutri-dark-grey">{article.title}</p>

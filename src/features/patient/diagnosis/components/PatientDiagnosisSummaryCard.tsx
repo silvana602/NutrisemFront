@@ -43,15 +43,15 @@ export function PatientDiagnosisSummaryCard({
       </header>
 
       <section className="grid grid-cols-1 gap-2 text-sm text-nutri-dark-grey sm:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/70 px-3 py-2">
+        <div className="nutri-platform-surface-soft rounded-lg px-3 py-2">
           <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">Fecha</p>
           <p className="mt-1 font-semibold">{row.dateLabel}</p>
         </div>
-        <div className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/70 px-3 py-2">
+        <div className="nutri-platform-surface-soft rounded-lg px-3 py-2">
           <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">Motivo</p>
           <p className="mt-1 font-semibold">{row.reason}</p>
         </div>
-        <div className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/70 px-3 py-2">
+        <div className="nutri-platform-surface-soft rounded-lg px-3 py-2">
           <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
             Atendido por
           </p>
@@ -59,7 +59,7 @@ export function PatientDiagnosisSummaryCard({
         </div>
       </section>
 
-      <section className="mt-4 rounded-xl border border-nutri-light-grey bg-nutri-white p-3 sm:p-4">
+      <section className="nutri-platform-surface mt-4 p-3 sm:p-4">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
           Resumen de consulta
         </h3>
@@ -81,7 +81,7 @@ export function PatientDiagnosisSummaryCard({
         </div>
       </section>
 
-      <section className="mt-4 rounded-xl border border-nutri-light-grey bg-nutri-white p-3 sm:p-4">
+      <section className="nutri-platform-surface mt-4 p-3 sm:p-4">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
           Resumen del diagnostico
         </h3>
@@ -98,7 +98,7 @@ export function PatientDiagnosisSummaryCard({
         </div>
       </section>
 
-      <section className="mt-4 rounded-xl border border-nutri-light-grey bg-nutri-white p-3 sm:p-4">
+      <section className="nutri-platform-surface mt-4 p-3 sm:p-4">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-sm font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
             Grafico de posicion

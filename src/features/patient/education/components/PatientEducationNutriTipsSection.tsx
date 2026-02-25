@@ -35,7 +35,7 @@ export function PatientEducationNutriTipsSection({
               {videos.map((video) => (
                 <article
                   key={video.videoId}
-                  className="overflow-hidden rounded-2xl border border-nutri-light-grey bg-nutri-white"
+                  className="nutri-platform-surface overflow-hidden rounded-2xl"
                 >
                   <div className="relative aspect-[9/14] bg-gradient-to-b from-nutri-secondary/20 via-nutri-off-white to-nutri-white p-3">
                     <p className="absolute right-3 top-3 rounded-full bg-nutri-primary px-2 py-1 text-[11px] font-semibold text-nutri-white">
@@ -43,7 +43,7 @@ export function PatientEducationNutriTipsSection({
                     </p>
 
                     <div className="flex h-full flex-col justify-between">
-                      <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-nutri-primary/20 bg-nutri-white text-nutri-primary">
+                      <div className="nutri-platform-surface-soft inline-flex h-10 w-10 items-center justify-center rounded-xl text-nutri-primary">
                         <BookOpenCheck size={18} aria-hidden />
                       </div>
                       <p className="text-sm font-semibold text-nutri-primary">{video.title}</p>
@@ -56,7 +56,7 @@ export function PatientEducationNutriTipsSection({
                       {video.tags.map((tag) => (
                         <span
                           key={`${video.videoId}-${tag}`}
-                          className="rounded-full border border-nutri-primary/20 bg-nutri-off-white px-2 py-0.5 text-[11px] font-semibold text-nutri-primary"
+                          className="nutri-platform-surface-soft rounded-full px-2 py-0.5 text-[11px] font-semibold text-nutri-primary"
                         >
                           {getTagLabelById(tag)}
                         </span>

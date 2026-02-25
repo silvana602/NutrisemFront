@@ -4,7 +4,7 @@
   --background: #f5efeb;
   --foreground: #3e4a4f;
   --nutri-navbar-height: 4.5rem;
-  --nutri-footer-height: 4.25rem;
+  --nutri-footer-height: 2.35rem;
   --font-ui: "Segoe UI";
   --font-heading: "Segoe UI";
 
@@ -63,10 +63,19 @@
 
 @layer components {
   .nutri-surface {
-    border: 1px solid var(--color-nutri-light-grey);
+    border: 1px solid rgba(23, 42, 58, 0.12);
     border-radius: var(--nutri-radius-lg);
-    background: var(--color-nutri-white);
-    box-shadow: var(--nutri-shadow-sm);
+    background:
+      linear-gradient(
+        160deg,
+        rgba(251, 249, 241, 0.94) 0%,
+        rgba(245, 239, 235, 0.78) 100%
+      ),
+      var(--color-nutri-white);
+    box-shadow:
+      0 10px 24px rgba(20, 33, 46, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(1.5px);
   }
 
   .nutri-input {
@@ -106,19 +115,22 @@
     color: var(--color-nutri-dark-grey);
   }
 
-  .nutri-clinician-layout {
+  .nutri-clinician-layout,
+  .nutri-platform-layout {
     background:
       radial-gradient(1200px 500px at 18% -14%, rgba(86, 124, 141, 0.2), transparent 70%),
       radial-gradient(980px 380px at 110% 2%, rgba(23, 42, 58, 0.14), transparent 72%),
       var(--nutri-clinician-canvas);
   }
 
-  .nutri-clinician-main {
+  .nutri-clinician-main,
+  .nutri-platform-main {
     position: relative;
     isolation: isolate;
   }
 
-  .nutri-clinician-main::before {
+  .nutri-clinician-main::before,
+  .nutri-platform-main::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -135,13 +147,15 @@
     z-index: -1;
   }
 
-  .nutri-clinician-page {
+  .nutri-clinician-page,
+  .nutri-platform-page {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
   }
 
-  .nutri-clinician-page-header {
+  .nutri-clinician-page-header,
+  .nutri-platform-page-header {
     border: 1px solid var(--nutri-clinician-border);
     border-radius: 1.25rem;
     background:
@@ -151,7 +165,8 @@
     padding: 1rem;
   }
 
-  .nutri-clinician-surface {
+  .nutri-clinician-surface,
+  .nutri-platform-surface {
     border: 1px solid var(--nutri-clinician-border);
     border-radius: 1rem;
     background: var(--nutri-clinician-surface);
@@ -159,7 +174,8 @@
     backdrop-filter: blur(2px);
   }
 
-  .nutri-clinician-surface-soft {
+  .nutri-clinician-surface-soft,
+  .nutri-platform-surface-soft {
     border: 1px solid rgba(86, 124, 141, 0.18);
     border-radius: 0.9rem;
     background:
@@ -168,7 +184,8 @@
     box-shadow: 0 8px 18px rgba(18, 33, 46, 0.08);
   }
 
-  .nutri-clinician-stat {
+  .nutri-clinician-stat,
+  .nutri-platform-stat {
     border: 1px solid rgba(23, 42, 58, 0.12);
     border-radius: 0.95rem;
     background:
@@ -193,7 +210,8 @@
     padding: 0.4rem 0.72rem;
   }
 
-  .nutri-clinician-divider {
+  .nutri-clinician-divider,
+  .nutri-platform-divider {
     height: 1px;
     width: 100%;
     background: linear-gradient(90deg, transparent 0%, var(--nutri-clinician-glow) 50%, transparent 100%);

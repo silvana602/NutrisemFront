@@ -25,7 +25,7 @@ export function PatientRecommendedFoodsTable({
           Aun no hay alimentos sugeridos registrados para tu plan actual.
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-nutri-light-grey bg-nutri-white">
+        <div className="nutri-platform-surface overflow-x-auto rounded-lg">
           <table className="min-w-[860px] table-auto text-sm">
             <thead className="bg-nutri-off-white">
               <tr className="text-left text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/80">

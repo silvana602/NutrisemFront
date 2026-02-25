@@ -53,7 +53,7 @@ export function PatientProgressCard({
       <p className="mt-1 text-sm text-nutri-dark-grey/80">{progressCopy.subtitle}</p>
 
       <div className="mt-4 grid grid-cols-1 gap-2 text-sm text-nutri-dark-grey sm:grid-cols-3">
-        <div className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/70 px-3 py-2">
+        <div className="nutri-platform-surface-soft rounded-lg px-3 py-2">
           <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
             Peso
           </p>
@@ -61,7 +61,7 @@ export function PatientProgressCard({
             {formatDelta(latestSnapshot?.weightKg ?? null, previousSnapshot?.weightKg ?? null, "kg")}
           </p>
         </div>
-        <div className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/70 px-3 py-2">
+        <div className="nutri-platform-surface-soft rounded-lg px-3 py-2">
           <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
             Talla
           </p>
@@ -69,7 +69,7 @@ export function PatientProgressCard({
             {formatDelta(latestSnapshot?.heightM ?? null, previousSnapshot?.heightM ?? null, "m")}
           </p>
         </div>
-        <div className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/70 px-3 py-2">
+        <div className="nutri-platform-surface-soft rounded-lg px-3 py-2">
           <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
             IMC
           </p>

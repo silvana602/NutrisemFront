@@ -47,7 +47,7 @@ export const PatientsTable: React.FC<Props> = ({
 
             <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
               <div className="col-span-2">
-                <dt className="text-xs text-nutri-dark-grey/70">Tutor</dt>
+                <dt className="text-xs text-nutri-dark-grey/70">Guardian</dt>
                 <dd className="font-medium text-nutri-dark-grey">{p.guardian}</dd>
               </div>
               <div>
@@ -106,7 +106,7 @@ export const PatientsTable: React.FC<Props> = ({
             <tr>
               <th className="px-3 py-2 text-left font-semibold">Nro</th>
               <th className="px-3 py-2 text-left font-semibold">Nombre completo</th>
-              <th className="px-3 py-2 text-left font-semibold">Nombre del tutor</th>
+              <th className="px-3 py-2 text-left font-semibold">Nombre del guardian</th>
               <th className="px-3 py-2 text-left font-semibold">Cedula</th>
               <th className="px-3 py-2 text-left font-semibold">Edad</th>
               <th className="px-3 py-2 text-left font-semibold">Sexo</th>

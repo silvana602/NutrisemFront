@@ -64,7 +64,7 @@ export default function PatientDashboardPage() {
   const educationHref = `/dashboard/patient/education?${educationSearchParams}#${educationQuickAccess.targetArticleId}`;
 
   return (
-    <div className="space-y-6 p-4 sm:p-6">
+    <div className="nutri-platform-page px-1 py-1 sm:px-2">
       <PatientDashboardHero firstName={user.firstName} />
 
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">

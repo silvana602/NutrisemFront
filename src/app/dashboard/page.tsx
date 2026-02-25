@@ -27,7 +27,7 @@ export default function DashboardPage() {
     default:
       return (
         <div className="flex h-full items-center justify-center px-4">
-          <div className="w-full max-w-md rounded-xl border border-nutri-secondary/35 bg-nutri-white p-5 text-center shadow-sm">
+          <div className="nutri-platform-surface w-full max-w-md p-5 text-center">
             <p className="text-base font-semibold text-nutri-primary">
               No se pudo cargar el panel
             </p>

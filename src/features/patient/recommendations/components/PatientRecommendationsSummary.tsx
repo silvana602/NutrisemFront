@@ -17,7 +17,7 @@ export function PatientRecommendationsSummary({
     <Card className="p-5">
       <header className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-lg font-semibold text-nutri-primary">Resumen de recomendaciones</h2>
-        <span className="inline-flex w-fit rounded-full border border-nutri-primary/20 bg-nutri-off-white px-3 py-1 text-xs font-semibold text-nutri-primary">
+        <span className="nutri-platform-surface-soft inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold text-nutri-primary">
           Ultima actualizacion: {dateLabel}
         </span>
       </header>

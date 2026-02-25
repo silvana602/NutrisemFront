@@ -54,8 +54,8 @@ export function PatientEducationSearchPanel({
               className={cn(
                 "rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors sm:text-sm",
                 isSelected
-                  ? "border-nutri-primary bg-nutri-primary text-nutri-white"
-                  : "border-nutri-primary/20 bg-nutri-off-white text-nutri-primary hover:bg-nutri-white"
+                  ? "border-transparent bg-[linear-gradient(135deg,#172A3A_0%,#567C8D_100%)] text-nutri-white"
+                  : "nutri-platform-surface-soft border-nutri-light-grey text-nutri-primary hover:border-nutri-secondary/45"
               )}
             >
               {tag.label}

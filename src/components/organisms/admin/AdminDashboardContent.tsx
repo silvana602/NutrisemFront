@@ -1,54 +1,53 @@
 "use client";
 
 import { useAuthStore } from "@/store/useAuthStore";
-import { Heading } from "../../atoms/Heading";
-import { IconButton } from "../../atoms/IconButton";
-import { SectionTitle } from "../../atoms/SectionTitle";
-import { MetricsGrid } from "../../molecules/MetricsGrid";
-import { ChartsGrid } from "../../molecules/ChartsGrid";
+import { Heading } from "@/components/atoms/Heading";
+import { IconButton } from "@/components/atoms/IconButton";
+import { SectionTitle } from "@/components/atoms/SectionTitle";
+import { MetricsGrid } from "@/components/molecules/MetricsGrid";
+import { ChartsGrid } from "@/components/molecules/ChartsGrid";
 
 export default function AdminDashboardContent() {
-  const user = useAuthStore(s => s.user);
+  const user = useAuthStore((state) => state.user);
   if (!user) return null;
-  
+
   const metrics = [
     { label: "Pacientes", value: 40 },
     { label: "Pacientes mujeres", value: 22 },
-    { label: "Pacientes varones", value: 18 }
+    { label: "Pacientes varones", value: 18 },
   ];
 
   return (
-    <div className="min-h-0 bg-nutri-off-white p-4 sm:p-6">
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Heading>
+    <div className="nutri-platform-page px-1 py-1 sm:px-2">
+      <div className="nutri-platform-page-header flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+        <Heading
+          containerClassName="space-y-2"
+          description="Panel global para seguimiento de actividad clinica y operativa del sistema."
+        >
           Bienvenid@, Administrador(a) {user.firstName} {user.lastName}
         </Heading>
 
         <IconButton
-          label="Añadir nuevo profesional medico"
+          label="Anadir nuevo profesional medico"
           className="w-full justify-center sm:w-auto"
         />
       </div>
 
-      {/* Vista general */}
-      <SectionTitle>
-        Vista general de la actividad del sistema
-      </SectionTitle>
+      <section className="nutri-platform-surface p-4 sm:p-5">
+        <SectionTitle className="mt-0">Vista general de la actividad del sistema</SectionTitle>
+        <p className="mt-2 text-sm text-nutri-dark-grey/85">
+          Numero de pacientes, medicos, consultas y diagnosticos recientes.
+        </p>
+        <MetricsGrid metrics={metrics} />
+      </section>
 
-      <p className="mb-4 text-sm text-nutri-dark-grey">
-        (número de pacientes, médicos, consultas, diagnósticos recientes, etc.)
-      </p>
-
-      <MetricsGrid metrics={metrics} />
-
-      {/* Gráficos */}
-      <SectionTitle>Gráficos globales</SectionTitle>
-
-      <p className="mb-4 text-sm text-nutri-dark-grey">
-        de desempeño, crecimiento de pacientes, comparativas por género o edad.
-      </p>
-
-      <ChartsGrid />
+      <section className="nutri-platform-surface p-4 sm:p-5">
+        <SectionTitle className="mt-0">Graficos globales</SectionTitle>
+        <p className="mt-2 text-sm text-nutri-dark-grey/85">
+          Desempeno general, crecimiento de pacientes y comparativas por genero o edad.
+        </p>
+        <ChartsGrid />
+      </section>
     </div>
   );
 }

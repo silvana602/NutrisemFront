@@ -30,7 +30,7 @@ export function PatientProgressGrowthSection({
         {indicators.map((indicator) => (
           <article
             key={indicator.id}
-            className="rounded-xl border border-nutri-light-grey bg-nutri-white p-3 sm:p-4"
+            className="nutri-platform-surface rounded-xl p-3 sm:p-4"
           >
             <AnthropometricTrendChart
               title={indicator.title}

@@ -20,7 +20,7 @@ export function PatientAnthropometricCard({ snapshot }: PatientAnthropometricCar
               Datos antropometricos
             </h2>
           </div>
-          <span className="rounded-full border border-nutri-primary/20 bg-nutri-off-white px-3 py-1 text-xs font-semibold text-nutri-primary">
+          <span className="nutri-platform-surface-soft rounded-full px-3 py-1 text-xs font-semibold text-nutri-primary">
             Sin registro
           </span>
         </header>
@@ -43,29 +43,29 @@ export function PatientAnthropometricCard({ snapshot }: PatientAnthropometricCar
             Datos antropometricos
           </h2>
         </div>
-        <span className="rounded-full border border-nutri-primary/20 bg-nutri-off-white px-3 py-1 text-xs font-semibold text-nutri-primary">
+        <span className="nutri-platform-surface-soft rounded-full px-3 py-1 text-xs font-semibold text-nutri-primary">
           {snapshot.dateLabel}
         </span>
       </header>
 
       <div className="grid grid-cols-1 gap-2 text-sm text-nutri-dark-grey sm:grid-cols-2">
-        <p className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/70 px-3 py-2">
+        <p className="nutri-platform-surface-soft rounded-lg px-3 py-2">
           <span className="font-semibold">Peso:</span>{" "}
           {formatMetric(snapshot.weightKg, "kg")}
         </p>
-        <p className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/70 px-3 py-2">
+        <p className="nutri-platform-surface-soft rounded-lg px-3 py-2">
           <span className="font-semibold">Talla:</span>{" "}
           {formatMetric(snapshot.heightM, "m")}
         </p>
-        <p className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/70 px-3 py-2">
+        <p className="nutri-platform-surface-soft rounded-lg px-3 py-2">
           <span className="font-semibold">IMC:</span>{" "}
           {formatMetric(snapshot.bmi, "", 1)}
         </p>
-        <p className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/70 px-3 py-2">
+        <p className="nutri-platform-surface-soft rounded-lg px-3 py-2">
           <span className="font-semibold">MUAC:</span>{" "}
           {formatMetric(snapshot.muacCm, "cm", 1)}
         </p>
-        <p className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/70 px-3 py-2 sm:col-span-2">
+        <p className="nutri-platform-surface-soft rounded-lg px-3 py-2 sm:col-span-2">
           <span className="font-semibold">Perimetro cefalico:</span>{" "}
           {formatMetric(snapshot.headCircumferenceCm, "cm", 1)}
         </p>

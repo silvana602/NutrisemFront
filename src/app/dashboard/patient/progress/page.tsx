@@ -63,7 +63,7 @@ export default function PatientProgressPage() {
     Boolean(viewModel?.indicators.some((indicator) => indicator.points.length > 0));
 
   return (
-    <div className="space-y-6 p-4 sm:p-6">
+    <div className="nutri-platform-page px-1 py-1 sm:px-2">
       <PatientProgressHero firstName={user.firstName} />
 
       {!viewModel || !hasAnyProgressData ? (

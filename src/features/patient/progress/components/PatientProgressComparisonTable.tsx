@@ -29,7 +29,7 @@ function TrendBadge({ tone }: { tone: PatientProgressTrendTone }) {
   }
 
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-nutri-light-grey bg-nutri-off-white px-2 py-1 text-xs font-semibold text-nutri-dark-grey">
+    <span className="nutri-platform-surface-soft inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-nutri-dark-grey">
       <Minus size={14} aria-hidden />
       Estable
     </span>
@@ -49,7 +49,7 @@ export function PatientProgressComparisonTable({ rows }: PatientProgressComparis
 
       <div className="space-y-3 lg:hidden">
         {rows.map((row) => (
-          <article key={row.id} className="rounded-xl border border-nutri-light-grey bg-nutri-white p-3">
+          <article key={row.id} className="nutri-platform-surface rounded-xl p-3">
             <div className="mb-2 flex items-center justify-between gap-2">
               <h3 className="text-sm font-semibold text-nutri-primary">{row.label}</h3>
               <TrendBadge tone={row.tone} />
@@ -79,7 +79,7 @@ export function PatientProgressComparisonTable({ rows }: PatientProgressComparis
         ))}
       </div>
 
-      <div className="hidden overflow-x-auto rounded-xl border border-nutri-light-grey lg:block">
+      <div className="nutri-platform-surface hidden overflow-x-auto rounded-xl lg:block">
         <table className="min-w-[980px] table-auto text-sm">
           <thead className="bg-nutri-off-white">
             <tr className="text-left text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/80">
@@ -93,7 +93,7 @@ export function PatientProgressComparisonTable({ rows }: PatientProgressComparis
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.id} className="border-t border-nutri-light-grey bg-nutri-white align-top">
+              <tr key={row.id} className="border-t border-nutri-light-grey bg-transparent align-top">
                 <td className="px-3 py-3">
                   <div className="space-y-1">
                     <p className="font-semibold text-nutri-primary">{row.label}</p>

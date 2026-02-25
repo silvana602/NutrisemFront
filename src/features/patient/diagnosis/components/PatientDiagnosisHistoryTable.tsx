@@ -41,8 +41,8 @@ export function PatientDiagnosisHistoryTable({
               key={row.diagnosisId}
               className={`rounded-xl border p-3 ${
                 isSelected
-                  ? "border-nutri-secondary/40 bg-nutri-off-white/70"
-                  : "border-nutri-light-grey bg-nutri-white"
+                  ? "nutri-platform-surface-soft border-nutri-secondary/40"
+                  : "nutri-platform-surface border-nutri-light-grey"
               }`}
             >
               <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
@@ -75,7 +75,7 @@ export function PatientDiagnosisHistoryTable({
         })}
       </div>
 
-      <div className="hidden overflow-x-auto rounded-xl border border-nutri-light-grey md:block">
+      <div className="nutri-platform-surface hidden overflow-x-auto rounded-xl md:block">
         <table className="min-w-[820px] table-auto text-sm">
           <thead className="bg-nutri-off-white">
             <tr className="text-left text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/80">
@@ -94,7 +94,7 @@ export function PatientDiagnosisHistoryTable({
                 <tr
                   key={row.diagnosisId}
                   className={`border-t border-nutri-light-grey align-top ${
-                    isSelected ? "bg-nutri-off-white/60" : "bg-nutri-white"
+                    isSelected ? "bg-nutri-off-white/60" : "bg-transparent"
                   }`}
                 >
                   <td className="px-3 py-3 font-semibold text-nutri-primary">{row.dateLabel}</td>

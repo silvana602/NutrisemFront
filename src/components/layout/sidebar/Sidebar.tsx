@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { getMenuByRole } from "@/config/menus";
 import Avatar from "@/components/ui/Avatar";
-import { UserRole } from "@/types/user";
 import { cn } from "@/lib/utils";
 
 export default function Sidebar() {
@@ -16,16 +15,10 @@ export default function Sidebar() {
   if (!hydrated || !user) return null;
 
   const menuItems = getMenuByRole(user.role);
-  const isClinician = user.role === UserRole.clinician;
 
   return (
     <aside
-      style={{ marginBottom: "calc(var(--nutri-footer-height) * -1)" }}
-      className={cn(
-        "hidden w-72 shrink-0 flex-col border-r border-nutri-light-grey bg-nutri-white/95 shadow-sm lg:sticky lg:top-[var(--nutri-navbar-height)] lg:flex lg:h-[calc(100dvh-var(--nutri-navbar-height))] lg:self-start lg:overflow-y-auto",
-        isClinician &&
-          "border-white/60 bg-[linear-gradient(175deg,rgba(251,249,241,0.96)_0%,rgba(245,239,235,0.9)_68%,rgba(231,233,227,0.88)_100%)] shadow-[0_16px_30px_rgba(18,33,46,0.12)]"
-      )}
+      className={cn("hidden w-72 shrink-0 flex-col border-r border-white/60 bg-[linear-gradient(175deg,rgba(251,249,241,0.96)_0%,rgba(245,239,235,0.9)_68%,rgba(231,233,227,0.88)_100%)] shadow-[0_16px_30px_rgba(18,33,46,0.12)] lg:sticky lg:top-[calc(var(--nutri-navbar-height)+0.4rem)] lg:flex lg:self-start")}
     >
       <div className="px-4 pt-5">
         <div className="rounded-2xl border border-nutri-light-grey/80 bg-white/75 px-4 py-5 shadow-[0_10px_22px_rgba(18,33,46,0.1)]">
@@ -40,7 +33,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <div className="mt-5 px-4">
+      <div className="mt-4 px-4">
         <div className="h-px w-full bg-gradient-to-r from-transparent via-nutri-secondary/35 to-transparent" />
       </div>
 
@@ -50,7 +43,7 @@ export default function Sidebar() {
         </p>
       </div>
 
-      <nav className="mt-2 pb-5">
+      <nav className="mt-2 pb-1">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.matchExact
@@ -64,14 +57,8 @@ export default function Sidebar() {
               className={cn(
                 "group relative mx-3 my-1.5 flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-200",
                 isActive
-                  ? cn(
-                      "bg-nutri-primary text-nutri-white shadow-[0_12px_24px_rgba(18,33,46,0.24)]",
-                      isClinician && "bg-[linear-gradient(135deg,#172A3A_0%,#567C8D_100%)]"
-                    )
-                  : cn(
-                      "text-nutri-dark-grey hover:bg-white/80 hover:shadow-[0_8px_18px_rgba(18,33,46,0.08)]",
-                      isClinician && "hover:-translate-y-0.5"
-                    )
+                  ? "bg-[linear-gradient(135deg,#172A3A_0%,#567C8D_100%)] text-nutri-white shadow-[0_12px_24px_rgba(18,33,46,0.24)]"
+                  : "text-nutri-dark-grey hover:-translate-y-0.5 hover:bg-white/80 hover:shadow-[0_8px_18px_rgba(18,33,46,0.08)]"
               )}
             >
               <span

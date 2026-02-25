@@ -21,7 +21,7 @@ export function PatientProgressAchievements({ achievements }: PatientProgressAch
     <Card className="p-5">
       <header className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-semibold text-nutri-primary">Resumen de logros</h2>
-        <span className="rounded-full border border-nutri-primary/20 bg-nutri-off-white px-3 py-1 text-xs font-semibold text-nutri-primary">
+        <span className="nutri-platform-surface-soft rounded-full px-3 py-1 text-xs font-semibold text-nutri-primary">
           {unlockedCount}/{achievements.length} desbloqueados
         </span>
       </header>
@@ -33,7 +33,7 @@ export function PatientProgressAchievements({ achievements }: PatientProgressAch
             className={`rounded-xl border px-3 py-3 ${
               achievement.unlocked
                 ? "border-emerald-200 bg-emerald-50/70"
-                : "border-nutri-light-grey bg-nutri-white"
+                : "nutri-platform-surface border-nutri-light-grey"
             }`}
           >
             <div className="mb-2 flex items-center gap-2">
@@ -41,7 +41,7 @@ export function PatientProgressAchievements({ achievements }: PatientProgressAch
                 className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${
                   achievement.unlocked
                     ? "bg-emerald-100 text-emerald-700"
-                    : "bg-nutri-off-white text-nutri-dark-grey/70"
+                    : "nutri-platform-surface-soft text-nutri-dark-grey/70"
                 }`}
               >
                 <AchievementIcon id={achievement.id} />

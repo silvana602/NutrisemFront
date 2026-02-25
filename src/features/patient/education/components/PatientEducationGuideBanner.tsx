@@ -60,14 +60,14 @@ export function PatientEducationGuideBanner({
           </Button>
         </div>
 
-        <div className={cn("border-l border-nutri-light-grey p-5 sm:p-6", visual.wrapperClassName)}>
-          <div className="flex h-full flex-col justify-between rounded-2xl border border-nutri-primary/10 bg-nutri-white/60 p-4">
-            <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-nutri-primary/15 bg-nutri-white">
+        <div className={cn("border-l border-white/60 p-5 sm:p-6", visual.wrapperClassName)}>
+          <div className="nutri-platform-surface-soft flex h-full flex-col justify-between p-4">
+            <div className="nutri-platform-surface inline-flex h-14 w-14 items-center justify-center rounded-2xl">
               {visual.icon}
             </div>
 
             <div className="space-y-1">
-              <p className="inline-flex rounded-full border border-nutri-primary/20 bg-nutri-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-nutri-primary">
+              <p className="nutri-platform-surface inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-nutri-primary">
                 {visual.badge}
               </p>
               <p className="text-base font-semibold text-nutri-primary">{guide.imageTitle}</p>
