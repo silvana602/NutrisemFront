@@ -17,7 +17,7 @@ export function LastPatientSection({ patient }: LastPatientSectionProps) {
       {patient ? (
         <LastPatientCard patient={patient} />
       ) : (
-        <article className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm">
+        <article className="nutri-clinician-surface p-4">
           <p className="text-sm text-nutri-dark-grey">
             No hay consultas registradas para los pacientes asignados.
           </p>

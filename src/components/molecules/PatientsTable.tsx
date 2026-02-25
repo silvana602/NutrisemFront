@@ -27,7 +27,7 @@ export const PatientsTable: React.FC<Props> = ({
         {data.map((p, index) => (
           <article
             key={p.patientId}
-            className={`rounded-lg border bg-nutri-white p-4 shadow-sm ${
+            className={`nutri-clinician-surface rounded-lg p-4 ${
               highlightedPatientId === p.patientId
                 ? "border-nutri-primary/40"
                 : "border-nutri-light-grey"
@@ -90,7 +90,7 @@ export const PatientsTable: React.FC<Props> = ({
         ))}
 
         {data.length === 0 && (
-          <div className="rounded-lg border border-nutri-light-grey bg-nutri-white px-4 py-6 text-center text-sm text-nutri-dark-grey">
+          <div className="nutri-clinician-surface rounded-lg border border-nutri-light-grey px-4 py-6 text-center text-sm text-nutri-dark-grey">
             No se encontraron pacientes.
           </div>
         )}
@@ -100,7 +100,7 @@ export const PatientsTable: React.FC<Props> = ({
         Desliza horizontalmente para ver todas las columnas.
       </p>
 
-      <div className="hidden w-full overflow-x-auto rounded-lg border border-nutri-light-grey md:block">
+      <div className="nutri-clinician-surface hidden w-full overflow-x-auto rounded-lg border border-nutri-light-grey md:block">
         <table className="w-full min-w-[860px] text-sm">
           <thead className="bg-nutri-off-white">
             <tr>

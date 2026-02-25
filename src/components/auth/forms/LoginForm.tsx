@@ -97,9 +97,12 @@ export function LoginForm() {
   }
 
   return (
-    <form noValidate onSubmit={handleSubmit} className="space-y-5">
+    <form noValidate onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="login-ci" className="nutri-label">
+        <label
+          htmlFor="login-ci"
+          className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-nutri-dark-grey/80"
+        >
           CI
         </label>
         <input
@@ -124,13 +127,13 @@ export function LoginForm() {
           aria-invalid={Boolean(errors.ci)}
           aria-describedby={errors.ci ? "login-ci-error" : undefined}
           maxLength={20}
-          className="nutri-input"
+          className="nutri-input h-11 rounded-xl border-nutri-light-grey/90 bg-white/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]"
           required
         />
         {errors.ci && (
           <p
             id="login-ci-error"
-            className="mt-1 text-xs font-medium text-nutri-secondary"
+            className="mt-1.5 text-xs font-medium text-nutri-secondary"
           >
             {errors.ci}
           </p>
@@ -138,7 +141,10 @@ export function LoginForm() {
       </div>
 
       <div>
-        <label htmlFor="login-password" className="nutri-label">
+        <label
+          htmlFor="login-password"
+          className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-nutri-dark-grey/80"
+        >
           Contrasena
         </label>
         <div className="relative">
@@ -163,14 +169,14 @@ export function LoginForm() {
             onBlur={() => handleFieldBlur("password", password)}
             aria-invalid={Boolean(errors.password)}
             aria-describedby={errors.password ? "login-password-error" : undefined}
-            className="nutri-input pr-10"
+            className="nutri-input h-11 rounded-xl border-nutri-light-grey/90 bg-white/85 pr-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]"
             required
           />
           <button
             type="button"
             onClick={() => setShowPassword((previous) => !previous)}
             aria-label={showPassword ? "Ocultar contrasena" : "Mostrar contrasena"}
-            className="absolute right-2.5 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-md p-1 text-nutri-secondary transition-colors hover:text-nutri-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nutri-secondary/35"
+            className="absolute right-2.5 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-lg border border-transparent p-1 text-nutri-secondary transition-all hover:border-nutri-light-grey hover:bg-white hover:text-nutri-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nutri-secondary/35"
           >
             <span className="sr-only">
               {showPassword ? "Ocultar contrasena" : "Mostrar contrasena"}
@@ -181,14 +187,14 @@ export function LoginForm() {
         {errors.password && (
           <p
             id="login-password-error"
-            className="mt-1 text-xs font-medium text-nutri-secondary"
+            className="mt-1.5 text-xs font-medium text-nutri-secondary"
           >
             {errors.password}
           </p>
         )}
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-nutri-dark-grey">
+      <label className="flex items-center gap-2 rounded-xl border border-nutri-light-grey/80 bg-white/60 px-3 py-2 text-sm text-nutri-dark-grey">
         <input
           type="checkbox"
           checked={rememberCredentials}
@@ -199,13 +205,15 @@ export function LoginForm() {
       </label>
 
       {errors.form && (
-        <p className="text-sm font-medium text-nutri-secondary">{errors.form}</p>
+        <p className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700">
+          {errors.form}
+        </p>
       )}
 
       <Button
         type="submit"
         disabled={loading}
-        className="w-full justify-center"
+        className="w-full justify-center rounded-xl py-2.5 text-sm font-bold shadow-[0_12px_24px_rgba(18,33,46,0.22)]"
       >
         {loading ? "Ingresando..." : "Iniciar sesion"}
       </Button>

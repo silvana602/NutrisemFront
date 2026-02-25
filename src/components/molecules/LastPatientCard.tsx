@@ -28,7 +28,7 @@ function TrendIcon({ direction }: { direction: LastPatientTrendDirection }) {
 }
 
 export const LastPatientCard = ({ patient }: { patient: LastPatientCardData }) => (
-  <article className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm sm:p-5">
+  <article className="nutri-clinician-surface p-4 sm:p-5">
     <header className="mb-4 flex flex-wrap items-center justify-between gap-2">
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
@@ -73,7 +73,7 @@ export const LastPatientCard = ({ patient }: { patient: LastPatientCardData }) =
           patient.trendDirection === "down" && "border-rose-200 bg-rose-50",
           patient.trendDirection !== "up" &&
             patient.trendDirection !== "down" &&
-            "border-nutri-light-grey bg-nutri-off-white"
+            "nutri-clinician-surface-soft border-nutri-light-grey"
         )}
       >
         <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
@@ -85,7 +85,7 @@ export const LastPatientCard = ({ patient }: { patient: LastPatientCardData }) =
         </p>
       </div>
 
-      <div className="rounded-lg border border-nutri-light-grey bg-nutri-off-white px-3 py-2">
+      <div className="nutri-clinician-surface-soft rounded-lg border border-nutri-light-grey px-3 py-2">
         <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
           Z-score
         </p>

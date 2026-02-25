@@ -345,7 +345,7 @@ function IndicatorBarCard({ title, subtitle, summary }: IndicatorBarProps) {
   const highPercent = percentage(summary.high, summary.total);
 
   return (
-    <article className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm">
+    <article className="nutri-clinician-surface p-4">
       <h3 className="text-sm font-semibold text-nutri-primary">{title}</h3>
       <p className="mt-1 text-xs text-nutri-dark-grey/80">{subtitle}</p>
 
@@ -722,12 +722,12 @@ export const ReportsContent: React.FC = () => {
       </div>
 
       {datasetRows.length === 0 ? (
-        <div className="rounded-xl border border-nutri-light-grey bg-nutri-white px-4 py-5 text-sm text-nutri-dark-grey shadow-sm">
+        <div className="nutri-clinician-surface px-4 py-5 text-sm text-nutri-dark-grey">
           No hay consultas suficientes para generar indicadores poblacionales.
         </div>
       ) : (
         <>
-          <section className="space-y-3 rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm sm:p-5">
+          <section className="nutri-clinician-surface space-y-3 p-4 sm:p-5">
             <header className="flex items-center gap-2">
               <LineChart size={18} className="text-nutri-primary" />
               <h3 className="text-base font-semibold text-nutri-primary">Prevalencia de malnutricion</h3>
@@ -751,7 +751,7 @@ export const ReportsContent: React.FC = () => {
             </div>
           </section>
 
-          <section className="space-y-3 rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm sm:p-5">
+          <section className="nutri-clinician-surface space-y-3 p-4 sm:p-5">
             <header className="flex items-center gap-2">
               <FileBarChart2 size={18} className="text-nutri-primary" />
               <h3 className="text-base font-semibold text-nutri-primary">Distribucion por Z-score</h3>
@@ -761,7 +761,7 @@ export const ReportsContent: React.FC = () => {
               {zScoreDistribution.entries.map((entry) => (
                 <article
                   key={entry.label}
-                  className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/60 p-3"
+                  className="nutri-clinician-surface-soft rounded-lg border border-nutri-light-grey p-3"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-sm font-semibold text-nutri-dark-grey">{entry.label}</p>
@@ -785,7 +785,7 @@ export const ReportsContent: React.FC = () => {
           </section>
 
           <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <article className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm sm:p-5">
+            <article className="nutri-clinician-surface p-4 sm:p-5">
               <h3 className="text-base font-semibold text-nutri-primary">Top de diagnosticos frecuentes</h3>
               {topDiagnoses.length === 0 ? (
                 <p className="mt-3 text-sm text-nutri-dark-grey">
@@ -796,7 +796,7 @@ export const ReportsContent: React.FC = () => {
                   {topDiagnoses.map((item, index) => (
                     <li
                       key={item.label}
-                      className="flex items-center justify-between rounded-lg border border-nutri-light-grey bg-nutri-off-white/60 px-3 py-2 text-sm"
+                      className="nutri-clinician-surface-soft flex items-center justify-between rounded-lg border border-nutri-light-grey px-3 py-2 text-sm"
                     >
                       <span className="font-medium text-nutri-dark-grey">
                         {index + 1}. {item.label}
@@ -808,7 +808,7 @@ export const ReportsContent: React.FC = () => {
               )}
             </article>
 
-            <article className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm sm:p-5">
+            <article className="nutri-clinician-surface p-4 sm:p-5">
               <header className="flex items-center gap-2">
                 <Heart size={18} className="text-nutri-primary" />
                 <h3 className="text-base font-semibold text-nutri-primary">Reporte de lactancia (6-24 meses)</h3>

@@ -193,10 +193,10 @@ export const ClinicianDashboardContent: React.FC<Props> = ({ user }) => {
   };
 
   return (
-    <div className="space-y-6 p-4 sm:p-6">
+    <div className="nutri-clinician-page px-1 py-1 sm:px-2">
       <ClinicianDashboardHero firstName={user.firstName} lastName={user.lastName} />
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+      <div className="nutri-clinician-surface-soft flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-4">
         <IconButton
           label="Nueva consulta"
           className="w-full justify-center sm:w-auto"

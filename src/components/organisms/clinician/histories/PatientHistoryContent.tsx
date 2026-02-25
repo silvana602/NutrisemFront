@@ -113,7 +113,7 @@ export const PatientHistoryContent: React.FC = () => {
   const showAssignedEmpty = patientOptions.length === 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <header className="space-y-1">
         <h2 className="text-xl font-semibold text-nutri-dark-grey">Historiales clinicos</h2>
         <p className="text-sm text-nutri-dark-grey/80">
@@ -121,7 +121,7 @@ export const PatientHistoryContent: React.FC = () => {
         </p>
       </header>
 
-      <section className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm sm:p-5">
+      <section className="nutri-clinician-surface-soft p-4 sm:p-5">
         <SearchBar
           value={search}
           onChange={setSearch}
@@ -142,7 +142,7 @@ export const PatientHistoryContent: React.FC = () => {
                 key={option.patient.patientId}
                 type="button"
                 onClick={() => setSelectedPatientId(option.patient.patientId)}
-                className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/60 p-3 text-left transition-colors hover:bg-nutri-off-white"
+                className="nutri-clinician-surface rounded-lg border border-nutri-light-grey p-3 text-left transition-colors hover:bg-nutri-off-white"
               >
                 <p className="text-sm font-semibold text-nutri-primary">{option.patientName}</p>
                 <p className="text-xs text-nutri-dark-grey/80">CI: {option.ci}</p>
@@ -165,7 +165,7 @@ export const PatientHistoryContent: React.FC = () => {
 
       {selectedPatient && (
         <section className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-nutri-light-grey bg-nutri-white px-4 py-3 shadow-sm">
+          <div className="nutri-clinician-surface-soft flex flex-wrap items-center justify-between gap-3 rounded-xl px-4 py-3">
             <div>
               <p className="text-sm text-nutri-dark-grey">Paciente seleccionado</p>
               <p className="text-base font-semibold text-nutri-primary">
@@ -192,4 +192,3 @@ export const PatientHistoryContent: React.FC = () => {
 };
 
 export default PatientHistoryContent;
-

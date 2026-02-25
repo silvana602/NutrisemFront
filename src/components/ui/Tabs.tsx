@@ -22,8 +22,8 @@ export function Tabs<T extends string>({
   className = "",
 }: TabsProps<T>) {
   return (
-    <div className={`w-full border-b border-[var(--color-nutri-light-grey)] ${className}`.trim()}>
-      <div className="flex min-w-max gap-2 overflow-x-auto pb-1">
+    <div className={`w-full ${className}`.trim()}>
+      <div className="flex min-w-max gap-2 overflow-x-auto rounded-xl border border-nutri-light-grey/85 bg-nutri-white/80 p-1 shadow-sm">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -31,13 +31,13 @@ export function Tabs<T extends string>({
             disabled={tab.disabled}
             onClick={() => !tab.disabled && onTabChange(tab.id)}
             className={`
-              shrink-0 rounded-t-md px-3 py-2 text-xs font-medium transition-colors sm:px-4 sm:text-sm
+              shrink-0 rounded-lg px-3 py-2 text-xs font-semibold transition-all duration-200 sm:px-4 sm:text-sm
               ${
                 activeTab === tab.id
-                  ? "bg-[var(--color-nutri-secondary)] text-nutri-white"
-                  : "bg-transparent text-[var(--color-nutri-dark-grey)] hover:bg-[var(--color-nutri-light-grey)]"
+                  ? "bg-[linear-gradient(135deg,#172A3A_0%,#567C8D_100%)] text-nutri-white shadow-[0_8px_16px_rgba(23,42,58,0.24)]"
+                  : "bg-transparent text-[var(--color-nutri-dark-grey)] hover:bg-[var(--color-nutri-light-grey)]/70"
               }
-              ${tab.disabled ? "cursor-not-allowed opacity-45 hover:bg-transparent" : ""}
+              ${tab.disabled ? "cursor-not-allowed opacity-45 hover:bg-transparent" : "hover:-translate-y-0.5"}
             `}
           >
             {tab.label}

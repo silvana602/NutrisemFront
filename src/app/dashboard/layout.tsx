@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import Sidebar from "@/components/layout/sidebar/Sidebar";
 import { LoadingButton } from "@/components/ui/Spinner";
 import { UserRole } from "@/types/user";
+import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -28,6 +29,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, hydrated } = useAuthStore();
   const routeRole = getRouteRole(pathname ?? "");
   const hasRoleMismatch = Boolean(user && routeRole && user.role !== routeRole);
+  const isClinicianRoute = routeRole === UserRole.clinician;
 
   useEffect(() => {
     if (!hydrated) return;
@@ -71,11 +73,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-[calc(100dvh-var(--nutri-navbar-height)-var(--nutri-footer-height))] items-start">
+    <div
+      className={cn(
+        "flex min-h-[calc(100dvh-var(--nutri-navbar-height)-var(--nutri-footer-height))] items-start",
+        isClinicianRoute && "nutri-clinician-layout"
+      )}
+    >
       <Sidebar />
 
-      <main className="min-w-0 flex-1 p-3 sm:p-4">
-        <div className="mx-auto w-full max-w-[1400px]">{children}</div>
+      <main
+        className={cn(
+          "min-w-0 flex-1 p-3 sm:p-4",
+          isClinicianRoute && "nutri-clinician-main px-2 py-3 sm:px-4 sm:py-5 lg:px-6"
+        )}
+      >
+        <div className={cn("mx-auto w-full max-w-[1400px]", isClinicianRoute && "max-w-[1460px]")}>
+          {children}
+        </div>
       </main>
     </div>
   );

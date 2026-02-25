@@ -17,18 +17,18 @@ export default function HistorialesReportesPage() {
   const [tab, setTab] = useState<ReportsTabId>("historiales");
 
   return (
-    <div className="w-full px-4 py-4 sm:px-6">
+    <div className="nutri-clinician-page w-full px-1 py-1 sm:px-2">
       <Heading
-        containerClassName="mb-6"
+        containerClassName="nutri-clinician-page-header mb-1 p-4 sm:p-5"
         eyebrow="Modulo clinician"
         description="Consulta historiales clinicos y genera reportes desde un solo lugar."
       >
         Historial y reportes
       </Heading>
 
-      <Tabs tabs={REPORTS_TABS} activeTab={tab} onTabChange={setTab} className="mb-6" />
+      <Tabs tabs={REPORTS_TABS} activeTab={tab} onTabChange={setTab} />
 
-      <div className="w-full">
+      <div className="nutri-clinician-surface w-full p-4 sm:p-5">
         {tab === "historiales" && <PatientHistoryContent />}
         {tab === "reportes" && <ReportsContent />}
       </div>

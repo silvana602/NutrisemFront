@@ -2289,10 +2289,15 @@ export const DiagnosisDocumentContent: React.FC = () => {
   >;
 
   return (
-    <div className="space-y-6 p-4 sm:p-6">
-      <Heading>Diagnostico del paciente</Heading>
+    <div className="nutri-clinician-page px-1 py-1 sm:px-2">
+      <Heading
+        containerClassName="nutri-clinician-page-header p-4 sm:p-5"
+        description="Busca al paciente, selecciona la consulta y revisa resumen, resultados y progresion antropometrica."
+      >
+        Diagnostico del paciente
+      </Heading>
 
-      <section>
+      <section className="nutri-clinician-surface p-4 sm:p-5">
         <div className="mt-2 flex flex-col gap-4 sm:mt-4 sm:flex-row sm:items-end sm:gap-6">
           <div className="relative w-full max-w-xl" onKeyDown={handleSearchKeyDown}>
             <SearchBar
@@ -2304,7 +2309,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
             {query.trim().length >= 3 && filteredPatients.length > 0 && (
               <ul
                 role="listbox"
-                className="absolute z-10 mt-1 w-full overflow-hidden rounded-lg border border-nutri-light-grey bg-nutri-white shadow-md"
+                className="nutri-clinician-surface absolute z-10 mt-1 w-full overflow-hidden rounded-lg border border-nutri-light-grey bg-nutri-white shadow-md"
               >
                 {filteredPatients.map((patientOption, index) => (
                   <li
@@ -2350,7 +2355,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
         </p>
 
         {selectedPatient && (
-          <div className="mt-4 rounded-lg border border-nutri-light-grey bg-nutri-off-white px-4 py-3">
+          <div className="nutri-clinician-surface-soft mt-4 rounded-lg border border-nutri-light-grey px-4 py-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-sm text-nutri-dark-grey">Diagnostico del paciente:</p>
@@ -2378,7 +2383,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
         )}
 
         {selectedPatient && (
-          <div className="mt-4 space-y-3 rounded-lg border border-nutri-light-grey bg-nutri-white p-4">
+          <div className="nutri-clinician-surface mt-4 space-y-3 p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm font-semibold text-nutri-primary">
                 {selectedConsultationResult ? "Consulta seleccionada" : "Resultados encontrados"}
@@ -2466,7 +2471,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
       </section>
 
       {selectedPatient && selectedPatientResults.length > 0 && !selectedConsultationResult && (
-        <div className="rounded-xl border border-nutri-light-grey bg-nutri-white p-5 shadow-sm">
+        <div className="nutri-clinician-surface p-5">
           <p className="text-sm text-nutri-dark-grey">
             Selecciona un resultado para mostrar el resumen y los tabs de resultados.
           </p>
@@ -2480,20 +2485,20 @@ export const DiagnosisDocumentContent: React.FC = () => {
           {activeTab === "summary" && (
         <>
           {!selectedPatient ? (
-            <div className="rounded-xl border border-nutri-light-grey bg-nutri-white p-5 shadow-sm">
+            <div className="nutri-clinician-surface p-5">
               <p className="text-sm text-nutri-dark-grey">
                 Selecciona un paciente desde el buscador para ver su resumen diagnostico.
               </p>
             </div>
           ) : !selectedConsultationResult ? (
-            <div className="rounded-xl border border-nutri-light-grey bg-nutri-white p-5 shadow-sm">
+            <div className="nutri-clinician-surface p-5">
               <p className="text-sm text-nutri-dark-grey">
                 No hay consultas para el paciente seleccionado
                 {consultationDateFilter ? ` en la fecha ${consultationDateFilter}` : ""}.
               </p>
             </div>
           ) : snapshotForSummary ? (
-            <article className="space-y-5 rounded-xl border border-nutri-light-grey bg-nutri-off-white p-4 shadow-sm sm:p-6">
+            <article className="nutri-clinician-surface space-y-5 p-4 sm:p-6">
               <header className="space-y-2 rounded-lg border border-nutri-primary/20 bg-nutri-white px-4 py-3">
                 <p className="text-sm font-semibold text-nutri-primary">Resumen de la ultima consulta</p>
                 <p className="text-xs text-nutri-dark-grey">
@@ -2780,7 +2785,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
 
             </article>
           ) : (
-            <article className="space-y-5 rounded-xl border border-nutri-light-grey bg-nutri-off-white p-4 shadow-sm sm:p-6">
+            <article className="nutri-clinician-surface space-y-5 p-4 sm:p-6">
               <header className="space-y-2 rounded-lg border border-nutri-primary/20 bg-nutri-white px-4 py-3">
                 <p className="text-sm font-semibold text-nutri-primary">Resumen de la ultima consulta</p>
                 <p className="text-xs text-nutri-dark-grey">
@@ -2851,7 +2856,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
           </header>
 
           {resultsStep === 0 && (
-            <article className="space-y-4 rounded-lg border border-nutri-light-grey bg-nutri-off-white p-4">
+            <article className="nutri-clinician-surface-soft space-y-4 p-4">
               {!selectedPatient ? (
                 <p className="text-sm text-nutri-dark-grey">
                   Selecciona un paciente para mostrar su diagnostico final.
@@ -2896,7 +2901,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
           )}
 
           {resultsStep === 1 && (
-            <article className="space-y-5 rounded-lg border border-nutri-light-grey bg-nutri-off-white p-4">
+            <article className="nutri-clinician-surface-soft space-y-5 p-4">
               {!selectedPatient ? (
                 <p className="text-sm text-nutri-dark-grey">
                   Selecciona un paciente para ver recomendaciones.
@@ -2999,7 +3004,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
           )}
 
           {resultsStep === 2 && (
-            <article className="space-y-4 rounded-lg border border-nutri-light-grey bg-nutri-off-white p-4">
+            <article className="nutri-clinician-surface-soft space-y-4 p-4">
               {!selectedPatient ? (
                 <p className="text-sm text-nutri-dark-grey">
                   Selecciona un paciente para visualizar sus graficos de progreso.

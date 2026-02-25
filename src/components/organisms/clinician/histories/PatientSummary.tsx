@@ -55,7 +55,7 @@ export const PatientSummary: React.FC<Props> = ({ patient }) => {
 
   if (!user) {
     return (
-      <section className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm">
+      <section className="nutri-clinician-surface p-4">
         <p className="text-sm text-nutri-dark-grey">Usuario del paciente no encontrado.</p>
       </section>
     );
@@ -67,7 +67,7 @@ export const PatientSummary: React.FC<Props> = ({ patient }) => {
   const statusLabel = latestDiagnosis?.nutritionalDiagnosis ?? "Sin diagnostico";
 
   return (
-    <section className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm sm:p-5">
+    <section className="nutri-clinician-surface p-4 sm:p-5">
       <header className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
@@ -117,4 +117,3 @@ export const PatientSummary: React.FC<Props> = ({ patient }) => {
 };
 
 export default PatientSummary;
-

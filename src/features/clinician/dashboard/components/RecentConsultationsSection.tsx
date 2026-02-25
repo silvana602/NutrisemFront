@@ -28,7 +28,7 @@ export function RecentConsultationsSection({
       </header>
 
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-        <article className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm">
+        <article className="nutri-clinician-surface p-4">
           <header className="mb-2 flex items-center gap-2">
             <FileClock size={16} className="text-nutri-primary" />
             <h3 className="text-sm font-semibold text-nutri-primary">Ficha en curso</h3>
@@ -57,7 +57,7 @@ export function RecentConsultationsSection({
           )}
         </article>
 
-        <article className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm">
+        <article className="nutri-clinician-surface p-4">
           <header className="mb-2 flex items-center gap-2">
             <ClipboardCheck size={16} className="text-nutri-primary" />
             <h3 className="text-sm font-semibold text-nutri-primary">Pacientes recien atendidos</h3>
@@ -70,7 +70,7 @@ export function RecentConsultationsSection({
               {recentConsultations.map((item) => (
                 <div
                   key={`recent-${item.recordId}`}
-                  className="flex flex-col gap-2 rounded-lg border border-nutri-light-grey bg-nutri-off-white/60 p-2.5 sm:flex-row sm:items-center sm:justify-between"
+                  className="nutri-clinician-surface-soft flex flex-col gap-2 p-2.5 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="space-y-0.5">
                     <p className="text-sm font-semibold text-nutri-dark-grey">{item.patientName}</p>

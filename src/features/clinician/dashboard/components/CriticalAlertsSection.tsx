@@ -14,7 +14,7 @@ export function CriticalAlertsSection({
   onViewDiagnosis,
 }: CriticalAlertsSectionProps) {
   return (
-    <section className="rounded-xl border border-rose-200 bg-rose-50/70 p-4 shadow-sm sm:p-5">
+    <section className="nutri-clinician-surface border-rose-200/75 bg-[linear-gradient(140deg,rgba(255,255,255,0.88)_0%,rgba(255,241,242,0.78)_100%)] p-4 sm:p-5">
       <header className="mb-3 flex items-center gap-2">
         <AlertTriangle size={18} className="text-rose-700" />
         <h2 className="text-base font-semibold text-rose-700">Alertas criticas de la semana</h2>
@@ -29,7 +29,7 @@ export function CriticalAlertsSection({
           {alerts.map(({ item, reason }) => (
             <article
               key={`alert-${item.recordId}`}
-              className="rounded-lg border border-rose-200 bg-nutri-white p-3"
+              className="nutri-clinician-surface-soft border-rose-200/85 p-3"
             >
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-0.5">

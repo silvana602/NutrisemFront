@@ -259,16 +259,18 @@ export const NewPatientRegistrationContent: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 p-4 sm:p-6">
-      <Heading>Registro de paciente pediatrico</Heading>
-
-      <p className="text-sm text-nutri-dark-grey">
-        Completa los datos del nino y del tutor responsable. Esta informacion sera usada para
-        iniciar consultas y generar diagnosticos.
-      </p>
+    <div className="nutri-clinician-page px-1 py-1 sm:px-2">
+      <div className="nutri-clinician-page-header p-4 sm:p-5">
+        <Heading
+          containerClassName="space-y-2"
+          description="Completa los datos del nino y del tutor responsable para habilitar consultas y diagnosticos."
+        >
+          Registro de paciente pediatrico
+        </Heading>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <section className="nutri-surface p-4 sm:p-5">
+        <section className="nutri-clinician-surface p-4 sm:p-5">
           <h2 className="mb-4 text-base font-semibold text-nutri-primary">1. Datos del paciente</h2>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -374,7 +376,7 @@ export const NewPatientRegistrationContent: React.FC = () => {
           </div>
         </section>
 
-        <section className="nutri-surface p-4 sm:p-5">
+        <section className="nutri-clinician-surface p-4 sm:p-5">
           <h2 className="mb-4 text-base font-semibold text-nutri-primary">2. Datos del tutor responsable</h2>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -492,7 +494,7 @@ export const NewPatientRegistrationContent: React.FC = () => {
         </section>
 
         {(errors.submit || submitMessage) && (
-          <div className="rounded-lg border border-nutri-light-grey bg-nutri-white px-4 py-3 text-sm">
+          <div className="nutri-clinician-surface-soft rounded-lg border border-nutri-light-grey px-4 py-3 text-sm">
             {errors.submit && <p className="text-rose-700">{errors.submit}</p>}
             {!errors.submit && submitMessage && <p className="text-emerald-700">{submitMessage}</p>}
           </div>

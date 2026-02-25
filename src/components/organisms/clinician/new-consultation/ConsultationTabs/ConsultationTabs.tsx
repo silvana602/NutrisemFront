@@ -113,20 +113,22 @@ export const ConsultationTabs: React.FC = () => {
       : "La consulta se guardo correctamente. Para continuar, abre el documento del diagnostico.";
 
   return (
-    <section className="w-full">
+    <section className="w-full space-y-6">
       <Tabs
         tabs={tabs}
         activeTab={safeActiveTab}
         onTabChange={(tab) => canAccessTab(tab) && setActiveTab(tab)}
       />
 
-      <div className="mt-6">
+      <div className="nutri-clinician-surface-soft p-4 sm:p-5">
         {safeActiveTab === "anthropometric" && <AnthropometricForm />}
         {safeActiveTab === "clinical" && <ClinicalForm />}
         {safeActiveTab === "historical" && <HistoricalForm />}
       </div>
 
-      <div className="mt-8 flex items-center justify-between">
+      <div className="nutri-clinician-divider" />
+
+      <div className="flex items-center justify-between">
         <div>
           {showBack && (
             <Button variant="outline" onClick={goBack}>

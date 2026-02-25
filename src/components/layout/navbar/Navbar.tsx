@@ -34,6 +34,13 @@ function isItemActive(pathname: string | null, href: string, matchExact?: boolea
   return pathname === href || pathname.startsWith(href + "/");
 }
 
+function roleLabel(role: UserRole | null): string {
+  if (role === UserRole.admin) return "Admin";
+  if (role === UserRole.clinician) return "Clinico";
+  if (role === UserRole.patient) return "Paciente";
+  return "Usuario";
+}
+
 export const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
@@ -96,20 +103,25 @@ export const Navbar = () => {
   const isClinician = user?.role === UserRole.clinician;
 
   return (
-    <header className="sticky top-0 z-30 h-[var(--nutri-navbar-height)] border-b border-nutri-light-grey bg-nutri-white/95 shadow-sm">
-      <div className="container mx-auto flex h-full px-3 sm:px-4">
-        <div className="flex w-full items-center justify-between">
+    <header className="sticky top-0 z-40 h-[var(--nutri-navbar-height)] border-b border-white/60 bg-[linear-gradient(110deg,rgba(251,249,241,0.96)_0%,rgba(245,239,235,0.9)_45%,rgba(231,233,227,0.85)_100%)] shadow-[0_10px_30px_rgba(18,33,46,0.12)] backdrop-blur">
+      <div className="mx-auto flex h-full w-full max-w-[1480px] px-3 sm:px-4 lg:px-6">
+        <div className="flex w-full items-center justify-between gap-3">
           <Link
             href="/"
             aria-label="Ir a la pagina de bienvenida"
-            className="flex min-w-0 items-center gap-2"
+            className="group flex min-w-0 items-center gap-2.5"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-nutri-primary text-lg font-bold text-nutri-white sm:h-10 sm:w-10 sm:text-xl">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/60 bg-[linear-gradient(135deg,#172A3A_0%,#567C8D_100%)] text-lg font-bold text-nutri-white shadow-[0_10px_20px_rgba(18,33,46,0.28)] transition-transform group-hover:-translate-y-0.5">
               N
             </div>
-            <span className="hidden truncate text-xl font-bold text-nutri-primary sm:inline sm:text-2xl">
-              Nutrisem
-            </span>
+            <div className="min-w-0">
+              <span className="hidden truncate text-xl font-extrabold tracking-tight text-nutri-primary sm:block sm:text-[1.45rem]">
+                Nutrisem
+              </span>
+              <span className="hidden text-[11px] font-semibold uppercase tracking-[0.14em] text-nutri-dark-grey/70 lg:block">
+                Seguimiento nutricional
+              </span>
+            </div>
           </Link>
 
           {user && (
@@ -125,10 +137,15 @@ export const Navbar = () => {
 
           {user ? (
             <div className="hidden md:block">
-              <UserMenu />
+              <div className="rounded-2xl border border-white/70 bg-white/65 p-1 shadow-[0_8px_18px_rgba(18,33,46,0.1)]">
+                <UserMenu />
+              </div>
             </div>
           ) : pathname !== "/login" ? (
-            <Button variant="outline" className="px-3 py-2 text-sm sm:px-5 sm:py-2.5">
+            <Button
+              variant="outline"
+              className="border-nutri-primary/25 bg-white/70 px-4 py-2 text-sm font-bold text-nutri-primary hover:bg-white sm:px-5 sm:py-2.5"
+            >
               <Link href={`/login${nextQuery}`}>Iniciar sesion</Link>
             </Button>
           ) : null}
@@ -143,22 +160,25 @@ export const Navbar = () => {
           ref={mobileRef}
           className="fixed inset-x-0 top-[var(--nutri-navbar-height)] z-50 md:hidden"
         >
-          <div className="mx-3 mt-3 max-h-[calc(100dvh-var(--nutri-navbar-height)-1rem)] overflow-y-auto rounded-2xl border border-nutri-light-grey bg-nutri-white p-3 shadow-2xl">
-            <div className="flex items-center gap-3 rounded-xl bg-nutri-off-white p-3">
-              <Avatar name={`${user.firstName} ${user.lastName}`} size={42} />
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-nutri-black">
-                  {user.firstName} {user.lastName}
-                </p>
-                <p className="truncate text-xs text-nutri-dark-grey">
-                  C.I. {user.identityNumber}
-                </p>
+          <div className="mx-3 mt-3 max-h-[calc(100dvh-var(--nutri-navbar-height)-1rem)] overflow-y-auto rounded-2xl border border-white/80 bg-[linear-gradient(160deg,rgba(251,249,241,0.97)_0%,rgba(245,239,235,0.92)_75%,rgba(231,233,227,0.9)_100%)] p-3 shadow-[0_24px_40px_rgba(18,33,46,0.3)]">
+            <div className="rounded-xl border border-white/85 bg-white/65 p-3 shadow-[0_10px_22px_rgba(18,33,46,0.1)]">
+              <div className="flex items-center gap-3">
+                <Avatar name={`${user.firstName} ${user.lastName}`} size={44} />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-nutri-black">
+                    {user.firstName} {user.lastName}
+                  </p>
+                  <p className="truncate text-xs text-nutri-dark-grey">C.I. {user.identityNumber}</p>
+                </div>
+                <span className="ml-auto inline-flex rounded-full border border-nutri-secondary/30 bg-nutri-secondary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-nutri-primary">
+                  {roleLabel(currentRole)}
+                </span>
               </div>
             </div>
 
-            <div className="my-3 h-px bg-nutri-light-grey" />
+            <div className="my-3 h-px bg-gradient-to-r from-transparent via-nutri-secondary/35 to-transparent" />
 
-            <p className="px-2 text-xs font-semibold uppercase tracking-wide text-nutri-secondary">
+            <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-nutri-secondary">
               Navegacion
             </p>
             <nav className="mt-2">
@@ -172,22 +192,31 @@ export const Navbar = () => {
                     href={item.href}
                     onClick={mobile.onClose}
                     className={cn(
-                      "my-1 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all",
+                      "group my-1.5 flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold transition-all",
                       active
-                        ? "bg-nutri-primary text-nutri-white"
-                        : "text-nutri-dark-grey hover:bg-nutri-off-white"
+                        ? "bg-[linear-gradient(135deg,#172A3A_0%,#567C8D_100%)] text-nutri-white shadow-[0_10px_20px_rgba(18,33,46,0.24)]"
+                        : "text-nutri-dark-grey hover:bg-white/75"
                     )}
                   >
-                    <Icon size={18} />
+                    <span
+                      className={cn(
+                        "inline-flex h-8 w-8 items-center justify-center rounded-lg border",
+                        active
+                          ? "border-white/30 bg-white/15"
+                          : "border-nutri-light-grey bg-white text-nutri-primary"
+                      )}
+                    >
+                      <Icon size={16} />
+                    </span>
                     <span>{item.label}</span>
                   </Link>
                 );
               })}
             </nav>
 
-            <div className="my-3 h-px bg-nutri-light-grey" />
+            <div className="my-3 h-px bg-gradient-to-r from-transparent via-nutri-secondary/35 to-transparent" />
 
-            <p className="px-2 text-xs font-semibold uppercase tracking-wide text-nutri-secondary">
+            <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-nutri-secondary">
               Usuario
             </p>
 
@@ -197,10 +226,10 @@ export const Navbar = () => {
                   <button
                     onClick={() => switchPanel(UserRole.admin)}
                     className={cn(
-                      "block w-full rounded-lg px-4 py-2 text-left text-sm transition-colors",
+                      "block w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all",
                       currentRole === UserRole.admin
                         ? "bg-nutri-primary text-nutri-white"
-                        : "text-nutri-dark-grey hover:bg-nutri-off-white"
+                        : "text-nutri-dark-grey hover:bg-white/75"
                     )}
                   >
                     Panel de Administracion
@@ -209,10 +238,10 @@ export const Navbar = () => {
                   <button
                     onClick={() => switchPanel(UserRole.clinician)}
                     className={cn(
-                      "block w-full rounded-lg px-4 py-2 text-left text-sm transition-colors",
+                      "block w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all",
                       currentRole === UserRole.clinician
                         ? "bg-nutri-primary text-nutri-white"
-                        : "text-nutri-dark-grey hover:bg-nutri-off-white"
+                        : "text-nutri-dark-grey hover:bg-white/75"
                     )}
                   >
                     Panel del Salubrista
@@ -221,10 +250,10 @@ export const Navbar = () => {
                   <button
                     onClick={() => switchPanel(UserRole.patient)}
                     className={cn(
-                      "block w-full rounded-lg px-4 py-2 text-left text-sm transition-colors",
+                      "block w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all",
                       currentRole === UserRole.patient
                         ? "bg-nutri-primary text-nutri-white"
-                        : "text-nutri-dark-grey hover:bg-nutri-off-white"
+                        : "text-nutri-dark-grey hover:bg-white/75"
                     )}
                   >
                     Panel de Paciente
@@ -237,10 +266,10 @@ export const Navbar = () => {
                   <button
                     onClick={() => switchPanel(UserRole.clinician)}
                     className={cn(
-                      "block w-full rounded-lg px-4 py-2 text-left text-sm transition-colors",
+                      "block w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all",
                       currentRole === UserRole.clinician
                         ? "bg-nutri-primary text-nutri-white"
-                        : "text-nutri-dark-grey hover:bg-nutri-off-white"
+                        : "text-nutri-dark-grey hover:bg-white/75"
                     )}
                   >
                     Mi Panel Profesional
@@ -249,10 +278,10 @@ export const Navbar = () => {
                   <button
                     onClick={() => switchPanel(UserRole.patient)}
                     className={cn(
-                      "block w-full rounded-lg px-4 py-2 text-left text-sm transition-colors",
+                      "block w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all",
                       currentRole === UserRole.patient
                         ? "bg-nutri-primary text-nutri-white"
-                        : "text-nutri-dark-grey hover:bg-nutri-off-white"
+                        : "text-nutri-dark-grey hover:bg-white/75"
                     )}
                   >
                     Mi Panel Personal
@@ -263,7 +292,7 @@ export const Navbar = () => {
 
             <button
               onClick={onLogout}
-              className="mt-3 w-full rounded-xl border border-nutri-primary/20 bg-nutri-primary/5 px-4 py-2.5 text-left text-sm font-semibold text-nutri-primary transition-all hover:bg-nutri-primary/10"
+              className="mt-3 w-full rounded-xl border border-nutri-primary/20 bg-nutri-primary/10 px-4 py-2.5 text-left text-sm font-semibold text-nutri-primary transition-all hover:bg-nutri-primary/15"
             >
               Cerrar sesion
             </button>

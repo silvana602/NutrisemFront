@@ -123,7 +123,7 @@ export const PatientsHistoryTable: React.FC<Props> = ({ patientId }) => {
   }, [displayedPage, rows]);
 
   return (
-    <section className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm sm:p-5">
+    <section className="nutri-clinician-surface p-4 sm:p-5">
       <header className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-base font-semibold text-nutri-primary">Historial de consultas</h3>
         <p className="text-xs text-nutri-dark-grey/80">Registros: {rows.length}</p>
@@ -139,7 +139,7 @@ export const PatientsHistoryTable: React.FC<Props> = ({ patientId }) => {
             {currentData.map((row) => (
               <article
                 key={row.consultationId}
-                className="rounded-lg border border-nutri-light-grey bg-nutri-off-white/60 p-4"
+                className="nutri-clinician-surface-soft rounded-lg border border-nutri-light-grey p-4"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm font-semibold text-nutri-dark-grey">{row.consultDateLabel}</p>
@@ -188,7 +188,7 @@ export const PatientsHistoryTable: React.FC<Props> = ({ patientId }) => {
             ))}
           </div>
 
-          <div className="hidden w-full overflow-x-auto rounded-lg border border-nutri-light-grey md:block">
+          <div className="nutri-clinician-surface hidden w-full overflow-x-auto rounded-lg border border-nutri-light-grey md:block">
             <table className="w-full min-w-[980px] text-sm">
               <thead className="bg-nutri-off-white">
                 <tr>
@@ -251,4 +251,3 @@ export const PatientsHistoryTable: React.FC<Props> = ({ patientId }) => {
 };
 
 export default PatientsHistoryTable;
-

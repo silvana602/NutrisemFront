@@ -25,18 +25,16 @@ export const NewConsultationContent: React.FC = () => {
   }, [patientIdFromQuery, selectedPatientId, setSelectedPatientId]);
 
   return (
-    <div
-      className="
-        w-full min-h-0
-        px-3 py-4 sm:px-6 sm:py-6
-        space-y-8
-        flex flex-col
-        bg-[var(--color-nutri-off-white)]"
-    >
-      <NewConsultationHeader />
-      <PatientSelector />
-      <ConsultationTabs />
+    <div className="nutri-clinician-page w-full min-h-0 px-1 py-1 sm:px-2">
+      <section className="nutri-clinician-page-header p-4 sm:p-5">
+        <NewConsultationHeader />
+      </section>
+      <section className="nutri-clinician-surface p-4 sm:p-5">
+        <PatientSelector />
+      </section>
+      <section className="nutri-clinician-surface p-4 sm:p-5">
+        <ConsultationTabs />
+      </section>
     </div>
   );
 };
-

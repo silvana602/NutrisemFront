@@ -2,6 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  ChevronDown,
+  LogOut,
+  ShieldCheck,
+  Stethoscope,
+  UserRound,
+} from "lucide-react";
 import AlertDialog from "@/components/ui/AlertDialog";
 import Avatar from "@/components/ui/Avatar";
 import { logoutClient } from "@/lib/auth/client";
@@ -10,6 +17,18 @@ import { cn } from "@/lib/utils";
 import { db } from "@/mocks/db";
 import { useAuthStore } from "@/store/useAuthStore";
 import { UserRole } from "@/types/user";
+
+type MenuEntry = {
+  role: UserRole;
+  label: string;
+  icon: React.ElementType;
+};
+
+function resolveRoleLabel(role: UserRole): string {
+  if (role === UserRole.admin) return "Administrador";
+  if (role === UserRole.clinician) return "Clinico";
+  return "Paciente";
+}
 
 export default function UserMenu() {
   const router = useRouter();
@@ -53,10 +72,46 @@ export default function UserMenu() {
 
   if (!user) return null;
 
+  const currentRole = activeRole ?? user.role;
+
   const canAccessPatientPanel = () =>
     db.patients.some((patient) => patient.userId === user.userId);
 
   const canAccessClinicianPanel = () => Boolean(useAuthStore.getState().clinician);
+
+  const menuEntries: MenuEntry[] =
+    user.role === UserRole.admin
+      ? [
+          {
+            role: UserRole.admin,
+            label: "Panel de Administracion",
+            icon: ShieldCheck,
+          },
+          {
+            role: UserRole.clinician,
+            label: "Panel del Salubrista",
+            icon: Stethoscope,
+          },
+          {
+            role: UserRole.patient,
+            label: "Panel de Paciente",
+            icon: UserRound,
+          },
+        ]
+      : user.role === UserRole.clinician
+        ? [
+            {
+              role: UserRole.clinician,
+              label: "Mi Panel Profesional",
+              icon: Stethoscope,
+            },
+            {
+              role: UserRole.patient,
+              label: "Mi Panel Personal",
+              icon: UserRound,
+            },
+          ]
+        : [];
 
   const onLogout = async () => {
     await logoutClient(clearSession);
@@ -79,70 +134,65 @@ export default function UserMenu() {
     router.push(resolveDashboardPathByRole(role));
   };
 
-  const isAdmin = user.role === UserRole.admin;
-  const isClinician = user.role === UserRole.clinician;
-
   return (
     <div ref={menuRef} className="relative">
       <button
         ref={buttonRef}
         onClick={() => setOpen((previous) => !previous)}
-        className="flex items-center gap-2 rounded-xl bg-[var(--color-nutri-white)] px-2 py-1 shadow-sm transition-shadow hover:shadow-md"
+        className="group flex items-center gap-2 rounded-2xl border border-white/75 bg-white/80 px-2.5 py-1.5 shadow-[0_8px_18px_rgba(18,33,46,0.12)] transition-all hover:-translate-y-0.5 hover:bg-white"
       >
         <Avatar name={`${user.firstName} ${user.lastName}`} size={32} />
+        <ChevronDown
+          size={16}
+          className={cn(
+            "text-nutri-primary/80 transition-transform duration-200",
+            open && "rotate-180"
+          )}
+        />
       </button>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-[min(18rem,calc(100vw-1rem))] rounded-xl border border-nutri-light-grey bg-nutri-white/95 shadow-sm">
-          {isAdmin && (
+        <div className="absolute right-0 z-50 mt-2 w-[min(20rem,calc(100vw-1rem))] overflow-hidden rounded-2xl border border-white/80 bg-[linear-gradient(155deg,rgba(251,249,241,0.98)_0%,rgba(245,239,235,0.93)_100%)] p-2 shadow-[0_24px_38px_rgba(18,33,46,0.26)]">
+          <div className="mx-1 mb-2 rounded-xl border border-white/85 bg-white/70 p-3 shadow-[0_8px_16px_rgba(18,33,46,0.08)]">
+            <div className="flex items-center gap-3">
+              <Avatar name={`${user.firstName} ${user.lastName}`} size={40} />
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-nutri-black">
+                  {user.firstName} {user.lastName}
+                </p>
+                <p className="truncate text-xs text-nutri-dark-grey/80">C.I. {user.identityNumber}</p>
+              </div>
+              <span className="ml-auto inline-flex rounded-full border border-nutri-secondary/30 bg-nutri-secondary/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-nutri-primary">
+                {resolveRoleLabel(currentRole)}
+              </span>
+            </div>
+          </div>
+
+          {menuEntries.length > 0 && (
             <>
-              <MenuButton
-                active={activeRole === UserRole.admin}
-                onClick={() => switchPanel(UserRole.admin)}
-              >
-                Panel de Administracion
-              </MenuButton>
-
-              <MenuButton
-                active={activeRole === UserRole.clinician}
-                onClick={() => switchPanel(UserRole.clinician)}
-              >
-                Panel del Salubrista
-              </MenuButton>
-
-              <MenuButton
-                active={activeRole === UserRole.patient}
-                onClick={() => switchPanel(UserRole.patient)}
-              >
-                Panel de Paciente
-              </MenuButton>
+              <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-nutri-dark-grey/70">
+                Cambiar panel
+              </p>
+              {menuEntries.map((entry) => (
+                <MenuButton
+                  key={entry.role}
+                  active={currentRole === entry.role}
+                  onClick={() => switchPanel(entry.role)}
+                  icon={entry.icon}
+                >
+                  {entry.label}
+                </MenuButton>
+              ))}
             </>
           )}
 
-          {isClinician && (
-            <>
-              <MenuButton
-                active={activeRole === UserRole.clinician}
-                onClick={() => switchPanel(UserRole.clinician)}
-              >
-                Mi Panel Profesional
-              </MenuButton>
-
-              <MenuButton
-                active={activeRole === UserRole.patient}
-                onClick={() => switchPanel(UserRole.patient)}
-              >
-                Mi Panel Personal
-              </MenuButton>
-            </>
-          )}
-
-          <div className="my-2 h-px bg-nutri-light-grey" />
+          <div className="my-2 h-px bg-gradient-to-r from-transparent via-nutri-secondary/35 to-transparent" />
 
           <button
             onClick={onLogout}
-            className="mx-3 my-1 flex w-[calc(100%-1.5rem)] items-center rounded-xl px-6 py-3 text-left text-sm font-medium text-nutri-dark-grey transition-all duration-150 hover:bg-nutri-off-white"
+            className="mx-2 my-1 flex w-[calc(100%-1rem)] items-center gap-2 rounded-xl border border-nutri-primary/20 bg-nutri-primary/10 px-4 py-2.5 text-left text-sm font-semibold text-nutri-primary transition-all duration-150 hover:bg-nutri-primary/15"
           >
+            <LogOut size={16} />
             Cerrar sesion
           </button>
         </div>
@@ -168,23 +218,36 @@ export default function UserMenu() {
 function MenuButton({
   onClick,
   children,
+  icon: Icon,
   active = false,
 }: {
   onClick: () => void;
   children: React.ReactNode;
+  icon: React.ElementType;
   active?: boolean;
 }) {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "mx-3 my-1 flex w-[calc(100%-1.5rem)] items-center rounded-xl px-6 py-3 text-left text-sm font-medium transition-all duration-150",
+        "group mx-2 my-1 flex w-[calc(100%-1rem)] items-center gap-3 rounded-xl px-4 py-2.5 text-left text-sm font-semibold transition-all duration-150",
         active
-          ? "bg-nutri-primary text-nutri-white shadow-sm"
-          : "text-nutri-dark-grey hover:bg-nutri-off-white"
+          ? "bg-[linear-gradient(135deg,#172A3A_0%,#567C8D_100%)] text-nutri-white shadow-[0_10px_18px_rgba(18,33,46,0.24)]"
+          : "text-nutri-dark-grey hover:bg-white/75"
       )}
     >
-      {children}
+      <span
+        className={cn(
+          "inline-flex h-8 w-8 items-center justify-center rounded-lg border",
+          active
+            ? "border-white/30 bg-white/10 text-white"
+            : "border-nutri-light-grey bg-white text-nutri-primary group-hover:border-nutri-secondary/40"
+        )}
+      >
+        <Icon size={16} />
+      </span>
+      <span className="flex-1">{children}</span>
+      {active ? <span className="h-2 w-2 rounded-full bg-white/90" /> : null}
     </button>
   );
 }

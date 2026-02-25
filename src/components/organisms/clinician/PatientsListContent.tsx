@@ -195,8 +195,8 @@ export const PatientsListContent: React.FC = () => {
   };
 
   return (
-    <div className="w-full space-y-6 px-3 py-4 sm:space-y-8 sm:px-6 sm:py-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="nutri-clinician-page w-full px-1 py-1 sm:px-2">
+      <div className="nutri-clinician-page-header flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
         <Heading>Mis pacientes</Heading>
         <IconButton
           label="Nuevo paciente"
@@ -206,34 +206,34 @@ export const PatientsListContent: React.FC = () => {
       </div>
 
       {highlightedPatientId && (
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+        <div className="nutri-clinician-surface-soft rounded-lg border border-emerald-200 px-4 py-3 text-sm text-emerald-700">
           Paciente registrado correctamente y asignado a tu lista.
         </div>
       )}
 
       <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <article className="rounded-xl border border-nutri-light-grey bg-nutri-white px-4 py-3 shadow-sm">
+        <article className="nutri-clinician-stat px-4 py-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
             Pacientes listados
           </p>
           <p className="mt-1 text-2xl font-semibold text-nutri-primary">{filtered.length}</p>
         </article>
 
-        <article className="rounded-xl border border-nutri-light-grey bg-nutri-white px-4 py-3 shadow-sm">
+        <article className="nutri-clinician-stat px-4 py-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
             Rango pediatrico 6-60m
           </p>
           <p className="mt-1 text-2xl font-semibold text-nutri-primary">{pediatricCount}</p>
         </article>
 
-        <article className="rounded-xl border border-nutri-light-grey bg-nutri-white px-4 py-3 shadow-sm">
+        <article className="nutri-clinician-stat px-4 py-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
             Riesgo nutricional
           </p>
           <p className="mt-1 text-2xl font-semibold text-nutri-primary">{riskCount}</p>
         </article>
 
-        <article className="rounded-xl border border-nutri-light-grey bg-nutri-white px-4 py-3 shadow-sm">
+        <article className="nutri-clinician-stat px-4 py-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
             Consulta ult. 30 dias
           </p>
@@ -241,7 +241,7 @@ export const PatientsListContent: React.FC = () => {
         </article>
       </section>
 
-      <section className="rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm sm:p-5">
+      <section className="nutri-clinician-surface p-4 sm:p-5">
         <div className="space-y-3">
           <SearchBar
             value={search}
@@ -292,7 +292,7 @@ export const PatientsListContent: React.FC = () => {
       )}
 
       {rows.length === 0 && (
-        <section className="rounded-xl border border-nutri-light-grey bg-nutri-white p-5 text-sm text-nutri-dark-grey shadow-sm">
+        <section className="nutri-clinician-surface p-5 text-sm text-nutri-dark-grey">
           No tienes pacientes asignados por el momento.
         </section>
       )}
