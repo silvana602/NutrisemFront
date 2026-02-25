@@ -5,7 +5,6 @@ import { db, seedOnce } from "@/mocks/db";
 
 import {
   PatientAnthropometricCard,
-  PatientDailyMissionCard,
   PatientDashboardHero,
   PatientEducationBanner,
   PatientProgressCard,
@@ -19,7 +18,6 @@ import {
   getProgressCopy,
   getZoneCopy,
   inferZoneFromStatus,
-  pickDailyMission,
 } from "@/features/patient/dashboard/utils";
 
 seedOnce();
@@ -51,7 +49,6 @@ export default function PatientDashboardPage() {
   const progressDirection = compareZoneProgress(currentZone, previousZone);
   const progressCopy = getProgressCopy(progressDirection);
 
-  const missionText = pickDailyMission(latestSnapshot?.recommendation ?? null);
   const suggestedFoodName = getFirstSuggestedFoodName(
     latestSnapshot?.recommendation?.recommendationId ?? null,
     db.recommendationFoods,
@@ -73,14 +70,11 @@ export default function PatientDashboardPage() {
         />
       </section>
 
-      <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <PatientStatusCard
-          zone={currentZone}
-          zoneCopy={zoneCopy}
-          dateLabel={latestSnapshot?.dateLabel ?? null}
-        />
-        <PatientDailyMissionCard missionText={missionText} />
-      </section>
+      <PatientStatusCard
+        zone={currentZone}
+        zoneCopy={zoneCopy}
+        dateLabel={latestSnapshot?.dateLabel ?? null}
+      />
 
       <PatientEducationBanner question={educationQuestion} />
     </div>

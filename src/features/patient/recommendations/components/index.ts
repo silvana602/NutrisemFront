@@ -5,3 +5,4 @@ export * from "./PatientRecommendedFoodsTable";
 export * from "./PatientRecommendedFoodsTableRow";
 export * from "./PatientLatestDietaryRecommendation";
 export * from "./PatientRestrictedFoodsList";
+export * from "./PatientRecommendationsPdfDownloadCard";
