@@ -9,4 +9,7 @@ export interface Food {
   fiberG: number;
   vitamins: string;
   minerals: string;
+  servingSize?: string;
+  allergens?: string;
+  notes?: string;
 }

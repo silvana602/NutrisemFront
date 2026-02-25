@@ -23,10 +23,12 @@ import {
 } from "@/lib/pediatricAge";
 import {
   useConsultationStore,
-  type HistoricalFoodGroupId,
-  type HistoricalMealSlotId,
-  type HistoricalRecallSlotId,
 } from "@/store/useConsultationStore";
+import type {
+  AntecedentFoodGroupId as HistoricalFoodGroupId,
+  AntecedentMealSlotId as HistoricalMealSlotId,
+  AntecedentRecallSlotId as HistoricalRecallSlotId,
+} from "@/types";
 
 seedOnce();
 

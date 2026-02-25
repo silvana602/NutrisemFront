@@ -5,4 +5,7 @@ export interface AnthropometricData {
   heightM: number;
   muacCm: number;
   headCircumferenceCm: number;
+  bmi?: number;
+  zScore?: number;
+  percentile?: number;
 }

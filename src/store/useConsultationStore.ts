@@ -3,131 +3,93 @@ import { persist } from "zustand/middleware";
 import { db, seedOnce } from "@/mocks/db";
 import { calculateAgeInMonths } from "@/lib/pediatricAge";
 import { calculatePediatricBmiZScoreAndPercentile } from "@/lib/pediatricGrowth";
+import type {
+  AnthropometricData,
+  AntecedentAppetiteLevel,
+  AntecedentFoodFrequency,
+  AntecedentFoodGroupId,
+  AntecedentMealSlotId,
+  AntecedentMealsPerDay,
+  AntecedentPrimaryCaregiver,
+  AntecedentRecallSlotId,
+  AntecedentSleepQuality,
+  AntecedentVaccinationStatus,
+  AntecedentYesNo,
+  Antecedents,
+  ClinicalBilateralEdemaGrade,
+  ClinicalData,
+  ClinicalInformantType,
+  ClinicalPrematurityOption,
+} from "@/types";
 
 seedOnce();
 
 export type ConsultationStep = "anthropometric" | "clinical" | "historical";
 
-export interface AnthropometricFormState {
-  weightKg?: number;
-  heightM?: number;
-  muacCm?: number;
-  headCircumferenceCm?: number;
-  bmi?: number;
-  zScore?: number;
-  percentile?: number;
-}
+export type AnthropometricFormState = Partial<
+  Omit<AnthropometricData, "anthropometricDataId" | "consultationId">
+>;
 
-export interface ClinicalFormState {
-  ageYears?: number; // legado
-  mainConsultationReason?: string;
-  informantType?: "MADRE" | "PADRE" | "CUIDADOR" | "OTRO";
-  informantName?: string;
-  informantRelationship?: string;
-  alarmSigns?: string[];
-  birthWeightKg?: number;
-  gestationalAgeWeeks?: number;
-  prematurity?: "SI" | "NO" | "DESCONOCIDO";
-  activityLevel?: string[];
-  apathy?: string[];
-  generalObservations?: string;
+type ClinicalMultiFieldKey =
+  | "alarmSigns"
+  | "activityLevel"
+  | "apathy"
+  | "hairCondition"
+  | "skinCondition"
+  | "edema"
+  | "dentition"
+  | "dehydration";
 
-  hairCondition?: string[];
-  skinCondition?: string[];
-  edema?: string[];
-  bilateralEdemaGrade?: "0" | "+" | "++" | "+++";
-  dentition?: string[];
-  physicalObservations?: string;
+type ClinicalFormStateBase = Omit<ClinicalData, "clinicalDataId" | "consultationId">;
 
-  diarrhea?: string;
-  vomiting?: string;
-  dehydration?: string[];
-  digestiveObservations?: string;
+export type ClinicalFormState = Omit<
+  ClinicalFormStateBase,
+  ClinicalMultiFieldKey | "informantType" | "prematurity" | "bilateralEdemaGrade"
+> & {
+  [K in ClinicalMultiFieldKey]?: string[];
+} & {
+  informantType?: ClinicalInformantType;
+  prematurity?: ClinicalPrematurityOption;
+  bilateralEdemaGrade?: ClinicalBilateralEdemaGrade;
+};
 
-  temperatureCelsius?: number;
-  temperatureObservation?: string;
-  heartRate?: number;
-  heartRateObservation?: string;
-  respiratoryRate?: number;
-  respiratoryRateObservation?: string;
-  bloodPressureSystolic?: number;
-  bloodPressureDiastolic?: number;
-  bloodPressure?: string;
-  bloodPressureObservation?: string;
-  observations?: string;
-}
+export type HistoricalFoodFrequency = AntecedentFoodFrequency;
 
-export interface HistoricalFormState {
-  breastfeeding?: string;
-  bottleFeeding?: string;
-  feedingFrequency?: string;
-  complementaryFeedingStartMonths?: number;
-  foodFrequencyByGroup?: Partial<Record<HistoricalFoodGroupId, HistoricalFoodFrequency>>;
-  mealsPerDay?: "1-2" | "3" | "4 O MAS";
-  mealSchedule?: Partial<Record<HistoricalMealSlotId, string>>;
-  habitualSchedule?: string;
-  recall24h?: Partial<Record<HistoricalRecallSlotId, string>>;
-  addedSugarSalt?: "SI" | "NO";
-  addedSugarSaltFrequency?: string;
-  appetiteLevel?: "BAJO" | "NORMAL" | "ALTO";
-  waterGlassesPerDay?: number;
-  foodAllergiesOrIntolerances?: string;
-  currentSupplementation?: string[];
-  currentSupplementationOther?: string;
-  dewormingLastDate?: string;
-  currentMedications?: string;
+export type HistoricalFoodGroupId = AntecedentFoodGroupId;
+
+export type HistoricalMealSlotId = AntecedentMealSlotId;
+
+export type HistoricalRecallSlotId = AntecedentRecallSlotId;
+
+type HistoricalFormStateBase = Omit<Antecedents, "antecedentsId" | "consultationId" | "recentIllnesses">;
+
+export type HistoricalFormState = Omit<
+  HistoricalFormStateBase,
+  | "mealsPerDay"
+  | "addedSugarSalt"
+  | "appetiteLevel"
+  | "vaccinationStatus"
+  | "safeWaterAccess"
+  | "basicSanitation"
+  | "foodInsecurityConcern"
+  | "foodInsecurityMealSkip"
+  | "primaryCaregiver"
+  | "daycareAttendance"
+  | "sleepQuality"
+> & {
   recentIllnesses?: string[];
-  recentIllnessesOther?: string;
-  vaccinationStatus?: "COMPLETO" | "INCOMPLETO" | "DESCONOCIDO";
-  safeWaterAccess?: "SI" | "NO";
-  basicSanitation?: "SI" | "NO";
-  foodInsecurityConcern?: "SI" | "NO";
-  foodInsecurityMealSkip?: "SI" | "NO";
-  primaryCaregiver?:
-    | "MADRE"
-    | "PADRE"
-    | "ABUELOS"
-    | "OTRO FAMILIAR"
-    | "CUIDADOR";
-  daycareAttendance?: "SI" | "NO";
-  sleepAverageHours?: number;
-  sleepQuality?:
-    | "BUENA (DESCANSA BIEN, SIN DESPERTARES FRECUENTES)"
-    | "REGULAR (SE DESPIERTA VARIAS VECES)"
-    | "MALA (DIFICULTAD PARA DORMIR O SUENO INTERRUMPIDO)";
-  bedtime?: string;
-  wakeupTime?: string;
-}
-
-export type HistoricalFoodFrequency =
-  | "DIARIO"
-  | "3-4 VECES/SEMANA"
-  | "1-2 VECES/SEMANA"
-  | "RARA VEZ / NUNCA";
-
-export type HistoricalFoodGroupId =
-  | "cerealsTubers"
-  | "fruits"
-  | "vegetables"
-  | "dairy"
-  | "meatsProteins"
-  | "legumes"
-  | "ultraProcessed"
-  | "eggs"
-  | "fishSeafood"
-  | "water"
-  | "sugaryDrinks"
-  | "fastFoodFried";
-
-export type HistoricalMealSlotId =
-  | "breakfast"
-  | "midMorningSnack"
-  | "lunch"
-  | "afternoonSnack"
-  | "dinner"
-  | "nightSnack";
-
-export type HistoricalRecallSlotId = "breakfast" | "lunch" | "dinner" | "snacks";
+  mealsPerDay?: AntecedentMealsPerDay;
+  addedSugarSalt?: AntecedentYesNo;
+  appetiteLevel?: AntecedentAppetiteLevel;
+  vaccinationStatus?: AntecedentVaccinationStatus;
+  safeWaterAccess?: AntecedentYesNo;
+  basicSanitation?: AntecedentYesNo;
+  foodInsecurityConcern?: AntecedentYesNo;
+  foodInsecurityMealSkip?: AntecedentYesNo;
+  primaryCaregiver?: AntecedentPrimaryCaregiver;
+  daycareAttendance?: AntecedentYesNo;
+  sleepQuality?: AntecedentSleepQuality;
+};
 
 export interface SavedConsultationSnapshot {
   savedAt: string;
