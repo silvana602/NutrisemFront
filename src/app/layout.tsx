@@ -19,13 +19,13 @@ const headingFont = Sora({
 });
 
 const APP_DESCRIPTION = "Plataforma de nutricion infantil.";
-const NUTRISEM_ICON_PATH = "/images/brand/nutrisem-icon.svg";
+const NUTRISEM_ICON_PATH = "/images/brand/ISOTIPO.png";
 
 export const metadata: Metadata = {
   title: { default: "Nutrisem", template: "%s | Nutrisem" },
   description: APP_DESCRIPTION,
   icons: {
-    icon: [{ url: NUTRISEM_ICON_PATH, type: "image/svg+xml" }],
+    icon: [{ url: NUTRISEM_ICON_PATH, type: "image/png" }],
     shortcut: [NUTRISEM_ICON_PATH],
     apple: [NUTRISEM_ICON_PATH],
   },

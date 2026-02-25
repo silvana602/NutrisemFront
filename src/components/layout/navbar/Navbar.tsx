@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 
 import Avatar from "@/components/ui/Avatar";
@@ -122,17 +123,22 @@ export const Navbar = () => {
             aria-label="Ir a la página de bienvenida"
             className="group flex min-w-0 items-center gap-2.5"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/60 bg-[linear-gradient(135deg,#172A3A_0%,#567C8D_100%)] text-lg font-bold text-nutri-white shadow-[0_10px_20px_rgba(18,33,46,0.28)] transition-transform group-hover:-translate-y-0.5">
-              N
-            </div>
-            <div className="min-w-0">
-              <span className="hidden truncate text-xl font-extrabold tracking-tight text-nutri-primary sm:block sm:text-[1.45rem]">
-                Nutrisem
-              </span>
-              <span className="hidden text-[11px] font-semibold uppercase tracking-[0.14em] text-nutri-dark-grey/70 lg:block">
-                Seguimiento nutricional
-              </span>
-            </div>
+            <Image
+              src="/images/brand/ISOTIPO.png"
+              alt="Isotipo de Nutrisem"
+              width={440}
+              height={440}
+              priority
+              className="h-10 w-10 rounded-xl object-cover shadow-[0_10px_20px_rgba(18,33,46,0.28)] transition-transform group-hover:-translate-y-0.5 sm:hidden"
+            />
+            <Image
+              src="/images/brand/ISOLOGO.png"
+              alt="Nutrisem"
+              width={789}
+              height={328}
+              priority
+              className="hidden h-10 w-auto object-contain drop-shadow-[0_8px_16px_rgba(18,33,46,0.22)] transition-transform group-hover:-translate-y-0.5 sm:block"
+            />
           </Link>
 
           {user && (
