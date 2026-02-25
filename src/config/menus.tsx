@@ -1,20 +1,16 @@
 import React from "react";
 import { UserRole } from "@/types/user";
 import {
-  LayoutDashboard,
-  Users,
-  BookOpen,
-  FileChartColumn,
-  ClipboardList,
   Activity,
   BarChart3,
-  Notebook,
+  BookOpen,
+  ClipboardList,
+  FileChartColumn,
   HeartPulse,
+  LayoutDashboard,
+  Notebook,
+  Users,
 } from "lucide-react";
-
-/* ======================================================
-    TIPOS
-   ====================================================== */
 
 export interface MenuItem {
   label: string;
@@ -25,13 +21,9 @@ export interface MenuItem {
   matchExact?: boolean;
 }
 
-/* ======================================================
-    MENÚ ADMIN
-   ====================================================== */
-
 export const adminMenu: MenuItem[] = [
   {
-    label: "Dashboard",
+    label: "Inicio",
     href: "/dashboard/admin",
     icon: LayoutDashboard,
     matchExact: true,
@@ -52,10 +44,6 @@ export const adminMenu: MenuItem[] = [
     icon: ClipboardList,
   },
 ];
-
-/* ======================================================
-    MENÚ CLINICIAN
-   ====================================================== */
 
 export const clinicianMenu: MenuItem[] = [
   {
@@ -86,10 +74,6 @@ export const clinicianMenu: MenuItem[] = [
   },
 ];
 
-/* ======================================================
-    MENÚ PATIENT
-   ====================================================== */
-
 export const patientMenu: MenuItem[] = [
   {
     label: "Inicio",
@@ -113,27 +97,20 @@ export const patientMenu: MenuItem[] = [
     icon: HeartPulse,
   },
   {
-    label: "Educacion",
+    label: "Educación",
     href: "/dashboard/patient/education",
     icon: BookOpen,
   },
 ];
 
-/* ======================================================
-    SELECTOR DE MENÚ POR ROL
-   ====================================================== */
-
 export function getMenuByRole(role: UserRole): MenuItem[] {
   switch (role) {
     case UserRole.admin:
       return adminMenu;
-
     case UserRole.clinician:
       return clinicianMenu;
-
     case UserRole.patient:
       return patientMenu;
-
     default:
       return [];
   }

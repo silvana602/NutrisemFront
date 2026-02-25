@@ -17,7 +17,7 @@ export function PatientLatestDietaryRecommendation({
     <Card className="space-y-4 p-5">
       <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-lg font-semibold text-nutri-primary">
-          Ultima recomendacion alimentaria nutricional
+          Última recomendación alimentaria nutricional
         </h2>
         <span className="nutri-platform-surface-soft inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold text-nutri-primary">
           Consulta: {dateLabel}

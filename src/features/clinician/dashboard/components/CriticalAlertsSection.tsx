@@ -46,7 +46,7 @@ export function CriticalAlertsSection({
                   className="h-fit text-xs"
                   onClick={() => onViewDiagnosis(item.patientId, item.recordId)}
                 >
-                  Ver diagnostico
+                  Ver diagnóstico
                 </Button>
               </div>
             </article>

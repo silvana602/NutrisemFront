@@ -29,8 +29,8 @@ export const PATIENT_EDUCATION_CATEGORIES: PatientEducationCategory[] = [
       },
       {
         articleId: "natural-sugar-substitutes",
-        title: "Sustitutos naturales del azucar para ninos",
-        summary: "Opciones practicas para reducir azucares anadidos sin perder sabor en casa.",
+        title: "Sustitutos naturales del azucar para niños",
+        summary: "Opciones prácticas para reducir azucares anadidos sin perder sabor en casa.",
         tags: ["recetas", "vitaminas"],
         readMinutes: 5,
       },
@@ -99,7 +99,7 @@ export const PATIENT_NUTRI_TIPS_VIDEOS: PatientNutriTipVideo[] = [
   {
     videoId: "smart-lunchbox",
     title: "Lonchera equilibrada en 5 minutos",
-    description: "Combinaciones practicas de fruta, proteina y cereal para media manana.",
+    description: "Combinaciones prácticas de fruta, proteina y cereal para media manana.",
     durationLabel: "01:10",
     tags: ["recetas", "vitaminas"],
   },
@@ -133,7 +133,7 @@ export function resolveGuideOfMonthByAge(ageMonths: number | null): PatientEduca
       ctaLabel: "Leer ahora",
       ctaHref: "#biblioteca-educativa",
       imageTitle: "6 a 12 meses",
-      imageCaption: "Texturas suaves, porciones pequenas y variedad gradual.",
+      imageCaption: "Texturas suaves, porciones pequeñas y variedad gradual.",
     };
   }
 
@@ -142,7 +142,7 @@ export function resolveGuideOfMonthByAge(ageMonths: number | null): PatientEduca
       ageGroup: "early-childhood",
       title: "Como manejar los berrinches a la hora de la comida",
       description:
-        "Estrategias practicas para mantener limites claros, reducir presion y construir habitos.",
+        "Estrategias prácticas para mantener limites claros, reducir presion y construir habitos.",
       ctaLabel: "Leer ahora",
       ctaHref: "#biblioteca-educativa",
       imageTitle: "2 a 5 anos",

@@ -23,7 +23,7 @@ export function PatientDiagnosisSummaryCard({
     <Card className="p-5">
       <header className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-2">
-          <h2 className="text-lg font-semibold text-nutri-primary">Resumen del diagnostico</h2>
+          <h2 className="text-lg font-semibold text-nutri-primary">Resumen del diagnóstico</h2>
           <div className="flex flex-wrap items-center gap-2">
             <PatientDiagnosisStatusIndicator status={row.nutritionalStatus} tone={row.statusTone} />
             <span className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
@@ -83,16 +83,16 @@ export function PatientDiagnosisSummaryCard({
 
       <section className="nutri-platform-surface mt-4 p-3 sm:p-4">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
-          Resumen del diagnostico
+          Resumen del diagnóstico
         </h3>
         <p className="mt-2 text-sm text-nutri-dark-grey">{row.diagnosisSummary}</p>
 
         <div className="mt-3 space-y-2 text-sm text-nutri-dark-grey">
           <p>
-            <span className="font-semibold">Recomendacion medica:</span> {row.medicalRecommendation}
+            <span className="font-semibold">Recomendación médica:</span> {row.medicalRecommendation}
           </p>
           <p>
-            <span className="font-semibold">Recomendacion alimentaria:</span>{" "}
+            <span className="font-semibold">Recomendación alimentaria:</span>{" "}
             {row.dietaryRecommendation}
           </p>
         </div>

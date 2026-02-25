@@ -166,7 +166,7 @@ export function getProgressCopy(direction: ProgressDirection): ProgressCopy {
 
   return {
     title: "Aun no hay una consulta previa para comparar.",
-    subtitle: "Cuando tengas un nuevo control, veras tu tendencia aqui.",
+    subtitle: "Cuando tengas un nuevo control, veras tu tendencia aquí.",
     badgeClassName: "border-nutri-light-grey bg-nutri-off-white text-nutri-dark-grey",
     badgeLabel: "Pendiente",
   };
@@ -201,10 +201,10 @@ export function getFirstSuggestedFoodName(
 
 export function buildEducationQuestion(foodName: string | null): string {
   if (foodName) {
-    return `Sabias por que es importante comer ${foodName.toLowerCase()}? Descubrelo aqui.`;
+    return `Sabias por que es importante comer ${foodName.toLowerCase()}? Descubrelo aquí.`;
   }
 
-  return "Sabias por que es importante comer espinaca? Descubrelo aqui.";
+  return "Sabias por que es importante comer espinaca? Descubrelo aquí.";
 }
 
 const EDUCATION_QUICK_ACCESS_ARTICLE = {
@@ -237,7 +237,7 @@ export function buildEducationQuickAccess(foodName: string | null): EducationQui
   }
 
   return {
-    question: `${EDUCATION_QUICK_ACCESS_ARTICLE.title} Descubrelo aqui.`,
+    question: `${EDUCATION_QUICK_ACCESS_ARTICLE.title} Descubrelo aquí.`,
     suggestedQuery: EDUCATION_QUICK_ACCESS_ARTICLE.suggestedQuery,
     suggestedTagId: EDUCATION_QUICK_ACCESS_ARTICLE.suggestedTagId,
     targetSectionId: EDUCATION_QUICK_ACCESS_ARTICLE.targetSectionId,

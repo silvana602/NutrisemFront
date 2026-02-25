@@ -109,7 +109,7 @@ export const AnthropometricForm = () => {
         ...prev,
         [patientKey]: {
           ...(prev[patientKey] ?? {}),
-          [key]: "Numero invalido",
+          [key]: "Número invalido",
         },
       }));
       setAnthropometric({ [key]: undefined });
@@ -162,7 +162,7 @@ export const AnthropometricForm = () => {
       )}
       {isPatientSelected && !isTargetAgeSelected && (
         <p className="rounded-lg border border-nutri-secondary/40 bg-nutri-off-white px-4 py-3 text-sm text-nutri-dark-grey">
-          Este formulario esta orientado a pacientes de 6 meses a 5 anios. Edad del paciente
+          Este formulario esta orientado a pacientes de 6 meses a 5 años. Edad del paciente
           seleccionado:{" "}
           {selectedPatientAgeMonths !== null
             ? formatPediatricAge(selectedPatientAgeMonths)

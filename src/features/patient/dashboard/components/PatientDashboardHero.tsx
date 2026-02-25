@@ -9,7 +9,7 @@ export function PatientDashboardHero({ firstName }: PatientDashboardHeroProps) {
     <Heading
       variant="panel"
       eyebrow="Inicio del paciente"
-      description="Aqui tienes un resumen rapido de tu ultima consulta, tu evolucion y la accion mas importante para hoy."
+      description="Aquí tienes un resumen rápido de tu última consulta, tu evolucion y la acción mas importante para hoy."
     >
       Bienvenid@, {firstName}
     </Heading>

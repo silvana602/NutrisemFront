@@ -29,7 +29,7 @@ export function formatCategoryLabel(category: string): string {
 
 export function translatePortionText(rawPortion: string): string {
   const value = rawPortion.trim();
-  if (!value) return "Porcion sugerida segun tolerancia y edad";
+  if (!value) return "Porcion sugerida según tolerancia y edad";
 
   return value
     .replace(/pieces?/gi, "piezas")

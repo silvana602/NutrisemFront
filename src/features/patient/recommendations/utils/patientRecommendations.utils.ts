@@ -79,7 +79,7 @@ export function buildPatientRecommendationViewModel(
     foods
   );
 
-  const nutritionalStatus = selectedDiagnosis.nutritionalDiagnosis || "Sin diagnostico";
+  const nutritionalStatus = selectedDiagnosis.nutritionalDiagnosis || "Sin diagnóstico";
 
   return {
     patientName: patientUser
@@ -89,7 +89,7 @@ export function buildPatientRecommendationViewModel(
     nutritionalStatus,
     medicalRecommendation:
       selectedRecommendation?.medicalRecommendation ||
-      "Sin recomendaciones medicas registradas.",
+      "Sin recomendaciones médicas registradas.",
     dietaryRecommendation:
       selectedRecommendation?.dietaryRecommendation ||
       "Sin recomendaciones alimentarias registradas.",

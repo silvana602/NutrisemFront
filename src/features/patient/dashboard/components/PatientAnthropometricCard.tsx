@@ -14,7 +14,7 @@ export function PatientAnthropometricCard({ snapshot }: PatientAnthropometricCar
         <header className="mb-4 flex items-start justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
-              Ultima consulta
+              Última consulta
             </p>
             <h2 className="text-lg font-semibold text-nutri-primary">
               Datos antropometricos
@@ -26,7 +26,7 @@ export function PatientAnthropometricCard({ snapshot }: PatientAnthropometricCar
         </header>
 
         <p className="text-sm text-nutri-dark-grey">
-          Aun no hay consulta registrada. Cuando exista un control, veras tus datos aqui.
+          Aun no hay consulta registrada. Cuando exista un control, veras tus datos aquí.
         </p>
       </Card>
     );
@@ -37,7 +37,7 @@ export function PatientAnthropometricCard({ snapshot }: PatientAnthropometricCar
       <header className="mb-4 flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
-            Ultima consulta
+            Última consulta
           </p>
           <h2 className="text-lg font-semibold text-nutri-primary">
             Datos antropometricos

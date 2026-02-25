@@ -30,7 +30,7 @@ export const ConsultationWizard = () => {
         anthropometric: <AnthropometricForm />,
         clinical: (
             <p className="text-sm text-[var(--color-nutri-dark-grey)]">
-                Pendiente: Datos Clinicos
+                Pendiente: Datos Clínicos
             </p>
         ),
         historical: (

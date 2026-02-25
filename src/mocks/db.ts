@@ -287,8 +287,8 @@ export function seedOnce() {
   const recommendation1: Recommendation = {
     recommendationId: uid("rec"),
     diagnosisId: diagnosis1.diagnosisId,
-    medicalRecommendation: "Regular checkup every 3 months",
-    dietaryRecommendation: "Balanced diet with fruits and vegetables",
+    medicalRecommendation: "Control médico regular cada 3 meses",
+    dietaryRecommendation: "Dieta balanceada con frutas y verduras",
   };
   db.recommendations.push(recommendation1);
 

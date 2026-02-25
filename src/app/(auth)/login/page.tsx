@@ -15,7 +15,7 @@ export default function LoginPage() {
           className="text-2xl font-semibold sm:text-2xl"
           description="Bienvenid@ a Nutrisem. Introduce tus credenciales para acceder a tu panel."
         >
-          Iniciar sesion
+          Iniciar sesión
         </Heading>
 
         <div className="my-5 h-px w-full bg-gradient-to-r from-transparent via-nutri-secondary/35 to-transparent" />

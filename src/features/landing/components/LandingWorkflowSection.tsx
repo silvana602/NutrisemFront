@@ -13,7 +13,7 @@ export function LandingWorkflowSection({ steps }: LandingWorkflowSectionProps) {
           Metodo Nutrisem
         </p>
         <h2 className="text-2xl font-bold text-nutri-primary sm:text-3xl">
-          Flujo clinico operativo de punta a punta
+          Flujo clínico operativo de punta a punta
         </h2>
       </header>
 

@@ -10,10 +10,10 @@ type RestrictedFoodsListProps = {
 
 function getToneClasses(tone: RestrictedFoodGroup["tone"]): string {
   if (tone === "red") {
-    return "border-rose-200 bg-rose-50";
+    return "nutri-restricted-tone-red border-rose-200 bg-rose-50";
   }
 
-  return "border-amber-200 bg-amber-50";
+  return "nutri-restricted-tone-amber border-amber-200 bg-amber-50";
 }
 
 function ToneIcon({ tone }: { tone: RestrictedFoodGroup["tone"] }) {
@@ -44,9 +44,13 @@ export function RestrictedFoodsList({
           >
             <header className="mb-2 flex items-center gap-2">
               <ToneIcon tone={group.tone} />
-              <h4 className="text-sm font-semibold text-nutri-dark-grey">{group.title}</h4>
+              <h4 className="nutri-restricted-tone-title text-sm font-semibold text-nutri-dark-grey">
+                {group.title}
+              </h4>
             </header>
-            <p className="mb-2 text-xs text-nutri-dark-grey/80">{group.subtitle}</p>
+            <p className="nutri-restricted-tone-subtitle mb-2 text-xs text-nutri-dark-grey/80">
+              {group.subtitle}
+            </p>
 
             <div className="overflow-hidden rounded-lg border border-nutri-light-grey bg-nutri-white">
               <table className="w-full table-fixed text-sm">

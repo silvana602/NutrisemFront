@@ -21,7 +21,7 @@ export function PatientProgressGrowthSection({
           Grafico de estado nutricional (Curvas OMS)
         </h2>
         <p className="text-sm text-nutri-dark-grey/80">
-          Eje X: edad del nino | Eje Y: peso o talla. Las lineas de referencia muestran percentiles
+          Eje X: edad del niño | Eje Y: peso o talla. Las líneas de referencia muestran percentiles
           OMS y la linea azul representa cada control del paciente.
         </p>
       </header>
@@ -42,7 +42,7 @@ export function PatientProgressGrowthSection({
             />
 
             <p className="mt-2 text-xs text-nutri-dark-grey/80">
-              Ultima lectura registrada: {latestDateLabel}. Clic para ampliar.
+              Última lectura registrada: {latestDateLabel}. Clic para ampliar.
             </p>
 
             {indicator.highlightLabel ? (

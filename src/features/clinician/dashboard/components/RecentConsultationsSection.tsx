@@ -42,7 +42,7 @@ export function RecentConsultationsSection({
                 {snapshotRecord.patientName} | {snapshotRecord.dateLabel}
               </p>
               <p className="text-xs text-nutri-dark-grey/80">
-                Peso: {formatWeight(snapshotRecord.weightKg)} | Z-score:{" "}
+                Peso: {formatWeight(snapshotRecord.weightKg)} | Puntaje Z:{" "}
                 {formatZScore(snapshotRecord.zScore)}
               </p>
               <Button
@@ -84,7 +84,7 @@ export function RecentConsultationsSection({
                     className="h-fit text-xs"
                     onClick={() => onOpenDiagnosis(item.patientId, item.recordId)}
                   >
-                    Abrir diagnostico
+                    Abrir diagnóstico
                   </Button>
                 </div>
               ))}

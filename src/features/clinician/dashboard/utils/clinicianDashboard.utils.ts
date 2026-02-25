@@ -13,7 +13,7 @@ function normalizeText(value: string): string {
 }
 
 export function deriveStatusFromSnapshot(zScore?: number): string {
-  if (typeof zScore !== "number") return "Sin diagnostico";
+  if (typeof zScore !== "number") return "Sin diagnóstico";
   if (zScore <= -3) return "Desnutricion aguda severa";
   if (zScore <= -2) return "Desnutricion aguda moderada";
   if (zScore < -1) return "Riesgo de desnutricion";
@@ -87,11 +87,11 @@ export function getCriticalAlertReason(item: DashboardConsultationRecord): strin
   const status = normalizeText(item.nutritionalStatus);
 
   if (typeof item.zScore === "number" && item.zScore <= -3) {
-    return "Z-score menor o igual a -3.";
+    return "Puntaje Z menor o igual a -3.";
   }
 
   if (typeof item.zScore === "number" && item.zScore <= -2) {
-    return "Z-score menor o igual a -2.";
+    return "Puntaje Z menor o igual a -2.";
   }
 
   if (status.includes("desnutricion") && status.includes("aguda")) {

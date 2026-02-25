@@ -183,7 +183,7 @@ export function AnthropometricTrendChart({
         </p>
         <p className="text-xs text-nutri-dark-grey/80">
           Punto actual: {latestPointStyle.label} | Percentil {latestPoint.percentile.toFixed(1)} |
-          Z-score {latestPoint.zScore.toFixed(2)}
+          Puntaje Z {latestPoint.zScore.toFixed(2)}
         </p>
       </header>
 

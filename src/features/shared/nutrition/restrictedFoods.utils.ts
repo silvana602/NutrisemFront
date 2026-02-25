@@ -54,7 +54,7 @@ export function buildRestrictedFoodGroupsByNutritionalStatus(
       },
       {
         title: "Zona Amarilla (Ocasional)",
-        subtitle: "Consumir maximo una vez por semana y en porciones pequenas.",
+        subtitle: "Consumir maximo una vez por semana y en porciones pequeñas.",
         tone: "amber",
         items: buildUniqueItems([
           {
@@ -141,7 +141,7 @@ export function buildRestrictedFoodGroupsByNutritionalStatus(
         },
         {
           food: "Bebidas energeticas.",
-          healthySubstitute: "Jugo natural sin azucar anadida.",
+          healthySubstitute: "Jugo natural sin azucar añadida.",
         },
         {
           food: "Snacks ultraprocesados con grasas trans.",

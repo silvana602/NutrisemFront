@@ -23,10 +23,10 @@ export function PatientDiagnosisHistoryTable({
     <Card className="p-5">
       <header className="mb-4 space-y-1">
         <h2 className="text-lg font-semibold text-nutri-primary">
-          Historial de Diagnosticos (Tabla Nutrisem)
+          Historial de Diagnósticos (Tabla Nutrisem)
         </h2>
         <p className="text-sm text-nutri-dark-grey/80">
-          El estado nutricional incluye un indicador visual para identificar mas rapido la
+          El estado nutricional incluye un indicador visual para identificar mas rápido la
           evolucion.
         </p>
       </header>
@@ -82,7 +82,7 @@ export function PatientDiagnosisHistoryTable({
               <th className="px-3 py-2">Fecha</th>
               <th className="px-3 py-2">Motivo / Nota rapida</th>
               <th className="px-3 py-2">Estado nutricional</th>
-              <th className="px-3 py-2">Accion</th>
+              <th className="px-3 py-2">Acción</th>
             </tr>
           </thead>
           <tbody>

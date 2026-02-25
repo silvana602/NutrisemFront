@@ -140,7 +140,7 @@ export function buildProgressAchievements(params: {
       id: "hydration-goal",
       title: "Meta de hidratacion cumplida",
       description: hydrationUnlocked
-        ? "Se registro progreso en hidratacion segun el seguimiento clinico."
+        ? "Se registro progreso en hidratacion según el seguimiento clínico."
         : "La meta de hidratacion sigue en curso para el proximo control.",
       unlocked: hydrationUnlocked,
     },

@@ -6,7 +6,7 @@ import { ErrorPageTemplate } from "@/components/ui/ErrorPageTemplate";
 import { useErrorPageActions } from "@/hooks/useErrorPageActions";
 
 const UNAUTHORIZED_MESSAGE =
-  "Olvidaste tu identificacion? Para entrar a consulta, primero debes iniciar sesion.";
+  "Olvidaste tu identificación? Para entrar a consulta, primero debes iniciar sesión.";
 
 function getSafeNextPath(nextPath: string | null) {
   if (!nextPath || !nextPath.startsWith("/")) return null;
@@ -42,7 +42,7 @@ export default function UnauthorizedPageClient() {
       imageAlt="Error 401 Nutrisem"
       actions={[
         {
-          label: "Iniciar Sesion",
+          label: "Iniciar Sesión",
           onClick: handleGoLogin,
           icon: LogIn,
           variant: "solid",

@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     const verifiedToken = await verifyAccessToken(accessToken);
     if (!verifiedToken) {
       const response = NextResponse.json(
-        { message: "Sesion invalida" },
+        { message: "Sesión inválida" },
         { status: 401 }
       );
       response.cookies.delete(ACCESS_TOKEN_COOKIE_NAME);
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     const user = getUserById(verifiedToken.userId);
     if (!user || user.role !== verifiedToken.role) {
       const response = NextResponse.json(
-        { message: "Sesion no encontrada" },
+        { message: "Sesión no encontrada" },
         { status: 401 }
       );
       response.cookies.delete(ACCESS_TOKEN_COOKIE_NAME);

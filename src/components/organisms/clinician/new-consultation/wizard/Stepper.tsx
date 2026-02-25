@@ -2,7 +2,7 @@ export const Stepper = ({ currentStep }: { currentStep: string }) => {
     const steps = ["anthropometric", "clinical"];
     const stepLabel: Record<string, string> = {
         anthropometric: "Antropometrico",
-        clinical: "Clinico",
+        clinical: "Clínico",
         historical: "Historico",
     };
 

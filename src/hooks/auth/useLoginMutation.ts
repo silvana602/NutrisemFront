@@ -84,7 +84,7 @@ export function useLoginMutation() {
 
           return {
             ok: false,
-            formError: errorPayload?.message ?? "No se pudo iniciar sesion",
+            formError: errorPayload?.message ?? "No se pudo iniciar sesión",
             fieldErrors: mapApiErrors(errorPayload),
           };
         }

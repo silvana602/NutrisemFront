@@ -105,14 +105,14 @@ export const PatientsListContent: React.FC = () => {
         return {
           patientId: patient.patientId,
           name: `${patient.firstName} ${patient.lastName}`,
-          guardian: guardian ? `${guardian.firstName} ${guardian.lastName}` : "Sin tutor",
+          guardian: guardian ? `${guardian.firstName} ${guardian.lastName}` : "Sin guardián",
           ci: patientUser?.identityNumber ?? patient.identityNumber,
           ageLabel: formatPediatricAge(ageMonths),
           ageMonths,
           sex: patient.gender === "male" ? "M" : "F",
           lastConsult: lastConsultDate ? lastConsultDate.toLocaleDateString("es-BO") : "Sin consultas",
           lastConsultTimestamp: lastConsultDate ? lastConsultDate.getTime() : null,
-          nutritionalStatus: lastDiagnosis?.nutritionalDiagnosis ?? "Sin diagnostico",
+          nutritionalStatus: lastDiagnosis?.nutritionalDiagnosis ?? "Sin diagnóstico",
           latestDiagnosisId: lastDiagnosis?.diagnosisId ?? null,
           isTargetPediatric: ageMonths >= TARGET_MIN_MONTHS && ageMonths <= TARGET_MAX_MONTHS,
         } satisfies PatientRow;
@@ -221,7 +221,7 @@ export const PatientsListContent: React.FC = () => {
 
         <article className="nutri-clinician-stat px-4 py-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
-            Rango pediatrico 6-60m
+            Rango pediátrico 6-60m
           </p>
           <p className="mt-1 text-2xl font-semibold text-nutri-primary">{pediatricCount}</p>
         </article>
@@ -249,7 +249,7 @@ export const PatientsListContent: React.FC = () => {
               setSearch(value);
               setPage(1);
             }}
-            placeholder="Buscar por paciente, CI o tutor"
+            placeholder="Buscar por paciente, CI o guardián"
             containerClassName="mt-0 max-w-none"
           />
 
@@ -274,7 +274,7 @@ export const PatientsListContent: React.FC = () => {
             Mostrando {paginatedPatients.length} de {filtered.length} pacientes
           </p>
           <p className="text-xs text-nutri-dark-grey/80">
-            El listado se ordena por la ultima consulta disponible.
+            El listado se ordena por la última consulta disponible.
           </p>
         </div>
 

@@ -110,7 +110,7 @@ export const ConsultationTabs: React.FC = () => {
   const dialogMessage =
     saveStage === "confirm"
       ? "Se guardaran los cambios de todo el formulario. Verifica que la informacion sea correcta antes de confirmar."
-      : "La consulta se guardo correctamente. Para continuar, abre el documento del diagnostico.";
+      : "La consulta se guardó correctamente. Para continuar, abre el documento del diagnóstico.";
 
   return (
     <section className="w-full space-y-6">
@@ -158,7 +158,7 @@ export const ConsultationTabs: React.FC = () => {
         message={dialogMessage}
         onCancel={closeSaveDialog}
         onConfirm={saveStage === "confirm" ? handleConfirmSave : handleViewDiagnosis}
-        confirmLabel={saveStage === "confirm" ? "Guardar" : "Ver diagnostico"}
+        confirmLabel={saveStage === "confirm" ? "Guardar" : "Ver diagnóstico"}
         cancelLabel="Cancelar"
         showCancel={saveStage === "confirm"}
         disableBackdropClose={saveStage === "saved"}

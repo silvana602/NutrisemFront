@@ -47,7 +47,7 @@ export const PatientsTable: React.FC<Props> = ({
 
             <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
               <div className="col-span-2">
-                <dt className="text-xs text-nutri-dark-grey/70">Guardian</dt>
+                <dt className="text-xs text-nutri-dark-grey/70">Guardián</dt>
                 <dd className="font-medium text-nutri-dark-grey">{p.guardian}</dd>
               </div>
               <div>
@@ -63,7 +63,7 @@ export const PatientsTable: React.FC<Props> = ({
                 <dd className="font-medium text-nutri-dark-grey">{getSexLabel(p.sex)}</dd>
               </div>
               <div>
-                <dt className="text-xs text-nutri-dark-grey/70">Ultima consulta</dt>
+                <dt className="text-xs text-nutri-dark-grey/70">Última consulta</dt>
                 <dd className="font-medium text-nutri-dark-grey">{p.lastConsult}</dd>
               </div>
             </dl>
@@ -75,7 +75,7 @@ export const PatientsTable: React.FC<Props> = ({
                 className="px-3 py-1.5 text-xs"
                 onClick={() => onOpenDiagnosis(p)}
               >
-                Ver diagnostico
+                Ver diagnóstico
               </Button>
               <Button
                 type="button"
@@ -106,11 +106,11 @@ export const PatientsTable: React.FC<Props> = ({
             <tr>
               <th className="px-3 py-2 text-left font-semibold">Nro</th>
               <th className="px-3 py-2 text-left font-semibold">Nombre completo</th>
-              <th className="px-3 py-2 text-left font-semibold">Nombre del guardian</th>
+              <th className="px-3 py-2 text-left font-semibold">Nombre del guardián</th>
               <th className="px-3 py-2 text-left font-semibold">Cedula</th>
               <th className="px-3 py-2 text-left font-semibold">Edad</th>
               <th className="px-3 py-2 text-left font-semibold">Sexo</th>
-              <th className="px-3 py-2 text-left font-semibold">Ultima consulta</th>
+              <th className="px-3 py-2 text-left font-semibold">Última consulta</th>
               <th className="px-3 py-2 text-left font-semibold">Estado nutricional</th>
               <th className="px-3 py-2 text-left font-semibold">Acciones</th>
             </tr>
@@ -142,7 +142,7 @@ export const PatientsTable: React.FC<Props> = ({
                       className="px-3 py-1.5 text-xs"
                       onClick={() => onOpenDiagnosis(p)}
                     >
-                      Ver diagnostico
+                      Ver diagnóstico
                     </Button>
                     <Button
                       type="button"

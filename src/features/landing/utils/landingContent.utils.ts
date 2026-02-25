@@ -24,7 +24,7 @@ export const LANDING_CAPABILITIES: LandingCapability[] = [
     capabilityId: "clinical-network",
     title: "Red profesional",
     description:
-      "Conecta equipos clinicos, historial y contexto familiar en una sola vista operativa.",
+      "Conecta equipos clínicos, historial y contexto familiar en una sola vista operativa.",
     badge: "Trabajo colaborativo",
   },
   {
@@ -83,7 +83,7 @@ export const LANDING_WORKFLOW_STEPS: LandingWorkflowStep[] = [
   {
     stepId: "capture",
     title: "Captura",
-    description: "Registra datos antropometricos y clinicos en minutos.",
+    description: "Registra datos antropometricos y clínicos en minutos.",
   },
   {
     stepId: "analyze",
@@ -93,7 +93,7 @@ export const LANDING_WORKFLOW_STEPS: LandingWorkflowStep[] = [
   {
     stepId: "recommend",
     title: "Interviene",
-    description: "Define recomendaciones medicas y alimentarias personalizadas.",
+    description: "Define recomendaciones médicas y alimentarias personalizadas.",
   },
   {
     stepId: "follow-up",

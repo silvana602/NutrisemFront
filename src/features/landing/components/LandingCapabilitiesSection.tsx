@@ -33,7 +33,7 @@ export function LandingCapabilitiesSection({
           Capacidades clave
         </p>
         <h2 className="text-2xl font-bold text-nutri-primary sm:text-3xl">
-          Todo el flujo nutricional pediatrico en una interfaz clara
+          Todo el flujo nutricional pediátrico en una interfaz clara
         </h2>
       </header>
 

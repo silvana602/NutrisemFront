@@ -108,7 +108,7 @@ export function buildPatientDiagnosisViewModel(
       const anthropometricRecord =
         anthropometricByConsultationId.get(consultation.consultationId) ?? null;
 
-      const nutritionalStatus = diagnosis.nutritionalDiagnosis || "Sin diagnostico";
+      const nutritionalStatus = diagnosis.nutritionalDiagnosis || "Sin diagnóstico";
       const chartRows = growthRows.filter((row) => row.dateValue <= consultation.date.getTime());
       const chartData = buildWeightForHeightChartData(chartRows);
 
@@ -130,9 +130,9 @@ export function buildPatientDiagnosisViewModel(
         diagnosisSummary: buildDiagnosisSummary(diagnosis.diagnosisDetails),
         clinicianName: buildClinicianDisplayName(consultation, cliniciansById, usersById),
         medicalRecommendation:
-          recommendation?.medicalRecommendation ?? "Sin recomendacion medica registrada.",
+          recommendation?.medicalRecommendation ?? "Sin recomendación médica registrada.",
         dietaryRecommendation:
-          recommendation?.dietaryRecommendation ?? "Sin recomendacion alimentaria registrada.",
+          recommendation?.dietaryRecommendation ?? "Sin recomendación alimentaria registrada.",
         vitals: {
           weightKg: anthropometricRecord?.weightKg ?? null,
           heightM: anthropometricRecord?.heightM ?? null,

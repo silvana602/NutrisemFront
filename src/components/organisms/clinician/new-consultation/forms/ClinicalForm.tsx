@@ -451,16 +451,16 @@ export const ClinicalForm = () => {
 
   return (
     <section className="space-y-6 rounded-xl bg-nutri-white p-4 sm:p-6">
-      <h3 className="text-lg font-semibold text-nutri-primary">Datos Clinicos</h3>
+      <h3 className="text-lg font-semibold text-nutri-primary">Datos Clínicos</h3>
 
       {!isPatientSelected && (
         <p className="rounded-lg border border-nutri-light-grey bg-nutri-off-white px-4 py-3 text-sm text-nutri-dark-grey">
-          Selecciona un paciente para registrar sus datos clinicos.
+          Selecciona un paciente para registrar sus datos clínicos.
         </p>
       )}
       {isPatientSelected && !isTargetAgeSelected && (
         <p className="rounded-lg border border-nutri-secondary/40 bg-nutri-off-white px-4 py-3 text-sm text-nutri-dark-grey">
-          El registro clinico esta parametrizado para pacientes de 6 meses a 5 anios. Edad del
+          El registro clínico esta parametrizado para pacientes de 6 meses a 5 años. Edad del
           paciente seleccionado:{" "}
           {selectedPatientAgeMonths !== null
             ? formatPediatricAge(selectedPatientAgeMonths)
@@ -808,7 +808,7 @@ export const ClinicalForm = () => {
                   value={clinical.temperatureCelsius ?? ""}
                   onChange={(event) => handleVitalInput("temperatureCelsius", event.target.value)}
                   className={cn("nutri-input", temperatureError && "border-nutri-secondary")}
-                  placeholder={`Rango pediatrico esperado: ${vitalRanges.temperature.min.toFixed(
+                  placeholder={`Rango pediátrico esperado: ${vitalRanges.temperature.min.toFixed(
                     1
                   )} a ${vitalRanges.temperature.max.toFixed(1)} C`}
                 />
@@ -838,7 +838,7 @@ export const ClinicalForm = () => {
                   value={clinical.heartRate ?? ""}
                   onChange={(event) => handleVitalInput("heartRate", event.target.value)}
                   className={cn("nutri-input", heartRateError && "border-nutri-secondary")}
-                  placeholder={`Rango pediatrico esperado: ${vitalRanges.heartRate.min} a ${vitalRanges.heartRate.max} lpm`}
+                  placeholder={`Rango pediátrico esperado: ${vitalRanges.heartRate.min} a ${vitalRanges.heartRate.max} lpm`}
                 />
                 {heartRateError && (
                   <p className="text-xs font-medium text-nutri-secondary">{heartRateError}</p>
@@ -866,7 +866,7 @@ export const ClinicalForm = () => {
                   value={clinical.respiratoryRate ?? ""}
                   onChange={(event) => handleVitalInput("respiratoryRate", event.target.value)}
                   className={cn("nutri-input", respiratoryRateError && "border-nutri-secondary")}
-                  placeholder={`Rango pediatrico esperado: ${vitalRanges.respiratoryRate.min} a ${vitalRanges.respiratoryRate.max} rpm`}
+                  placeholder={`Rango pediátrico esperado: ${vitalRanges.respiratoryRate.min} a ${vitalRanges.respiratoryRate.max} rpm`}
                 />
                 {respiratoryRateError && (
                   <p className="text-xs font-medium text-nutri-secondary">

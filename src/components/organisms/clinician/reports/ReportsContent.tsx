@@ -134,8 +134,8 @@ function percentage(value: number, total: number): number {
 
 function getStatusText(status: IndicatorStatus | null): string {
   if (!status) return "Sin dato";
-  if (status === "severe_low") return "Deficit moderado/severo";
-  if (status === "risk_low") return "Riesgo de deficit";
+  if (status === "severe_low") return "Déficit moderado/severo";
+  if (status === "risk_low") return "Riesgo de déficit";
   if (status === "high") return "Alto para referencia";
   return "Normal";
 }
@@ -315,7 +315,7 @@ function inferTopDiagnosisTokens(diagnosisLabel: string, diagnosisDetails: strin
     }
   }
 
-  if (!tokens.length && label && label !== "sin diagnostico" && label !== "normal") {
+  if (!tokens.length && label && label !== "sin diagnóstico" && label !== "normal") {
     tokens.push(diagnosisLabel);
   }
 
@@ -359,7 +359,7 @@ function IndicatorBarCard({ title, subtitle, summary }: IndicatorBarProps) {
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-nutri-dark-grey">
-        <p>Deficit severo: {severePercent}%</p>
+        <p>Déficit severo: {severePercent}%</p>
         <p>Riesgo: {riskPercent}%</p>
         <p>Normal: {normalPercent}%</p>
         <p>Alto: {highPercent}%</p>
@@ -420,7 +420,7 @@ export const ReportsContent: React.FC = () => {
           ageMonths,
           weightKg,
           heightCm,
-          diagnosisLabel: diagnosis?.nutritionalDiagnosis ?? "Sin diagnostico",
+          diagnosisLabel: diagnosis?.nutritionalDiagnosis ?? "Sin diagnóstico",
           zScore: parseZScore(diagnosis?.zScorePercentile ?? null),
           breastfeedingStatus: antecedents?.breastfeeding ?? null,
           indicatorStatus: {
@@ -489,7 +489,7 @@ export const ReportsContent: React.FC = () => {
       if (clinician && consultation.clinicianId !== clinician.clinicianId) continue;
 
       const labels = inferTopDiagnosisTokens(
-        diagnosis.nutritionalDiagnosis ?? "Sin diagnostico",
+        diagnosis.nutritionalDiagnosis ?? "Sin diagnóstico",
         diagnosis.diagnosisDetails ?? ""
       );
 
@@ -577,7 +577,7 @@ export const ReportsContent: React.FC = () => {
     const dateStamp = today.toISOString().slice(0, 10);
 
     const zScoreRows = [
-      ["Banda Z-score", "Casos", "Porcentaje"],
+      ["Banda de puntaje Z", "Casos", "Porcentaje"],
       ...zScoreDistribution.entries.map((entry) => [
         entry.label,
         entry.count,
@@ -586,12 +586,12 @@ export const ReportsContent: React.FC = () => {
     ];
 
     const topDiagnosisRows = [
-      ["Diagnostico", "Casos"],
+      ["Diagnóstico", "Casos"],
       ...topDiagnoses.map((item) => [item.label, item.count]),
     ];
 
     const prevalenceRows = [
-      ["Indicador", "Deficit severo", "Riesgo", "Normal", "Alto", "Total"],
+      ["Indicador", "Déficit severo", "Riesgo", "Normal", "Alto", "Total"],
       [
         "Peso/Edad",
         prevalenceWeightForAge.severeLow,
@@ -624,28 +624,28 @@ export const ReportsContent: React.FC = () => {
       ["Fecha de generacion", today.toLocaleString("es-BO")],
       ["Total consultas analizadas", datasetRows.length],
       [
-        "Prevalencia deficit peso/edad (%)",
+        "Prevalencia déficit peso/edad (%)",
         `${percentage(
           prevalenceWeightForAge.severeLow + prevalenceWeightForAge.riskLow,
           prevalenceWeightForAge.total
         )}%`,
       ],
       [
-        "Prevalencia deficit talla/edad (%)",
+        "Prevalencia déficit talla/edad (%)",
         `${percentage(
           prevalenceHeightForAge.severeLow + prevalenceHeightForAge.riskLow,
           prevalenceHeightForAge.total
         )}%`,
       ],
       [
-        "Prevalencia deficit peso/talla (%)",
+        "Prevalencia déficit peso/talla (%)",
         `${percentage(
           prevalenceWeightForHeight.severeLow + prevalenceWeightForHeight.riskLow,
           prevalenceWeightForHeight.total
         )}%`,
       ],
-      ["Ninos 6-24 meses evaluados", lactationReport.totalChildren6To24Months],
-      ["Ninos 6-24 meses con lactancia", lactationReport.maintainedBreastfeeding],
+      ["Niños 6-24 meses evaluados", lactationReport.totalChildren6To24Months],
+      ["Niños 6-24 meses con lactancia", lactationReport.maintainedBreastfeeding],
       ["Cobertura de lactancia 6-24 meses (%)", `${lactationReport.maintainedPercent}%`],
     ];
 
@@ -657,7 +657,7 @@ export const ReportsContent: React.FC = () => {
         "Peso_kg",
         "Talla_cm",
         "Z_score",
-        "Diagnostico",
+        "Diagnóstico",
         "Peso_Edad",
         "Talla_Edad",
         "Peso_Talla",
@@ -702,7 +702,7 @@ export const ReportsContent: React.FC = () => {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold text-nutri-dark-grey">
-            Analisis clinico y poblacional
+            Analisis clínico y poblacional
           </h2>
           <p className="text-sm text-nutri-dark-grey/80">
             Indicadores OMS para vigilancia nutricional de la poblacion pediatrica atendida.
@@ -754,7 +754,7 @@ export const ReportsContent: React.FC = () => {
           <section className="nutri-clinician-surface space-y-3 p-4 sm:p-5">
             <header className="flex items-center gap-2">
               <FileBarChart2 size={18} className="text-nutri-primary" />
-              <h3 className="text-base font-semibold text-nutri-primary">Distribucion por Z-score</h3>
+              <h3 className="text-base font-semibold text-nutri-primary">Distribución por puntaje Z</h3>
             </header>
 
             <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
@@ -780,16 +780,16 @@ export const ReportsContent: React.FC = () => {
             </div>
 
             <p className="text-xs text-nutri-dark-grey/80">
-              Casos con Z-score disponible: {zScoreDistribution.total}
+              Casos con puntaje Z disponible: {zScoreDistribution.total}
             </p>
           </section>
 
           <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <article className="nutri-clinician-surface p-4 sm:p-5">
-              <h3 className="text-base font-semibold text-nutri-primary">Top de diagnosticos frecuentes</h3>
+              <h3 className="text-base font-semibold text-nutri-primary">Top de diagnósticos frecuentes</h3>
               {topDiagnoses.length === 0 ? (
                 <p className="mt-3 text-sm text-nutri-dark-grey">
-                  No hay diagnosticos suficientes para construir el ranking.
+                  No hay diagnósticos suficientes para construir el ranking.
                 </p>
               ) : (
                 <ol className="mt-3 space-y-2">
@@ -814,7 +814,7 @@ export const ReportsContent: React.FC = () => {
                 <h3 className="text-base font-semibold text-nutri-primary">Reporte de lactancia (6-24 meses)</h3>
               </header>
               <p className="mt-3 text-sm text-nutri-dark-grey">
-                Ninos evaluados en rango 6-24 meses:{" "}
+                Niños evaluados en rango 6-24 meses:{" "}
                 <span className="font-semibold">{lactationReport.totalChildren6To24Months}</span>
               </p>
               <p className="mt-1 text-sm text-nutri-dark-grey">
@@ -826,7 +826,7 @@ export const ReportsContent: React.FC = () => {
                 <span className="font-semibold">{lactationReport.maintainedPercent}%</span>
               </p>
               <p className="mt-3 text-xs text-nutri-dark-grey/80">
-                Este indicador usa el ultimo registro de cada nino en rango etareo para monitoreo local.
+                Este indicador usa el ultimo registro de cada niño en rango etario para monitoreo local.
               </p>
             </article>
           </section>

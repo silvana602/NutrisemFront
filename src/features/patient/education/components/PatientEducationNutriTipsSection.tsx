@@ -16,7 +16,7 @@ export function PatientEducationNutriTipsSection({
       <div className="space-y-1">
         <h2 className="text-xl font-semibold text-nutri-primary">Nutri-Tips en Videos Cortos</h2>
         <p className="text-sm text-nutri-dark-grey/80">
-          Formato rapido estilo reels educativos para aplicar ideas en minutos.
+          Formato rápido estilo reels educativos para aplicar ideas en minutos.
         </p>
       </div>
 

@@ -63,8 +63,8 @@ export const PatientSummary: React.FC<Props> = ({ patient }) => {
 
   const ageLabel = formatPediatricAge(calculateAgeInMonths(patient.birthDate));
   const genderLabel = patient.gender === "male" ? "Masculino" : "Femenino";
-  const tutorName = guardian ? `${guardian.firstName} ${guardian.lastName}` : "Sin tutor registrado";
-  const statusLabel = latestDiagnosis?.nutritionalDiagnosis ?? "Sin diagnostico";
+  const tutorName = guardian ? `${guardian.firstName} ${guardian.lastName}` : "Sin guardián registrado";
+  const statusLabel = latestDiagnosis?.nutritionalDiagnosis ?? "Sin diagnóstico";
 
   return (
     <section className="nutri-clinician-surface p-4 sm:p-5">
@@ -89,13 +89,13 @@ export const PatientSummary: React.FC<Props> = ({ patient }) => {
 
       <div className="grid grid-cols-1 gap-2 text-sm text-nutri-dark-grey sm:grid-cols-2 lg:grid-cols-3">
         <p>
-          <span className="font-semibold">Tutor:</span> {tutorName}
+          <span className="font-semibold">Guardián:</span> {tutorName}
         </p>
         <p>
           <span className="font-semibold">CI:</span> {user.identityNumber}
         </p>
         <p>
-          <span className="font-semibold">Telefono:</span> {guardian?.phone || user.phone || "Sin dato"}
+          <span className="font-semibold">Teléfono:</span> {guardian?.phone || user.phone || "Sin dato"}
         </p>
         <p>
           <span className="font-semibold">Edad actual:</span> {ageLabel}
@@ -104,11 +104,11 @@ export const PatientSummary: React.FC<Props> = ({ patient }) => {
           <span className="font-semibold">Sexo:</span> {genderLabel}
         </p>
         <p>
-          <span className="font-semibold">Ultima consulta:</span>{" "}
+          <span className="font-semibold">Última consulta:</span>{" "}
           {latestConsultation ? latestConsultation.date.toLocaleDateString("es-BO") : "Sin consultas"}
         </p>
         <p className="sm:col-span-2 lg:col-span-3">
-          <span className="font-semibold">Direccion:</span>{" "}
+          <span className="font-semibold">Dirección:</span>{" "}
           {guardian?.address || user.address || patient.address || "Sin dato"}
         </p>
       </div>

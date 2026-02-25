@@ -245,7 +245,7 @@ function buildPatientRecommendationsReportHtml(params: {
             <div class="brand-mark">N</div>
             <div>
               <p class="brand-title">NUTRISEM</p>
-              <p class="brand-subtitle">Seguimiento nutricional pediatrico</p>
+              <p class="brand-subtitle">Seguimiento nutricional pediátrico</p>
             </div>
           </div>
           <div>
@@ -262,7 +262,7 @@ function buildPatientRecommendationsReportHtml(params: {
         <p class="meta">Estado nutricional: ${escapeHtml(patient.nutritionalStatus)}</p>
 
         <section class="report-section">
-          <h2>Ultima recomendacion alimentaria nutricional</h2>
+          <h2>Última recomendación alimentaria nutricional</h2>
           <div class="recommendation-box">${escapeHtml(patient.dietaryRecommendation)}</div>
         </section>
 

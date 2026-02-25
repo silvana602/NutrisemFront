@@ -34,7 +34,7 @@ export function Heading({
     <header
       className={cn(
         isPanel &&
-          "rounded-2xl border border-nutri-secondary/20 bg-gradient-to-r from-nutri-white via-nutri-off-white to-nutri-light-grey/45 p-5 shadow-sm sm:p-6",
+          "nutri-panel-heading rounded-2xl border border-nutri-secondary/20 bg-gradient-to-r from-nutri-white via-nutri-off-white to-nutri-light-grey/45 p-5 shadow-sm sm:p-6",
         !isPanel && "space-y-2",
         isCentered && "text-center",
         containerClassName

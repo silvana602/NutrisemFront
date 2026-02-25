@@ -30,8 +30,8 @@ export function formatPediatricAge(months: number): string {
   const remainingMonths = months % 12;
 
   if (remainingMonths === 0) {
-    return `${years} ${years === 1 ? "anio" : "anios"}`;
+    return `${years} ${years === 1 ? "año" : "años"}`;
   }
 
-  return `${years} ${years === 1 ? "anio" : "anios"} ${remainingMonths} meses`;
+  return `${years} ${years === 1 ? "año" : "años"} ${remainingMonths} meses`;
 }

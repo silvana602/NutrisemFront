@@ -14,7 +14,7 @@ function validateLoginField(field: LoginField, value: string) {
     return validateDocumentNumber(value);
   }
 
-  return validateRequired(value, "La contrasena");
+  return validateRequired(value, "La contraseña");
 }
 
 export function useLoginFormValidation() {

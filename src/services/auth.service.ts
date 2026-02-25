@@ -6,7 +6,7 @@ import type { Clinician } from "@/types/clinician";
 
 export const AuthService = {
   /**
-   * Login de usuario (CI + contrasena)
+   * Login de usuario (CI + contraseña)
    */
   login: (dto: LoginDto): AuthResponse | null => {
     const user = db.users.find((u) => u.identityNumber === dto.identityCard);
@@ -97,7 +97,7 @@ export const AuthService = {
   },
 
   /**
-   * Cambiar contrasena
+   * Cambiar contraseña
    */
   changePassword: (userId: string, newPassword: string): boolean => {
     const user = db.users.find((u) => u.userId === userId);

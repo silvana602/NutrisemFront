@@ -218,7 +218,7 @@ function buildLatestMessage(points: AnthropometricTrendPoint[]): string {
 
   return `Percentil actual ${latestPoint.percentile.toFixed(
     1
-  )} con variacion ${formatSigned(percentileDelta)} (${trendCopy})`;
+  )} con variación ${formatSigned(percentileDelta)} (${trendCopy})`;
 }
 
 function buildHighlightLabel(point: AnthropometricTrendPoint | null): string | null {

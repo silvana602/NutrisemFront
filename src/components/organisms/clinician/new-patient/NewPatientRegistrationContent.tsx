@@ -40,7 +40,7 @@ type FormErrors = Partial<Record<keyof FormData, string>> & {
 const RELATIONSHIP_OPTIONS = [
   { value: "mother", label: "Madre" },
   { value: "father", label: "Padre" },
-  { value: "legal_guardian", label: "Tutor legal" },
+  { value: "legal_guardian", label: "Guardián legal" },
   { value: "other", label: "Otro familiar/cuidador" },
 ] as const;
 
@@ -93,10 +93,10 @@ function validateForm(form: FormData): FormErrors {
   if (!patientFirstName) errors.patientFirstName = "Ingresa el nombre del paciente.";
   if (!patientLastName) errors.patientLastName = "Ingresa el apellido del paciente.";
   if (!patientIdentityNumber) {
-    errors.patientIdentityNumber = "Ingresa CI o numero de identificacion del paciente.";
+    errors.patientIdentityNumber = "Ingresa CI o número de identificación del paciente.";
   }
-  if (!patientAddress) errors.patientAddress = "Ingresa la direccion del paciente.";
-  if (!form.patientGender) errors.patientGender = "Selecciona el sexo biologico del paciente.";
+  if (!patientAddress) errors.patientAddress = "Ingresa la dirección del paciente.";
+  if (!form.patientGender) errors.patientGender = "Selecciona el sexo biológico del paciente.";
 
   const birthDate = parseBirthDate(form.patientBirthDate);
   if (!birthDate) {
@@ -105,24 +105,24 @@ function validateForm(form: FormData): FormErrors {
     const ageMonths = calculateAgeInMonths(birthDate);
     if (ageMonths > 60) {
       errors.patientBirthDate =
-        "Para este modulo pediatrico el paciente debe tener 60 meses o menos.";
+        "Para este módulo pediátrico el paciente debe tener 60 meses o menos.";
     }
   }
 
-  if (!guardianFirstName) errors.guardianFirstName = "Ingresa el nombre del tutor.";
-  if (!guardianLastName) errors.guardianLastName = "Ingresa el apellido del tutor.";
+  if (!guardianFirstName) errors.guardianFirstName = "Ingresa el nombre del guardián.";
+  if (!guardianLastName) errors.guardianLastName = "Ingresa el apellido del guardián.";
   if (!guardianIdentityNumber) {
-    errors.guardianIdentityNumber = "Ingresa el CI del tutor.";
+    errors.guardianIdentityNumber = "Ingresa el CI del guardián.";
   }
-  if (!guardianPhone) errors.guardianPhone = "Ingresa un telefono de contacto.";
+  if (!guardianPhone) errors.guardianPhone = "Ingresa un teléfono de contacto.";
   if (guardianPhone && guardianPhone.replace(/\D/g, "").length < 7) {
-    errors.guardianPhone = "Ingresa un telefono valido (minimo 7 digitos).";
+    errors.guardianPhone = "Ingresa un teléfono valido (mínimo 7 dígitos).";
   }
-  if (!guardianAddress) errors.guardianAddress = "Ingresa la direccion del tutor.";
+  if (!guardianAddress) errors.guardianAddress = "Ingresa la dirección del guardián.";
 
   if (!form.confirmTutorData) {
     errors.confirmTutorData =
-      "Debes confirmar que los datos fueron proporcionados por el tutor.";
+      "Debes confirmar que los datos fueron proporcionados por el guardián.";
   }
 
   const duplicatePatient = db.patients.some(
@@ -131,7 +131,7 @@ function validateForm(form: FormData): FormErrors {
 
   if (duplicatePatient) {
     errors.patientIdentityNumber =
-      "Ya existe un paciente registrado con ese numero de identificacion.";
+      "Ya existe un paciente registrado con ese número de identificación.";
   }
 
   return errors;
@@ -167,7 +167,7 @@ export const NewPatientRegistrationContent: React.FC = () => {
     }
 
     if (!user) {
-      setErrors({ submit: "No hay una sesion activa para registrar al paciente." });
+      setErrors({ submit: "No hay una sesión activa para registrar al paciente." });
       return;
     }
 
@@ -184,7 +184,7 @@ export const NewPatientRegistrationContent: React.FC = () => {
     }
     const patientGender = form.patientGender;
     if (patientGender !== "female" && patientGender !== "male") {
-      setErrors({ patientGender: "Selecciona el sexo biologico del paciente." });
+      setErrors({ patientGender: "Selecciona el sexo biológico del paciente." });
       return;
     }
 
@@ -263,9 +263,9 @@ export const NewPatientRegistrationContent: React.FC = () => {
       <div className="nutri-clinician-page-header p-4 sm:p-5">
         <Heading
           containerClassName="space-y-2"
-          description="Completa los datos del nino y del tutor responsable para habilitar consultas y diagnosticos."
+          description="Completa los datos del niño y del guardián responsable para habilitar consultas y diagnósticos."
         >
-          Registro de paciente pediatrico
+          Registro de paciente pediátrico
         </Heading>
       </div>
 
@@ -308,14 +308,14 @@ export const NewPatientRegistrationContent: React.FC = () => {
 
             <div>
               <label className="nutri-label" htmlFor="patient-id-number">
-                CI / identificacion del paciente
+                CI / identificación del paciente
               </label>
               <input
                 id="patient-id-number"
                 className="nutri-input"
                 value={form.patientIdentityNumber}
                 onChange={(event) => setField("patientIdentityNumber", event.target.value)}
-                placeholder="Numero de CI o certificado"
+                placeholder="Número de CI o certificado"
               />
               {errors.patientIdentityNumber && (
                 <p className="mt-1 text-xs text-rose-700">{errors.patientIdentityNumber}</p>
@@ -324,7 +324,7 @@ export const NewPatientRegistrationContent: React.FC = () => {
 
             <div>
               <label className="nutri-label" htmlFor="patient-gender">
-                Sexo biologico
+                Sexo biológico
               </label>
               <select
                 id="patient-gender"
@@ -360,7 +360,7 @@ export const NewPatientRegistrationContent: React.FC = () => {
 
             <div>
               <label className="nutri-label" htmlFor="patient-address">
-                Direccion del paciente
+                Dirección del paciente
               </label>
               <input
                 id="patient-address"
@@ -377,12 +377,12 @@ export const NewPatientRegistrationContent: React.FC = () => {
         </section>
 
         <section className="nutri-clinician-surface p-4 sm:p-5">
-          <h2 className="mb-4 text-base font-semibold text-nutri-primary">2. Datos del tutor responsable</h2>
+          <h2 className="mb-4 text-base font-semibold text-nutri-primary">2. Datos del guardián responsable</h2>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="nutri-label" htmlFor="guardian-first-name">
-                Nombres del tutor
+                Nombres del guardián
               </label>
               <input
                 id="guardian-first-name"
@@ -398,7 +398,7 @@ export const NewPatientRegistrationContent: React.FC = () => {
 
             <div>
               <label className="nutri-label" htmlFor="guardian-last-name">
-                Apellidos del tutor
+                Apellidos del guardián
               </label>
               <input
                 id="guardian-last-name"
@@ -414,14 +414,14 @@ export const NewPatientRegistrationContent: React.FC = () => {
 
             <div>
               <label className="nutri-label" htmlFor="guardian-id-number">
-                CI del tutor
+                CI del guardián
               </label>
               <input
                 id="guardian-id-number"
                 className="nutri-input"
                 value={form.guardianIdentityNumber}
                 onChange={(event) => setField("guardianIdentityNumber", event.target.value)}
-                placeholder="Numero de CI"
+                placeholder="Número de CI"
               />
               {errors.guardianIdentityNumber && (
                 <p className="mt-1 text-xs text-rose-700">{errors.guardianIdentityNumber}</p>
@@ -448,7 +448,7 @@ export const NewPatientRegistrationContent: React.FC = () => {
 
             <div>
               <label className="nutri-label" htmlFor="guardian-phone">
-                Telefono del tutor
+                Teléfono del guardián
               </label>
               <input
                 id="guardian-phone"
@@ -464,7 +464,7 @@ export const NewPatientRegistrationContent: React.FC = () => {
 
             <div>
               <label className="nutri-label" htmlFor="guardian-address">
-                Direccion del tutor
+                Dirección del guardián
               </label>
               <input
                 id="guardian-address"
@@ -486,7 +486,7 @@ export const NewPatientRegistrationContent: React.FC = () => {
               onChange={(event) => setField("confirmTutorData", event.target.checked)}
               className="mt-0.5 h-4 w-4 rounded border-nutri-light-grey"
             />
-            Confirmo que los datos fueron brindados por el tutor responsable del paciente.
+            Confirmo que los datos fueron brindados por el guardián responsable del paciente.
           </label>
           {errors.confirmTutorData && (
             <p className="mt-1 text-xs text-rose-700">{errors.confirmTutorData}</p>

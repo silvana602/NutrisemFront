@@ -16,7 +16,7 @@ export function PatientRecommendationsPdfDownloadCard({
         <div className="space-y-1">
           <h2 className="text-lg font-semibold text-nutri-primary">Descarga en PDF</h2>
           <p className="text-sm text-nutri-dark-grey/80">
-            Incluye la recomendacion alimentaria, alimentos sugeridos y prohibiciones con sustitutos.
+            Incluye la recomendación alimentaria, alimentos sugeridos y prohibiciones con sustitutos.
           </p>
         </div>
 

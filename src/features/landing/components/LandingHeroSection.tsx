@@ -39,7 +39,7 @@ export function LandingHeroSection({
             description="Supervisa crecimiento, detecta riesgos y activa intervenciones nutricionales oportunas desde una sola plataforma."
             descriptionClassName="max-w-xl text-sm leading-relaxed text-nutri-dark-grey sm:text-base"
           >
-            Nutrisem transforma datos clinicos en decisiones nutricionales accionables
+            Nutrisem transforma datos clínicos en decisiones nutricionales accionables
           </Heading>
 
           <div className="flex flex-col gap-3 sm:flex-row">
@@ -91,7 +91,7 @@ export function LandingHeroSection({
 
           <div className="mt-4 flex items-center gap-2 text-xs text-nutri-off-white/90">
             <ClipboardList size={14} aria-hidden />
-            Datos consolidados de control clinico y antropometria
+            Datos consolidados de control clínico y antropometria
           </div>
         </div>
       </div>

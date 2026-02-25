@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import type { Clinician } from "@/types/clinician";
 import type { User } from "@/types/user";
 import { useAuthStore } from "@/store/useAuthStore";
+import { applyInterfaceSettings } from "@/features/settings/utils/settingsRuntime.utils";
+import { readUserSettings } from "@/features/settings/utils/settingsStorage.utils";
 
 type SessionResponse = {
   user: User;
@@ -29,6 +31,7 @@ async function fetchCurrentSession() {
 
 export default function AppSessionBootstrap() {
   const hydrated = useAuthStore((state) => state.hydrated);
+  const user = useAuthStore((state) => state.user);
   const setHydrated = useAuthStore((state) => state.setHydrated);
   const setSession = useAuthStore((state) => state.setSession);
   const clearSession = useAuthStore((state) => state.clearSession);
@@ -58,6 +61,20 @@ export default function AppSessionBootstrap() {
       }
     })();
   }, [hydrated, setHydrated, setSession, clearSession]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
+    if (!user) {
+      const root = window.document.documentElement;
+      root.removeAttribute("data-nutri-modo");
+      root.removeAttribute("data-nutri-modo-preferencia");
+      root.setAttribute("lang", "es");
+      return;
+    }
+
+    applyInterfaceSettings(readUserSettings(user.userId));
+  }, [hydrated, user?.userId]);
 
   return null;
 }

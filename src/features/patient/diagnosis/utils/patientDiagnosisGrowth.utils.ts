@@ -238,7 +238,7 @@ export function buildWeightForHeightInterpretation(points: AnthropometricTrendPo
   if (!previousPoint) {
     return `Peso/Talla actual ${latestPoint.actual.toFixed(2)} kg, percentil ${latestPoint.percentile.toFixed(
       1
-    )}, Z-score ${latestPoint.zScore.toFixed(2)} (${getZoneSummaryCopy(latestPoint.zone)}).`;
+    )}, Puntaje Z ${latestPoint.zScore.toFixed(2)} (${getZoneSummaryCopy(latestPoint.zone)}).`;
   }
 
   const percentileDelta = latestPoint.percentile - previousPoint.percentile;
@@ -253,9 +253,9 @@ export function buildWeightForHeightInterpretation(points: AnthropometricTrendPo
 
   return `Peso/Talla actual ${latestPoint.actual.toFixed(2)} kg, percentil ${latestPoint.percentile.toFixed(
     1
-  )}, Z-score ${latestPoint.zScore.toFixed(2)} (${getZoneSummaryCopy(
+  )}, Puntaje Z ${latestPoint.zScore.toFixed(2)} (${getZoneSummaryCopy(
     latestPoint.zone
-  )}). Variacion reciente: ${formatSigned(percentileDelta)} percentiles (${trendCopy})`;
+  )}). Variación reciente: ${formatSigned(percentileDelta)} percentiles (${trendCopy})`;
 }
 
 export function buildWeightForHeightChartData(rows: PatientGrowthRow[]): PatientGrowthChartData {

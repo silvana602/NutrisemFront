@@ -72,7 +72,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className={cn("nutri-platform-layout flex min-h-[calc(100dvh-var(--nutri-navbar-height)-var(--nutri-footer-height))] items-start")}>
+    <div
+      className={cn(
+        "nutri-platform-layout flex min-h-[calc(100dvh-var(--nutri-navbar-height)-var(--nutri-footer-height))] items-start overflow-x-hidden lg:pl-64"
+      )}
+    >
       <Sidebar />
 
       <main className={cn("nutri-platform-main min-w-0 flex-1 px-2 py-3 sm:px-4 sm:py-5 lg:px-6")}>

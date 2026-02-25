@@ -20,8 +20,8 @@ export default function HistorialesReportesPage() {
     <div className="nutri-clinician-page w-full px-1 py-1 sm:px-2">
       <Heading
         containerClassName="nutri-clinician-page-header mb-1 p-4 sm:p-5"
-        eyebrow="Modulo clinician"
-        description="Consulta historiales clinicos y genera reportes desde un solo lugar."
+        eyebrow="Módulo clinician"
+        description="Consulta historiales clínicos y genera reportes desde un solo lugar."
       >
         Historial y reportes
       </Heading>

@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronDown,
   LogOut,
+  Settings,
   ShieldCheck,
   Stethoscope,
   UserRound,
@@ -12,11 +13,15 @@ import {
 import AlertDialog from "@/components/ui/AlertDialog";
 import Avatar from "@/components/ui/Avatar";
 import { logoutClient } from "@/lib/auth/client";
-import { resolveDashboardPathByRole } from "@/lib/auth/roleRouting";
+import {
+  resolveDashboardPathByRole,
+  resolveSettingsPathByRole,
+} from "@/lib/auth/roleRouting";
 import { cn } from "@/lib/utils";
 import { db } from "@/mocks/db";
 import { useAuthStore } from "@/store/useAuthStore";
 import { UserRole } from "@/types/user";
+import { useUserSettings } from "@/features/settings/hooks/useUserSettings";
 
 type MenuEntry = {
   role: UserRole;
@@ -26,12 +31,13 @@ type MenuEntry = {
 
 function resolveRoleLabel(role: UserRole): string {
   if (role === UserRole.admin) return "Administrador";
-  if (role === UserRole.clinician) return "Clinico";
+  if (role === UserRole.clinician) return "Clínico";
   return "Paciente";
 }
 
 export default function UserMenu() {
   const router = useRouter();
+  const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
   const activeRole = useAuthStore((state) => state.activeRole);
   const setActiveRole = useAuthStore((state) => state.setActiveRole);
@@ -73,6 +79,7 @@ export default function UserMenu() {
   if (!user) return null;
 
   const currentRole = activeRole ?? user.role;
+  const { fotoPerfil: profilePhoto } = useUserSettings(user.userId);
 
   const canAccessPatientPanel = () =>
     db.patients.some((patient) => patient.userId === user.userId);
@@ -84,7 +91,7 @@ export default function UserMenu() {
       ? [
           {
             role: UserRole.admin,
-            label: "Panel de Administracion",
+            label: "Panel de Administración",
             icon: ShieldCheck,
           },
           {
@@ -112,6 +119,9 @@ export default function UserMenu() {
             },
           ]
         : [];
+  const settingsPath = resolveSettingsPathByRole(currentRole);
+  const isSettingsActive =
+    pathname === settingsPath || pathname?.startsWith(settingsPath + "/");
 
   const onLogout = async () => {
     await logoutClient(clearSession);
@@ -134,6 +144,11 @@ export default function UserMenu() {
     router.push(resolveDashboardPathByRole(role));
   };
 
+  const openSettings = () => {
+    close();
+    router.push(settingsPath);
+  };
+
   return (
     <div ref={menuRef} className="relative">
       <button
@@ -141,7 +156,7 @@ export default function UserMenu() {
         onClick={() => setOpen((previous) => !previous)}
         className="group flex items-center gap-2 rounded-2xl border border-white/75 bg-white/80 px-2.5 py-1.5 shadow-[0_8px_18px_rgba(18,33,46,0.12)] transition-all hover:-translate-y-0.5 hover:bg-white"
       >
-        <Avatar name={`${user.firstName} ${user.lastName}`} size={32} />
+        <Avatar name={`${user.firstName} ${user.lastName}`} src={profilePhoto} size={32} />
         <ChevronDown
           size={16}
           className={cn(
@@ -155,7 +170,7 @@ export default function UserMenu() {
         <div className="absolute right-0 z-50 mt-2 w-[min(20rem,calc(100vw-1rem))] overflow-hidden rounded-2xl border border-white/80 bg-[linear-gradient(155deg,rgba(251,249,241,0.98)_0%,rgba(245,239,235,0.93)_100%)] p-2 shadow-[0_24px_38px_rgba(18,33,46,0.26)]">
           <div className="mx-1 mb-2 rounded-xl border border-white/85 bg-white/70 p-3 shadow-[0_8px_16px_rgba(18,33,46,0.08)]">
             <div className="flex items-center gap-3">
-              <Avatar name={`${user.firstName} ${user.lastName}`} size={40} />
+              <Avatar name={`${user.firstName} ${user.lastName}`} src={profilePhoto} size={40} />
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-nutri-black">
                   {user.firstName} {user.lastName}
@@ -188,12 +203,16 @@ export default function UserMenu() {
 
           <div className="my-2 h-px bg-gradient-to-r from-transparent via-nutri-secondary/35 to-transparent" />
 
+          <MenuButton active={Boolean(isSettingsActive)} onClick={openSettings} icon={Settings}>
+            Configuración
+          </MenuButton>
+
           <button
             onClick={onLogout}
             className="mx-2 my-1 flex w-[calc(100%-1rem)] items-center gap-2 rounded-xl border border-nutri-primary/20 bg-nutri-primary/10 px-4 py-2.5 text-left text-sm font-semibold text-nutri-primary transition-all duration-150 hover:bg-nutri-primary/15"
           >
             <LogOut size={16} />
-            Cerrar sesion
+            Cerrar sesión
           </button>
         </div>
       )}
@@ -230,18 +249,18 @@ function MenuButton({
     <button
       onClick={onClick}
       className={cn(
-        "group mx-2 my-1 flex w-[calc(100%-1rem)] items-center gap-3 rounded-xl px-4 py-2.5 text-left text-sm font-semibold transition-all duration-150",
+        "nutri-menu-panel-button group mx-2 my-1 flex w-[calc(100%-1rem)] items-center gap-3 rounded-xl px-4 py-2.5 text-left text-sm font-semibold transition-all duration-150",
         active
-          ? "bg-[linear-gradient(135deg,#172A3A_0%,#567C8D_100%)] text-nutri-white shadow-[0_10px_18px_rgba(18,33,46,0.24)]"
-          : "text-nutri-dark-grey hover:bg-white/75"
+          ? "nutri-menu-panel-button-active bg-[linear-gradient(135deg,#172A3A_0%,#567C8D_100%)] text-nutri-white shadow-[0_10px_18px_rgba(18,33,46,0.24)]"
+          : "nutri-menu-panel-button-idle text-nutri-dark-grey hover:bg-white/75"
       )}
     >
       <span
         className={cn(
-          "inline-flex h-8 w-8 items-center justify-center rounded-lg border",
+          "nutri-menu-button-icon inline-flex h-8 w-8 items-center justify-center rounded-lg border",
           active
-            ? "border-white/30 bg-white/10 text-white"
-            : "border-nutri-light-grey bg-white text-nutri-primary group-hover:border-nutri-secondary/40"
+            ? "nutri-menu-button-icon-active border-white/30 bg-white/10 text-white"
+            : "nutri-menu-button-icon-idle border-nutri-light-grey bg-white text-nutri-primary group-hover:border-nutri-secondary/40"
         )}
       >
         <Icon size={16} />

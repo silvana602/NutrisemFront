@@ -109,7 +109,7 @@ export const PatientsHistoryTable: React.FC<Props> = ({ patientId }) => {
         heightM: anthropometric?.heightM ?? null,
         bmi: bmi !== null ? Number(bmi.toFixed(2)) : null,
         zScore: diagnosis?.zScorePercentile ?? null,
-        nutritionalDiagnosis: diagnosis?.nutritionalDiagnosis ?? "Sin diagnostico",
+        nutritionalDiagnosis: diagnosis?.nutritionalDiagnosis ?? "Sin diagnóstico",
       } satisfies HistoryRow;
     });
   }, [patient, patientId]);
@@ -162,7 +162,7 @@ export const PatientsHistoryTable: React.FC<Props> = ({ patientId }) => {
                     <span className="font-semibold">IMC:</span> {formatBmi(row.bmi)}
                   </p>
                   <p className="col-span-2">
-                    <span className="font-semibold">Z-score:</span> {formatZScore(row.zScore)}
+                    <span className="font-semibold">Puntaje Z:</span> {formatZScore(row.zScore)}
                   </p>
                 </div>
 
@@ -173,7 +173,7 @@ export const PatientsHistoryTable: React.FC<Props> = ({ patientId }) => {
                     className="px-3 py-1.5 text-xs"
                     onClick={() => router.push(buildDiagnosisUrl(patientId, row.diagnosisId, "summary"))}
                   >
-                    Ver diagnostico
+                    Ver diagnóstico
                   </Button>
                   <Button
                     type="button"
@@ -197,8 +197,8 @@ export const PatientsHistoryTable: React.FC<Props> = ({ patientId }) => {
                   <th className="px-3 py-2 text-left font-semibold">Peso</th>
                   <th className="px-3 py-2 text-left font-semibold">Talla</th>
                   <th className="px-3 py-2 text-left font-semibold">IMC</th>
-                  <th className="px-3 py-2 text-left font-semibold">Z-score</th>
-                  <th className="px-3 py-2 text-left font-semibold">Diagnostico</th>
+                  <th className="px-3 py-2 text-left font-semibold">Puntaje Z</th>
+                  <th className="px-3 py-2 text-left font-semibold">Diagnóstico</th>
                   <th className="px-3 py-2 text-left font-semibold">Acciones</th>
                 </tr>
               </thead>
@@ -223,7 +223,7 @@ export const PatientsHistoryTable: React.FC<Props> = ({ patientId }) => {
                           className="px-3 py-1.5 text-xs"
                           onClick={() => router.push(buildDiagnosisUrl(patientId, row.diagnosisId, "summary"))}
                         >
-                          Ver diagnostico
+                          Ver diagnóstico
                         </Button>
                         <Button
                           type="button"

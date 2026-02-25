@@ -28,7 +28,7 @@ export default function AdminDashboardContent() {
         </Heading>
 
         <IconButton
-          label="Anadir nuevo profesional medico"
+          label="Anadir nuevo profesional médico"
           className="w-full justify-center sm:w-auto"
         />
       </div>
@@ -36,7 +36,7 @@ export default function AdminDashboardContent() {
       <section className="nutri-platform-surface p-4 sm:p-5">
         <SectionTitle className="mt-0">Vista general de la actividad del sistema</SectionTitle>
         <p className="mt-2 text-sm text-nutri-dark-grey/85">
-          Numero de pacientes, medicos, consultas y diagnosticos recientes.
+          Número de pacientes, médicos, consultas y diagnósticos recientes.
         </p>
         <MetricsGrid metrics={metrics} />
       </section>

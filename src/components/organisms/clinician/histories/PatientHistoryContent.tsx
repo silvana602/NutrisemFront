@@ -68,7 +68,7 @@ export const PatientHistoryContent: React.FC = () => {
           ci: patientUser?.identityNumber ?? patient.identityNumber,
           tutorName: guardian
             ? `${guardian.firstName} ${guardian.lastName}`
-            : "Sin tutor registrado",
+            : "Sin guardián registrado",
           lastConsultLabel: lastConsultation
             ? lastConsultation.date.toLocaleDateString("es-BO")
             : "Sin consultas",
@@ -115,9 +115,9 @@ export const PatientHistoryContent: React.FC = () => {
   return (
     <div className="space-y-5">
       <header className="space-y-1">
-        <h2 className="text-xl font-semibold text-nutri-dark-grey">Historiales clinicos</h2>
+        <h2 className="text-xl font-semibold text-nutri-dark-grey">Historiales clínicos</h2>
         <p className="text-sm text-nutri-dark-grey/80">
-          Busca un paciente por nombre, CI o tutor para revisar su historial de consultas.
+          Busca un paciente por nombre, CI o guardián para revisar su historial de consultas.
         </p>
       </header>
 
@@ -125,7 +125,7 @@ export const PatientHistoryContent: React.FC = () => {
         <SearchBar
           value={search}
           onChange={setSearch}
-          placeholder="Buscar paciente por nombre, CI o tutor"
+          placeholder="Buscar paciente por nombre, CI o guardián"
           containerClassName="mt-0 max-w-none"
         />
 
@@ -146,9 +146,9 @@ export const PatientHistoryContent: React.FC = () => {
               >
                 <p className="text-sm font-semibold text-nutri-primary">{option.patientName}</p>
                 <p className="text-xs text-nutri-dark-grey/80">CI: {option.ci}</p>
-                <p className="text-xs text-nutri-dark-grey/80">Tutor: {option.tutorName}</p>
+                <p className="text-xs text-nutri-dark-grey/80">Guardián: {option.tutorName}</p>
                 <p className="mt-1 text-xs text-nutri-dark-grey/80">
-                  Ultima consulta: {option.lastConsultLabel} | Registros:{" "}
+                  Última consulta: {option.lastConsultLabel} | Registros:{" "}
                   {option.consultationsCount}
                 </p>
               </button>

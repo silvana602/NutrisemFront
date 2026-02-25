@@ -145,7 +145,7 @@ export function LoginForm() {
           htmlFor="login-password"
           className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-nutri-dark-grey/80"
         >
-          Contrasena
+          Contraseña
         </label>
         <div className="relative">
           <input
@@ -175,11 +175,11 @@ export function LoginForm() {
           <button
             type="button"
             onClick={() => setShowPassword((previous) => !previous)}
-            aria-label={showPassword ? "Ocultar contrasena" : "Mostrar contrasena"}
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
             className="absolute right-2.5 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-lg border border-transparent p-1 text-nutri-secondary transition-all hover:border-nutri-light-grey hover:bg-white hover:text-nutri-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nutri-secondary/35"
           >
             <span className="sr-only">
-              {showPassword ? "Ocultar contrasena" : "Mostrar contrasena"}
+              {showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
             </span>
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
@@ -201,7 +201,7 @@ export function LoginForm() {
           onChange={(event) => setRememberCredentials(event.target.checked)}
           className="h-4 w-4 cursor-pointer rounded border-nutri-light-grey accent-nutri-primary"
         />
-        <span>Recordar credenciales en esta sesion</span>
+        <span>Recordar credenciales en esta sesión</span>
       </label>
 
       {errors.form && (
@@ -215,7 +215,7 @@ export function LoginForm() {
         disabled={loading}
         className="w-full justify-center rounded-xl py-2.5 text-sm font-bold shadow-[0_12px_24px_rgba(18,33,46,0.22)]"
       >
-        {loading ? "Ingresando..." : "Iniciar sesion"}
+        {loading ? "Ingresando..." : "Iniciar sesión"}
       </Button>
     </form>
   );

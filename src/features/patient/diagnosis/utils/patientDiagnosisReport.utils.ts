@@ -227,7 +227,7 @@ function buildPatientDiagnosisReportHtml(params: BuildPatientDiagnosisReportHtml
             <div class="brand-mark">N</div>
             <div>
               <p class="brand-title">NUTRISEM</p>
-              <p class="brand-subtitle">Seguimiento nutricional pediatrico</p>
+              <p class="brand-subtitle">Seguimiento nutricional pediátrico</p>
             </div>
           </div>
           <div>
@@ -236,14 +236,14 @@ function buildPatientDiagnosisReportHtml(params: BuildPatientDiagnosisReportHtml
           </div>
         </div>
 
-        <h1>Informe de diagnostico pediatrico</h1>
+        <h1>Informe de diagnóstico pediátrico</h1>
         <p class="meta">
           Paciente: ${escapeHtml(patient.patientName)} | CI: ${escapeHtml(
             patient.patientIdentityNumber
           )} | Edad: ${escapeHtml(patient.patientAgeLabel)}
         </p>
         <p class="meta">
-          Medico: ${escapeHtml(row.clinicianName)} | Fecha de consulta: ${escapeHtml(
+          Médico: ${escapeHtml(row.clinicianName)} | Fecha de consulta: ${escapeHtml(
             row.dateLabel
           )}
         </p>
@@ -254,7 +254,7 @@ function buildPatientDiagnosisReportHtml(params: BuildPatientDiagnosisReportHtml
         </section>
 
         <section class="report-section">
-          <h2>Resumen del diagnostico</h2>
+          <h2>Resumen del diagnóstico</h2>
           ${renderRowsTable(diagnosisRows)}
         </section>
 
@@ -300,9 +300,9 @@ export async function generatePatientDiagnosisReportPdf(params: {
 
   const diagnosisRows: PatientReportFieldRow[] = [
     { label: "Estado nutricional", value: row.nutritionalStatus },
-    { label: "Conclusion del medico", value: row.diagnosisSummary },
-    { label: "Recomendacion medica", value: row.medicalRecommendation },
-    { label: "Recomendacion alimentaria", value: row.dietaryRecommendation },
+    { label: "Conclusion del médico", value: row.diagnosisSummary },
+    { label: "Recomendación médica", value: row.medicalRecommendation },
+    { label: "Recomendación alimentaria", value: row.dietaryRecommendation },
   ];
 
   const documentTitle = `Informe_Consulta_${toSafeFileToken(row.consultationNumber)}_${toSafeFileToken(

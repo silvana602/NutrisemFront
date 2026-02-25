@@ -50,12 +50,12 @@ type DiagnosisResult = {
 };
 
 const DIAGNOSIS_TABS: readonly TabItem<DiagnosisTabId>[] = [
-  { id: "summary", label: "Resumen de la ultima consulta" },
+  { id: "summary", label: "Resumen de la última consulta" },
   { id: "results", label: "Resultados" },
 ];
 
 const RESULTS_STEPS = [
-  { id: "final", title: "Diagnostico Final" },
+  { id: "final", title: "Diagnóstico Final" },
   { id: "recommendations", title: "Recomendaciones" },
   { id: "trends", title: "Progreso antropometrico" },
 ] as const;
@@ -300,21 +300,21 @@ function buildDefaultMedicalRecommendation(nutritionalStatus: string): string {
   const status = normalizeText(nutritionalStatus);
 
   if (status.includes("desnutricion")) {
-    return "Se recomienda seguimiento clinico estrecho, control de peso y talla semanal, tamizaje de comorbilidades y vigilancia de signos de alarma en domicilio.";
+    return "Se recomienda seguimiento clínico estrecho, control de peso y talla semanal, tamizaje de comorbilidades y vigilancia de signos de alarma en domicilio.";
   }
 
   if (status.includes("sobrepeso") || status.includes("obesidad")) {
     return "Se recomienda control mensual, promocion de actividad fisica acorde a la edad, reduccion de ultraprocesados y evaluacion periodica de habitos familiares.";
   }
 
-  return "Se recomienda control periodico en consulta, refuerzo de practicas de alimentacion saludable y monitoreo de crecimiento segun calendario pediatrico.";
+  return "Se recomienda control periódico en consulta, refuerzo de prácticas de alimentacion saludable y monitoreo de crecimiento según calendario pediátrico.";
 }
 
 function buildDefaultDietaryRecommendation(nutritionalStatus: string): string {
   const status = normalizeText(nutritionalStatus);
 
   if (status.includes("desnutricion")) {
-    return "Incrementar densidad energetica en 5-6 tiempos de comida al dia, con porciones pequenas y frecuentes, priorizando proteina de alto valor biologico y alimentos fortificados.";
+    return "Incrementar densidad energética en 5-6 tiempos de comida al dia, con porciones pequeñas y frecuentes, priorizando proteina de alto valor biológico y alimentos fortificados.";
   }
 
   if (status.includes("sobrepeso") || status.includes("obesidad")) {
@@ -354,8 +354,8 @@ function translateFoodName(foodName: string): string {
 
 function translateReferenceAge(referenceAge: string): string {
   return referenceAge
-    .replace(/years?/gi, "anios")
-    .replace(/year/gi, "anio")
+    .replace(/years?/gi, "años")
+    .replace(/year/gi, "año")
     .replace(/months?/gi, "meses")
     .replace(/month/gi, "mes");
 }
@@ -558,14 +558,14 @@ function buildIndicatorInterpretation(
   if (!previousPoint) {
     return `${indicatorTitle}: valor actual ${latestPoint.actual.toFixed(2)} ${unit}, percentil ${latestPoint.percentile.toFixed(
       1
-    )} y Z-score ${latestPoint.zScore.toFixed(2)}. Clasificacion: ${statusLabel}.`;
+    )} y Puntaje Z ${latestPoint.zScore.toFixed(2)}. Clasificación: ${statusLabel}.`;
   }
 
   const percentileDelta = latestPoint.percentile - previousPoint.percentile;
   let trendLabel = "sin cambios relevantes en la trayectoria.";
 
   if (percentileDelta <= -15) {
-    trendLabel = "caida importante de la curva respecto a la consulta previa.";
+    trendLabel = "caída importante de la curva respecto a la consulta previa.";
   } else if (percentileDelta <= -5) {
     trendLabel = "tendencia descendente de la curva.";
   } else if (percentileDelta >= 10) {
@@ -574,9 +574,9 @@ function buildIndicatorInterpretation(
 
   return `${indicatorTitle}: valor actual ${latestPoint.actual.toFixed(2)} ${unit}, percentil ${latestPoint.percentile.toFixed(
     1
-  )} y Z-score ${latestPoint.zScore.toFixed(
+  )} y Puntaje Z ${latestPoint.zScore.toFixed(
     2
-  )}. Clasificacion: ${statusLabel}; variacion del percentil ${formatSigned(percentileDelta)} puntos (${trendLabel})`;
+  )}. Clasificación: ${statusLabel}; variación del percentil ${formatSigned(percentileDelta)} puntos (${trendLabel})`;
 }
 
 function buildGrowthOverview(indicators: GrowthIndicatorAssessment[]): GrowthOverview | null {
@@ -608,7 +608,7 @@ function buildGrowthOverview(indicators: GrowthIndicatorAssessment[]): GrowthOve
     label = "Desnutricion moderada/severa";
     tone = minZScore <= -3 ? "red" : "yellow";
     summary =
-      "Existe deficit antropometrico importante (Z-score < -2) y se recomienda seguimiento nutricional y clinico prioritario.";
+      "Existe déficit antropometrico importante (Puntaje Z < -2) y se recomienda seguimiento nutricional y clínico prioritario.";
   } else if (hasCurveDrop || hasNutritionalRiskBand) {
     label = "Riesgo de desnutricion";
     tone = "yellow";
@@ -632,7 +632,7 @@ function buildGrowthOverview(indicators: GrowthIndicatorAssessment[]): GrowthOve
     .filter((indicator) => indicator.hasCurveDrop)
     .map(
       (indicator) =>
-        `Se detecta caida de la curva en ${indicator.shortTitle.toLowerCase()}. Se sugiere cita con nutricionista pediatrico en 15 dias.`
+        `Se detecta caída de la curva en ${indicator.shortTitle.toLowerCase()}. Se sugiere cita con nutricionista pediátrico en 15 dias.`
     );
 
   return { label, summary, tone, curveDropAlerts };
@@ -657,10 +657,10 @@ function buildAutomatedFollowUpRecommendations(params: {
 
   if (ageMonths !== null && ageMonths >= 12 && ageMonths <= 60) {
     recommendations.push(
-      "1-5 anios: asegurar porcion diaria de proteina (huevo, carnes magras o legumbres), al menos 2 porciones de fruta y 2 de verduras."
+      "1-5 años: asegurar porcion diaria de proteina (huevo, carnes magras o legumbres), al menos 2 porciones de fruta y 2 de verduras."
     );
     recommendations.push(
-      "1-5 anios: priorizar agua simple y evitar bebidas azucaradas, frituras y snacks ultraprocesados."
+      "1-5 años: priorizar agua simple y evitar bebidas azucaradas, frituras y snacks ultraprocesados."
     );
   }
 
@@ -678,7 +678,7 @@ function buildAutomatedFollowUpRecommendations(params: {
     );
   } else if (overview?.label === "Eutrofico") {
     recommendations.push(
-      "Continuar controles periodicos y mantener patron de alimentacion balanceado segun edad pediatrica."
+      "Continuar controles periodicos y mantener patron de alimentacion balanceado según edad pediatrica."
     );
   }
 
@@ -686,7 +686,7 @@ function buildAutomatedFollowUpRecommendations(params: {
     recommendations.push(...overview.curveDropAlerts);
   } else if (indicators.some((indicator) => indicator.hasCurveDrop)) {
     recommendations.push(
-      "Se sugiere cita con nutricionista pediatrico en 15 dias por descenso reciente de la curva de crecimiento."
+      "Se sugiere cita con nutricionista pediátrico en 15 dias por descenso reciente de la curva de crecimiento."
     );
   }
 
@@ -1235,7 +1235,7 @@ function buildDiagnosisReportHtml(params: {
           .join("")}
 
         <section class="report-section">
-          <h2>Diagnostico final</h2>
+          <h2>Diagnóstico final</h2>
           ${renderRowsTable(finalDiagnosisRows)}
         </section>
 
@@ -1574,7 +1574,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
       const findings = [
         `Paciente ${selectedConsultationResult.patientName}.`,
         `Motivo de consulta: ${formatValue(snapshotForSummary.clinical.mainConsultationReason)}.`,
-        `IMC ${formatValue(snapshotForSummary.anthropometric.bmi)} y Z-Score ${formatValue(
+        `IMC ${formatValue(snapshotForSummary.anthropometric.bmi)} y Puntaje Z ${formatValue(
           snapshotForSummary.anthropometric.zScore
         )}.`,
         `Senales de alarma actuales: ${formatValue(snapshotForSummary.clinical.alarmSigns)}.`,
@@ -1593,7 +1593,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
 
     return (
       selectedConsultationResult.diagnosisDetails ||
-      "No se registro un diagnostico detallado para esta consulta."
+      "No se registró un diagnóstico detallado para esta consulta."
     );
   }, [selectedConsultationResult, snapshotForSummary]);
 
@@ -1649,7 +1649,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
       foodId: food.foodId,
       foodName: translateFoodName(food.foodName),
       category: translateFoodCategory(food.category),
-      portion: "Porcion sugerida segun tolerancia y edad",
+      portion: "Porcion sugerida según tolerancia y edad",
       timesPerDay: "1 vez/dia",
       referenceAge: fallbackReferenceAge,
       energyKcal: food.energyKcal,
@@ -1931,10 +1931,10 @@ export const DiagnosisDocumentContent: React.FC = () => {
       const reportSections: ReportSectionData[] = [];
 
       const patientAndGuardianRows: ReportFieldRow[] = [
-        { label: "Numero de consulta", value: reportIdentity.consultationNumber },
+        { label: "Número de consulta", value: reportIdentity.consultationNumber },
         { label: "Paciente", value: selectedConsultationResult.patientName },
         { label: "Cedula de identidad", value: selectedConsultationResult.identityNumber },
-        { label: "Tutor / responsable", value: selectedGuardianName },
+        { label: "Guardián / responsable", value: selectedGuardianName },
         {
           label: "Edad al momento de la consulta",
           value: formatPediatricAge(selectedConsultationResult.ageMonths),
@@ -1960,13 +1960,13 @@ export const DiagnosisDocumentContent: React.FC = () => {
               value: formatValue(snapshotForSummary.anthropometric.headCircumferenceCm),
             },
             { label: "IMC", value: formatValue(snapshotForSummary.anthropometric.bmi) },
-            { label: "Z-Score", value: formatValue(snapshotForSummary.anthropometric.zScore) },
+            { label: "Puntaje Z", value: formatValue(snapshotForSummary.anthropometric.zScore) },
             { label: "Percentil", value: formatValue(snapshotForSummary.anthropometric.percentile) },
           ],
         });
 
         reportSections.push({
-          title: "Datos clinicos",
+          title: "Datos clínicos",
           rows: [
             { label: "Motivo principal de consulta", value: formatValue(snapshotForSummary.clinical.mainConsultationReason) },
             { label: "Quien brinda la informacion", value: formatValue(snapshotForSummary.clinical.informantType) },
@@ -2048,9 +2048,9 @@ export const DiagnosisDocumentContent: React.FC = () => {
                 ? recall24hEntries.map(([slotId, value]) => `${RECALL_SLOT_LABELS[slotId]}: ${value}`).join(" | ")
                 : "Sin dato",
             },
-            { label: "Azucar/sal anadida", value: formatValue(snapshotForSummary.historical.addedSugarSalt) },
+            { label: "Azucar/sal añadida", value: formatValue(snapshotForSummary.historical.addedSugarSalt) },
             {
-              label: "Frecuencia de azucar/sal anadida",
+              label: "Frecuencia de azucar/sal añadida",
               value: formatValue(snapshotForSummary.historical.addedSugarSaltFrequency),
             },
             { label: "Apetito", value: formatValue(snapshotForSummary.historical.appetiteLevel) },
@@ -2064,7 +2064,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
               label: "Suplementacion (otros)",
               value: formatValue(snapshotForSummary.historical.currentSupplementationOther),
             },
-            { label: "Desparasitacion (ultima fecha)", value: formatValue(snapshotForSummary.historical.dewormingLastDate) },
+            { label: "Desparasitación (última fecha)", value: formatValue(snapshotForSummary.historical.dewormingLastDate) },
             { label: "Medicamentos actuales", value: formatValue(snapshotForSummary.historical.currentMedications) },
             { label: "Enfermedades recientes", value: formatValue(snapshotForSummary.historical.recentIllnesses) },
             {
@@ -2116,14 +2116,14 @@ export const DiagnosisDocumentContent: React.FC = () => {
                 headCircumferenceCm: "Perimetro cefalico (cm)",
               }),
               { label: "IMC", value: formatValue(selectedConsultationResult.bmi) },
-              { label: "Z-Score / Percentil", value: formatValue(selectedConsultationResult.zScore) },
+              { label: "Puntaje Z / Percentil", value: formatValue(selectedConsultationResult.zScore) },
             ],
           });
         }
 
         if (clinicalRecord) {
           reportSections.push({
-            title: "Datos clinicos",
+            title: "Datos clínicos",
             rows: buildRowsFromRecord(clinicalRecord, {
               activityLevel: "Nivel de actividad",
               apathy: "Desanimo",
@@ -2159,15 +2159,15 @@ export const DiagnosisDocumentContent: React.FC = () => {
 
       const finalDiagnosisRows: ReportFieldRow[] = [
         { label: "Estado nutricional", value: selectedConsultationResult.nutritionalStatus },
-        { label: "Detalle diagnostico", value: selectedConsultationDetail },
+        { label: "Detalle diagnóstico", value: selectedConsultationDetail },
         { label: "IMC", value: formatValue(selectedConsultationResult.bmi) },
-        { label: "Z-Score / Percentil", value: formatValue(selectedConsultationResult.zScore) },
+        { label: "Puntaje Z / Percentil", value: formatValue(selectedConsultationResult.zScore) },
       ];
 
       const recommendationRows: ReportFieldRow[] = [
         {
-          label: "Recomendaciones medicas",
-          value: recommendationData?.medicalText ?? "Sin recomendaciones medicas registradas.",
+          label: "Recomendaciones médicas",
+          value: recommendationData?.medicalText ?? "Sin recomendaciones médicas registradas.",
         },
         {
           label: "Recomendaciones alimentarias",
@@ -2186,7 +2186,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
             label: indicator.title,
             value: `${indicator.latestPoint.actual.toFixed(2)} ${indicator.unit} | Percentil ${indicator.latestPoint.percentile.toFixed(
               1
-            )} | Z-score ${indicator.latestPoint.zScore.toFixed(2)} | Estado ${indicator.statusLabel}`,
+            )} | Puntaje Z ${indicator.latestPoint.zScore.toFixed(2)} | Estado ${indicator.statusLabel}`,
           }))
         : [{ label: "Progreso", value: "Sin datos antropometricos para mostrar." }];
 
@@ -2220,7 +2220,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
       const reportHtml = buildDiagnosisReportHtml({
         generatedAt,
         documentTitle,
-        reportTitle: "Informe de Diagnostico Pediatrico",
+        reportTitle: "Informe de Diagnóstico Pediátrico",
         reportIdentity,
         reportSections,
         finalDiagnosisRows,
@@ -2294,7 +2294,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
         containerClassName="nutri-clinician-page-header p-4 sm:p-5"
         description="Busca al paciente, selecciona la consulta y revisa resumen, resultados y progresion antropometrica."
       >
-        Diagnostico del paciente
+        Diagnóstico del paciente
       </Heading>
 
       <section className="nutri-clinician-surface p-4 sm:p-5">
@@ -2358,7 +2358,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
           <div className="nutri-clinician-surface-soft mt-4 rounded-lg border border-nutri-light-grey px-4 py-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-sm text-nutri-dark-grey">Diagnostico del paciente:</p>
+                <p className="text-sm text-nutri-dark-grey">Diagnóstico del paciente:</p>
                 <p className="text-base font-semibold text-nutri-primary">
                   {selectedPatient.firstName} {selectedPatient.lastName}
                 </p>
@@ -2370,7 +2370,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
                 </p>
                 {!isSelectedPatientInTargetAge && (
                   <p className="text-xs font-medium text-nutri-secondary">
-                    Paciente fuera del rango pediatrico objetivo (6 meses - 5 anios).
+                    Paciente fuera del rango pediátrico objetivo (6 meses - 5 años).
                   </p>
                 )}
               </div>
@@ -2409,7 +2409,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
                       {selectedConsultationResult.patientName}
                     </p>
                     <p>
-                      <span className="font-semibold">Tutor:</span> {selectedGuardianName}
+                      <span className="font-semibold">Guardián:</span> {selectedGuardianName}
                     </p>
                     <p>
                       <span className="font-semibold">Atendido por:</span>{" "}
@@ -2453,7 +2453,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
                         <span className="font-semibold">Paciente:</span> {resultItem.patientName}
                       </p>
                       <p>
-                        <span className="font-semibold">Tutor:</span> {selectedGuardianName}
+                        <span className="font-semibold">Guardián:</span> {selectedGuardianName}
                       </p>
                       <p>
                         <span className="font-semibold">Atendido por:</span> {resultItem.attendedByName}
@@ -2487,7 +2487,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
           {!selectedPatient ? (
             <div className="nutri-clinician-surface p-5">
               <p className="text-sm text-nutri-dark-grey">
-                Selecciona un paciente desde el buscador para ver su resumen diagnostico.
+                Selecciona un paciente desde el buscador para ver su resumen diagnóstico.
               </p>
             </div>
           ) : !selectedConsultationResult ? (
@@ -2500,7 +2500,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
           ) : snapshotForSummary ? (
             <article className="nutri-clinician-surface space-y-5 p-4 sm:p-6">
               <header className="space-y-2 rounded-lg border border-nutri-primary/20 bg-nutri-white px-4 py-3">
-                <p className="text-sm font-semibold text-nutri-primary">Resumen de la ultima consulta</p>
+                <p className="text-sm font-semibold text-nutri-primary">Resumen de la última consulta</p>
                 <p className="text-xs text-nutri-dark-grey">
                   Fecha de registro: {formatDateTime(snapshotForSummary.savedAt)}
                 </p>
@@ -2521,7 +2521,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
                   value={formatValue(selectedPatientUser?.identityNumber ?? selectedPatient?.identityNumber)}
                 />
                 <FieldRow
-                  label="Tutor / responsable"
+                  label="Guardián / responsable"
                   value={selectedGuardianName}
                 />
                 <FieldRow
@@ -2547,11 +2547,11 @@ export const DiagnosisDocumentContent: React.FC = () => {
                   value={formatValue(snapshotForSummary.anthropometric.headCircumferenceCm)}
                 />
                 <FieldRow label="IMC" value={formatValue(snapshotForSummary.anthropometric.bmi)} />
-                <FieldRow label="Z-Score" value={formatValue(snapshotForSummary.anthropometric.zScore)} />
+                <FieldRow label="Puntaje Z" value={formatValue(snapshotForSummary.anthropometric.zScore)} />
                 <FieldRow label="Percentil" value={formatValue(snapshotForSummary.anthropometric.percentile)} />
               </Section>
 
-              <Section title="2. Datos clinicos">
+              <Section title="2. Datos clínicos">
                 <FieldRow
                   label="Motivo principal de consulta"
                   value={formatValue(snapshotForSummary.clinical.mainConsultationReason)}
@@ -2697,11 +2697,11 @@ export const DiagnosisDocumentContent: React.FC = () => {
                   }
                 />
                 <FieldRow
-                  label="Azucar/sal anadida"
+                  label="Azucar/sal añadida"
                   value={formatValue(snapshotForSummary.historical.addedSugarSalt)}
                 />
                 <FieldRow
-                  label="Frecuencia de azucar/sal anadida"
+                  label="Frecuencia de azucar/sal añadida"
                   value={formatValue(snapshotForSummary.historical.addedSugarSaltFrequency)}
                 />
                 <FieldRow
@@ -2725,7 +2725,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
                   value={formatValue(snapshotForSummary.historical.currentSupplementationOther)}
                 />
                 <FieldRow
-                  label="Desparasitacion (ultima fecha)"
+                  label="Desparasitación (última fecha)"
                   value={formatValue(snapshotForSummary.historical.dewormingLastDate)}
                 />
                 <FieldRow
@@ -2787,7 +2787,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
           ) : (
             <article className="nutri-clinician-surface space-y-5 p-4 sm:p-6">
               <header className="space-y-2 rounded-lg border border-nutri-primary/20 bg-nutri-white px-4 py-3">
-                <p className="text-sm font-semibold text-nutri-primary">Resumen de la ultima consulta</p>
+                <p className="text-sm font-semibold text-nutri-primary">Resumen de la última consulta</p>
                 <p className="text-xs text-nutri-dark-grey">
                   Fecha de consulta: {selectedConsultationResult?.dateLabel ?? "Sin dato"}
                 </p>
@@ -2807,7 +2807,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
                   value={formatValue(selectedPatientUser?.identityNumber ?? selectedPatient.identityNumber)}
                 />
                 <FieldRow
-                  label="Tutor / responsable"
+                  label="Guardián / responsable"
                   value={selectedGuardianName}
                 />
                 <FieldRow
@@ -2816,13 +2816,13 @@ export const DiagnosisDocumentContent: React.FC = () => {
                 />
               </Section>
 
-              <Section title="Diagnostico final">
+              <Section title="Diagnóstico final">
                 <FieldRow
                   label="Estado nutricional"
                   value={selectedConsultationResult.nutritionalStatus}
                 />
                 <FieldRow
-                  label="Detalle diagnostico"
+                  label="Detalle diagnóstico"
                   value={selectedConsultationDetail}
                 />
                 <FieldRow
@@ -2830,7 +2830,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
                   value={formatValue(selectedConsultationResult.bmi)}
                 />
                 <FieldRow
-                  label="Z-Score / Percentil"
+                  label="Puntaje Z / Percentil"
                   value={formatValue(selectedConsultationResult.zScore)}
                 />
               </Section>
@@ -2843,7 +2843,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
         <>
           <section className="space-y-4 rounded-xl border border-nutri-light-grey bg-nutri-white p-4 shadow-sm sm:p-5">
             <header className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-              <h3 className="text-base font-semibold text-nutri-primary">Resultados de diagnostico</h3>
+              <h3 className="text-base font-semibold text-nutri-primary">Resultados de diagnóstico</h3>
               <p className="text-xs text-nutri-dark-grey/80">
                 Registros encontrados: {selectedPatientResults.length}
               </p>
@@ -2859,7 +2859,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
             <article className="nutri-clinician-surface-soft space-y-4 p-4">
               {!selectedPatient ? (
                 <p className="text-sm text-nutri-dark-grey">
-                  Selecciona un paciente para mostrar su diagnostico final.
+                  Selecciona un paciente para mostrar su diagnóstico final.
                 </p>
               ) : !selectedConsultationResult ? (
                 <p className="text-sm text-nutri-dark-grey">
@@ -2870,7 +2870,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
                 <>
                   <div className="space-y-1">
                     <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
-                      Diagnostico final
+                      Diagnóstico final
                     </p>
                     <p className="text-lg font-semibold text-nutri-primary">
                       {selectedConsultationResult.nutritionalStatus}
@@ -2879,7 +2879,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
 
                   <div className="space-y-1">
                     <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
-                      Diagnostico detallado
+                      Diagnóstico detallado
                     </p>
                     <p className="text-sm leading-relaxed text-nutri-dark-grey">
                       {selectedConsultationDetail}
@@ -2908,7 +2908,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
                 </p>
               ) : !selectedConsultationResult ? (
                 <p className="text-sm text-nutri-dark-grey">
-                  No hay diagnosticos para generar recomendaciones
+                  No hay diagnósticos para generar recomendaciones
                   {consultationDateFilter ? ` en la fecha ${consultationDateFilter}` : ""}.
                 </p>
               ) : !recommendationData ? (
@@ -2919,7 +2919,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
                 <>
                   <div className="space-y-1">
                     <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
-                      Recomendaciones medicas generales
+                      Recomendaciones médicas generales
                     </p>
                     <p className="text-sm leading-relaxed text-nutri-dark-grey">
                       {recommendationData.medicalText}
@@ -2943,8 +2943,8 @@ export const DiagnosisDocumentContent: React.FC = () => {
 
                   {!recommendationData.hasPersistedRecommendation && (
                     <p className="text-xs text-nutri-dark-grey/80">
-                      Se muestra una propuesta base porque no hay una recomendacion guardada para
-                      este diagnostico.
+                      Se muestra una propuesta base porque no hay una recomendación guardada para
+                      este diagnóstico.
                     </p>
                   )}
 
@@ -3039,7 +3039,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
                           {indicator.latestPoint.actual.toFixed(2)} {indicator.unit}
                         </p>
                         <p className="text-xs text-nutri-dark-grey/80">
-                          Percentil {indicator.latestPoint.percentile.toFixed(1)} | Z-score{" "}
+                          Percentil {indicator.latestPoint.percentile.toFixed(1)} | Puntaje Z{" "}
                           {indicator.latestPoint.zScore.toFixed(2)}
                         </p>
                         <p
@@ -3052,7 +3052,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
                         </p>
                         {indicator.points.length > 1 && (
                           <p className="text-xs text-nutri-dark-grey/80">
-                            Variacion reciente: {formatSigned(indicator.percentileDelta)} percentiles |
+                            Variación reciente: {formatSigned(indicator.percentileDelta)} percentiles |
                             Z {formatSigned(indicator.zDelta, 2)}
                           </p>
                         )}
@@ -3085,7 +3085,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
                             <th className="px-3 py-2">Indicador</th>
                             <th className="px-3 py-2">Valor actual</th>
                             <th className="px-3 py-2">Percentil</th>
-                            <th className="px-3 py-2">Z-score</th>
+                            <th className="px-3 py-2">Puntaje Z</th>
                             <th className="px-3 py-2">Estado</th>
                             <th className="px-3 py-2">Tendencia reciente</th>
                           </tr>

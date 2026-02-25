@@ -25,7 +25,7 @@ seedOnce();
 
 const HISTORICAL_STEPS = [
   { id: "feeding", title: "3.1 Alimentacion actual y pasada" },
-  { id: "practices", title: "3.2 Practicas alimentarias" },
+  { id: "practices", title: "3.2 Prácticas alimentarias" },
   { id: "health", title: "3.3 Antecedentes de salud" },
   { id: "sleep", title: "3.4 Patrones de sueno" },
 ] as const;
@@ -373,7 +373,7 @@ export const HistoricalForm = () => {
   );
   const mealScheduleError =
     historical.mealsPerDay && !isMealScheduleComplete
-      ? `Completa al menos ${requiredMealsCount} horarios segun la cantidad de comidas.`
+      ? `Completa al menos ${requiredMealsCount} horarios según la cantidad de comidas.`
       : null;
 
   const recallCompletedCount = DIET_RECALL_SLOTS.filter((slot) =>
@@ -500,7 +500,7 @@ export const HistoricalForm = () => {
       )}
       {isPatientSelected && !isTargetAgeSelected && (
         <p className="rounded-lg border border-nutri-secondary/40 bg-nutri-off-white px-4 py-3 text-sm text-nutri-dark-grey">
-          Los antecedentes se registran bajo parametros para 6 meses a 5 anios. Edad del paciente
+          Los antecedentes se registran bajo parametros para 6 meses a 5 años. Edad del paciente
           seleccionado:{" "}
           {selectedPatientAgeMonths !== null
             ? formatPediatricAge(selectedPatientAgeMonths)
@@ -743,7 +743,7 @@ export const HistoricalForm = () => {
 
               <div className="space-y-2">
                 <SingleSelectOptionGroup
-                  label="Azucar/sal anadida en preparaciones del nino"
+                  label="Azucar/sal añadida en preparaciones del niño"
                   value={historical.addedSugarSalt}
                   options={YES_NO_OPTIONS}
                   columnsClassName="grid-cols-2"
@@ -910,7 +910,7 @@ export const HistoricalForm = () => {
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-nutri-dark-grey">
-                  Desparasitacion (ultima fecha)
+                  Desparasitación (última fecha)
                 </label>
                 <input
                   type="date"

@@ -83,7 +83,7 @@ export const ClinicianDashboardContent: React.FC<Props> = ({ user }) => {
         patientName: `${patientUser.firstName} ${patientUser.lastName}`,
         guardianName: guardian
           ? `${guardian.firstName} ${guardian.lastName}`
-          : "Sin tutor registrado",
+          : "Sin guardián registrado",
         identityNumber: patientUser.identityNumber ?? patient.identityNumber,
         ageLabel: formatPediatricAge(calculateAgeInMonths(patient.birthDate, consultation.date)),
         genderLabel: patient.gender === "female" ? "Femenino" : "Masculino",
@@ -91,7 +91,7 @@ export const ClinicianDashboardContent: React.FC<Props> = ({ user }) => {
         dateLabel: consultation.date.toLocaleDateString("es-BO"),
         weightKg: anthropometric?.weightKg ?? null,
         heightM: anthropometric?.heightM ?? null,
-        nutritionalStatus: diagnosis?.nutritionalDiagnosis ?? "Sin diagnostico",
+        nutritionalStatus: diagnosis?.nutritionalDiagnosis ?? "Sin diagnóstico",
         zScore: diagnosis?.zScorePercentile ?? null,
         source: "history" as const,
       };
@@ -120,7 +120,7 @@ export const ClinicianDashboardContent: React.FC<Props> = ({ user }) => {
           patientName: `${patientUser.firstName} ${patientUser.lastName}`,
           guardianName: guardian
             ? `${guardian.firstName} ${guardian.lastName}`
-            : "Sin tutor registrado",
+            : "Sin guardián registrado",
           identityNumber: patientUser.identityNumber ?? patient.identityNumber,
           ageLabel: formatPediatricAge(calculateAgeInMonths(patient.birthDate, snapshotDate)),
           genderLabel: patient.gender === "female" ? "Femenino" : "Masculino",

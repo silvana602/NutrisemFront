@@ -43,7 +43,7 @@ export const LastPatientCard = ({ patient }: { patient: LastPatientCardData }) =
 
     <div className="grid grid-cols-1 gap-2 text-sm text-nutri-dark-grey sm:grid-cols-2">
       <p>
-        <span className="font-semibold">Tutor:</span> {patient.parentName}
+        <span className="font-semibold">Guardián:</span> {patient.parentName}
       </p>
       <p>
         <span className="font-semibold">CI:</span> {patient.idCard}
@@ -61,7 +61,7 @@ export const LastPatientCard = ({ patient }: { patient: LastPatientCardData }) =
         <span className="font-semibold">Talla:</span> {patient.height}
       </p>
       <p className="sm:col-span-2">
-        <span className="font-semibold">Fecha ultima consulta:</span> {patient.consultationDate}
+        <span className="font-semibold">Fecha última consulta:</span> {patient.consultationDate}
       </p>
     </div>
 
@@ -87,7 +87,7 @@ export const LastPatientCard = ({ patient }: { patient: LastPatientCardData }) =
 
       <div className="nutri-clinician-surface-soft rounded-lg border border-nutri-light-grey px-3 py-2">
         <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
-          Z-score
+          Puntaje Z
         </p>
         <p className="mt-1 text-sm font-semibold text-nutri-dark-grey">{patient.zScore}</p>
       </div>
@@ -98,10 +98,10 @@ export const LastPatientCard = ({ patient }: { patient: LastPatientCardData }) =
         href={patient.diagnosisHref}
         className="mt-4 inline-flex items-center rounded-lg border border-nutri-primary/20 bg-nutri-white px-3 py-2 text-sm font-semibold text-nutri-primary transition-colors hover:bg-nutri-off-white"
       >
-        Ver diagnostico
+        Ver diagnóstico
       </Link>
     ) : (
-      <p className="mt-4 text-sm text-nutri-dark-grey/80">No hay diagnostico disponible para este registro.</p>
+      <p className="mt-4 text-sm text-nutri-dark-grey/80">No hay diagnóstico disponible para este registro.</p>
     )}
   </article>
 );

@@ -168,7 +168,7 @@ export const PatientSelector: React.FC = () => {
               </p>
               {!isSelectedPatientInTargetAge && (
                 <p className="text-xs font-medium text-nutri-secondary">
-                  Fuera del rango objetivo (6 meses - 5 anios). Selecciona otro paciente para esta
+                  Fuera del rango objetivo (6 meses - 5 años). Selecciona otro paciente para esta
                   consulta.
                 </p>
               )}

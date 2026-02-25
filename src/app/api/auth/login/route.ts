@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
         message: "Debe completar los campos obligatorios",
         fieldErrors: {
           ci: "La CI es obligatoria",
-          password: "La contrasena es obligatoria",
+          password: "La contraseña es obligatoria",
         },
       };
 
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
     if (!normalizedPassword) {
       const body: LoginErrorBody = {
-        message: "La contrasena es obligatoria",
+        message: "La contraseña es obligatoria",
         field: "password",
       };
 
@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
     const savedPassword = db.passwords.get(user.userId);
     if (!savedPassword || savedPassword !== normalizedPassword) {
       const body: LoginErrorBody = {
-        message: "La contrasena es incorrecta",
+        message: "La contraseña es incorrecta",
         field: "password",
       };
 
