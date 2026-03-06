@@ -1,6 +1,6 @@
 export type Gender = "male" | "female";
 
-export interface Patient {
+export type Patient = {
   patientId: string;
   userId: string;
   firstName: string;
@@ -9,4 +9,4 @@ export interface Patient {
   birthDate: Date;
   gender: Gender;
   address: string;
-}
+};

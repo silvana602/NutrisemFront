@@ -1,47 +1,72 @@
 import React from "react";
 import { UserRole } from "@/types/user";
 import {
+  isMenuHrefVisibleForRole,
+  readRoleVisibilitySettings,
+} from "@/features/settings/utils/roleVisibility.utils";
+import {
   Activity,
   BarChart3,
   BookOpen,
   ClipboardList,
-  FileChartColumn,
   HeartPulse,
+  LifeBuoy,
   LayoutDashboard,
   Notebook,
+  Settings2,
+  ShieldCheck,
   Users,
 } from "lucide-react";
 
-export interface MenuItem {
+export type MenuSubItem = {
   label: string;
   href: string;
-  icon: React.ElementType;
   badge?: string | number;
-  external?: boolean;
   matchExact?: boolean;
-}
+};
+
+export type MenuItem = MenuSubItem & {
+  icon: React.ElementType;
+  external?: boolean;
+  children?: MenuSubItem[];
+};
 
 export const adminMenu: MenuItem[] = [
   {
-    label: "Inicio",
+    label: "Panel de control",
     href: "/dashboard/admin",
     icon: LayoutDashboard,
     matchExact: true,
   },
   {
-    label: "Usuarios",
+    label: "Gestión de usuarios",
     href: "/dashboard/admin/users",
     icon: Users,
+    children: [
+      {
+        label: "Médicos",
+        href: "/dashboard/admin/users/medicos",
+      },
+      {
+        label: "Pacientes",
+        href: "/dashboard/admin/users/pacientes",
+      },
+    ],
   },
   {
-    label: "Reportes",
-    href: "/dashboard/admin/reports",
-    icon: FileChartColumn,
+    label: "Configuración del sistema",
+    href: "/dashboard/admin/settings",
+    icon: Settings2,
   },
   {
-    label: "Historiales",
-    href: "/dashboard/admin/histories",
-    icon: ClipboardList,
+    label: "Seguridad y auditoría",
+    href: "/dashboard/admin/security-audit",
+    icon: ShieldCheck,
+  },
+  {
+    label: "Soporte técnico",
+    href: "/dashboard/admin/support",
+    icon: LifeBuoy,
   },
 ];
 
@@ -103,14 +128,31 @@ export const patientMenu: MenuItem[] = [
   },
 ];
 
+function applyRoleVisibility(role: UserRole, menu: MenuItem[]): MenuItem[] {
+  const visibilitySettings = readRoleVisibilitySettings();
+
+  return menu
+    .filter((item) => isMenuHrefVisibleForRole(role, item.href, visibilitySettings))
+    .map((item) => {
+      if (!item.children?.length) return item;
+
+      const visibleChildren = item.children.filter((child) =>
+        isMenuHrefVisibleForRole(role, child.href, visibilitySettings)
+      );
+
+      if (visibleChildren.length === item.children.length) return item;
+      return { ...item, children: visibleChildren };
+    });
+}
+
 export function getMenuByRole(role: UserRole): MenuItem[] {
   switch (role) {
     case UserRole.admin:
-      return adminMenu;
+      return applyRoleVisibility(role, adminMenu);
     case UserRole.clinician:
-      return clinicianMenu;
+      return applyRoleVisibility(role, clinicianMenu);
     case UserRole.patient:
-      return patientMenu;
+      return applyRoleVisibility(role, patientMenu);
     default:
       return [];
   }

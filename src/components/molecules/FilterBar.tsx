@@ -2,14 +2,14 @@
 
 import { Button } from "@/components/ui/Button";
 
-interface FilterBarProps {
+type FilterBarProps = {
   gender: string;
   age: string;
   onGenderChange: (value: string) => void;
   onAgeChange: (value: string) => void;
   onClearFilters?: () => void;
   clearButtonLabel?: string;
-}
+};
 
 export function FilterBar({
   gender,

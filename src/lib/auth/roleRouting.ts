@@ -7,7 +7,7 @@ export const DASHBOARD_PATH_BY_ROLE: Record<UserRole, string> = {
 };
 
 export const SETTINGS_PATH_BY_ROLE: Record<UserRole, string> = {
-  [UserRole.admin]: "/dashboard/admin/settings",
+  [UserRole.admin]: "/dashboard/admin/profile-settings",
   [UserRole.clinician]: "/dashboard/clinician/settings",
   [UserRole.patient]: "/dashboard/patient/settings",
 };
@@ -16,9 +16,23 @@ export const ROLE_ALLOWED_PREFIXES: Record<UserRole, string[]> = {
   [UserRole.admin]: [
     "/dashboard/admin",
     "/dashboard/admin/users",
-    "/dashboard/admin/reports",
-    "/dashboard/admin/histories",
+    "/dashboard/admin/users/medicos",
+    "/dashboard/admin/users/pacientes",
     "/dashboard/admin/settings",
+    "/dashboard/admin/profile-settings",
+    "/dashboard/admin/security-audit",
+    "/dashboard/admin/support",
+    "/dashboard/clinician",
+    "/dashboard/clinician/patients",
+    "/dashboard/clinician/consultation",
+    "/dashboard/clinician/diagnosis",
+    "/dashboard/clinician/reports",
+    "/dashboard/clinician/settings",
+    "/dashboard/patient",
+    "/dashboard/patient/progress",
+    "/dashboard/patient/diagnosis",
+    "/dashboard/patient/recommendations",
+    "/dashboard/patient/settings",
   ],
   [UserRole.clinician]: [
     "/dashboard/clinician",

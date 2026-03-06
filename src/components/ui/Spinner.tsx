@@ -6,9 +6,9 @@ import React from "react";
    Spinner
 ========================= */
 
-interface SpinnerProps {
+type SpinnerProps = {
   size?: "md" | "lg" | "xl";
-}
+};
 
 const Spinner: React.FC<SpinnerProps> = ({ size = "lg" }) => {
   const sizes = {
@@ -36,12 +36,12 @@ const Spinner: React.FC<SpinnerProps> = ({ size = "lg" }) => {
    Loading Button
 ========================= */
 
-interface LoadingButtonProps {
+type LoadingButtonProps = {
   loading?: boolean;
   children: React.ReactNode;
   spinnerSize?: "md" | "lg" | "xl";
   className?: string;
-}
+};
 
 const LoadingButton: React.FC<LoadingButtonProps> = ({
   loading = false,

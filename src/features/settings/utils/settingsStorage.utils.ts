@@ -1,5 +1,6 @@
 import type {
   InterfacePreferences,
+  TutorLegalData,
   UserSettingsStorage,
 } from "../types/settings.types";
 
@@ -11,9 +12,20 @@ export const DEFAULT_PREFERENCES: InterfacePreferences = {
   idioma: "es",
 };
 
+export const DEFAULT_TUTOR_LEGAL_DATA: TutorLegalData = {
+  nombreTutor: "",
+  cedulaTutor: "",
+  parentescoTutor: "",
+  telefonoTutor: "",
+  direccionTutor: "",
+};
+
 export const DEFAULT_USER_SETTINGS: UserSettingsStorage = {
   fotoPerfil: null,
   preferencias: DEFAULT_PREFERENCES,
+  firmaDigitalMedico: null,
+  selloMedico: null,
+  datosTutor: DEFAULT_TUTOR_LEGAL_DATA,
 };
 
 export function buildUserSettingsKey(userId: string): string {
@@ -30,6 +42,10 @@ export function mergeUserSettings(
     preferencias: {
       ...base.preferencias,
       ...(override.preferencias ?? {}),
+    },
+    datosTutor: {
+      ...base.datosTutor,
+      ...(override.datosTutor ?? {}),
     },
   };
 }

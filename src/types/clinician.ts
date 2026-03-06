@@ -1,4 +1,4 @@
-export interface Clinician {
+export type Clinician = {
   clinicianId: string;
   userId: string;
   professionalLicense: string;
@@ -6,4 +6,4 @@ export interface Clinician {
   specialty: string;
   residence: string;
   institution: string;
-}
+};

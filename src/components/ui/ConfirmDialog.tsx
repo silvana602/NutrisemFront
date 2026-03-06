@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { Backdrop } from "@/components/ui/Backdrop";
 import { Button } from "@/components/ui/Button";
 
-interface ConfirmDialogProps {
+type ConfirmDialogProps = {
   open: boolean;
   title: string;
   message: string;
@@ -17,7 +17,7 @@ interface ConfirmDialogProps {
   disableConfirm?: boolean;
   disableCancel?: boolean;
   disableBackdropClose?: boolean;
-}
+};
 
 export default function ConfirmDialog({
   open,

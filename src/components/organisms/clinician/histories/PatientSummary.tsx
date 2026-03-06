@@ -7,9 +7,9 @@ import { db } from "@/mocks/db";
 import type { Patient } from "@/types/patient";
 import type { Guardian, User } from "@/types";
 
-interface Props {
+type Props = {
   patient: Patient;
-}
+};
 
 function getStatusToneClasses(status: string): string {
   const normalized = status

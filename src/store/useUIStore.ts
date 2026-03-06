@@ -5,12 +5,12 @@ import { persist } from "zustand/middleware";
 // Tipos de tema y notificaciones
 type Theme = "light" | "dark";
 
-interface Notification {
+type Notification = {
   message: string;
-}
+};
 
 // Definición del estado y acciones de la UI
-interface UIStore {
+type UIStore = {
   // Estados
   isSidebarOpen: boolean;
   isModalOpen: boolean;
@@ -25,7 +25,7 @@ interface UIStore {
   closeModal: () => void;
   setLoading: (value: boolean) => void;
   setTheme: (theme: Theme) => void;
-}
+};
 
 // Creación del store
 export const useUIStore = create<UIStore>()(

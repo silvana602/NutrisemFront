@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -25,6 +25,7 @@ import {
   resolveSettingsPathByRole,
 } from "@/lib/auth/roleRouting";
 import { useUserSettings } from "@/features/settings/hooks/useUserSettings";
+import { ROLE_VISIBILITY_UPDATED_EVENT } from "@/features/settings/utils/roleVisibility.utils";
 
 function buildNext(pathname: string | null, qs: string): string | "" {
   if (!pathname) return "";
@@ -66,20 +67,33 @@ export const Navbar = () => {
 
   const [showPatientAlert, setShowPatientAlert] = useState(false);
   const [showClinicianAlert, setShowClinicianAlert] = useState(false);
+  const [, setVisibilityVersion] = useState(0);
 
   useGlobalDismiss([mobile.onClose], [mobileRef, mobileBtnRef]);
 
+  useEffect(() => {
+    const handleVisibilityUpdated = () => {
+      setVisibilityVersion((version) => version + 1);
+    };
+
+    window.addEventListener(ROLE_VISIBILITY_UPDATED_EVENT, handleVisibilityUpdated);
+    return () => {
+      window.removeEventListener(ROLE_VISIBILITY_UPDATED_EVENT, handleVisibilityUpdated);
+    };
+  }, []);
+
   const currentRole = activeRole ?? user?.role ?? null;
   const { fotoPerfil: profilePhoto } = useUserSettings(user?.userId ?? null);
-  const menuItems = useMemo(() => {
-    if (!currentRole) return [];
-    return getMenuByRole(currentRole);
-  }, [currentRole]);
+  const menuItems = currentRole ? getMenuByRole(currentRole) : [];
 
   const canAccessPatientPanel = () =>
-    user ? db.patients.some((p) => p.userId === user.userId) : false;
+    user
+      ? user.role === UserRole.admin ||
+        db.patients.some((p) => p.userId === user.userId)
+      : false;
 
-  const canAccessClinicianPanel = () => Boolean(clinician);
+  const canAccessClinicianPanel = () =>
+    Boolean(user && (user.role === UserRole.admin || clinician));
 
   const switchPanel = (role: UserRole) => {
     if (!user) return;
@@ -110,6 +124,11 @@ export const Navbar = () => {
     mobile.onClose();
     router.push(resolveSettingsPathByRole(currentRole));
   };
+
+  const settingsPath = currentRole ? resolveSettingsPathByRole(currentRole) : null;
+  const isSettingsActive = Boolean(
+    settingsPath && (pathname === settingsPath || pathname?.startsWith(settingsPath + "/"))
+  );
 
   const isAdmin = user?.role === UserRole.admin;
   const isClinician = user?.role === UserRole.clinician;
@@ -311,7 +330,7 @@ export const Navbar = () => {
               onClick={onOpenSettings}
               className={cn(
                 "nutri-menu-panel-button mt-2 w-full rounded-xl px-4 py-2.5 text-left text-sm font-semibold transition-all",
-                pathname?.includes("/settings")
+                isSettingsActive
                   ? "nutri-menu-panel-button-active bg-nutri-primary text-nutri-white"
                   : "nutri-menu-panel-button-idle text-nutri-dark-grey hover:bg-white/75"
               )}

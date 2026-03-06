@@ -7,7 +7,10 @@ import type {
   RecommendationFood,
   User,
 } from "@/types";
-import { buildRestrictedFoodGroupsByNutritionalStatus } from "@/features/shared/nutrition";
+import {
+  buildRestrictedFoodGroupsByNutritionalStatus,
+  type RestrictedFoodItem,
+} from "@/features/shared/nutrition";
 
 import type { PatientRecommendationViewModel } from "../types";
 import { formatDate } from "./patientRecommendationsFormatting.utils";
@@ -22,6 +25,7 @@ type BuildPatientRecommendationModelParams = {
   recommendations: Recommendation[];
   recommendationFoods: RecommendationFood[];
   foods: Food[];
+  restrictedItems?: RestrictedFoodItem[];
 };
 
 export function buildPatientRecommendationViewModel(
@@ -36,6 +40,7 @@ export function buildPatientRecommendationViewModel(
     recommendations,
     recommendationFoods,
     foods,
+    restrictedItems = [],
   } = params;
 
   const patient = patients.find((item) => item.userId === userId) ?? null;
@@ -94,6 +99,9 @@ export function buildPatientRecommendationViewModel(
       selectedRecommendation?.dietaryRecommendation ||
       "Sin recomendaciones alimentarias registradas.",
     suggestedFoods,
-    restrictedGroups: buildRestrictedFoodGroupsByNutritionalStatus(nutritionalStatus),
+    restrictedGroups: buildRestrictedFoodGroupsByNutritionalStatus(
+      nutritionalStatus,
+      restrictedItems
+    ),
   };
 }

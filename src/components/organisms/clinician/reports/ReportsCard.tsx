@@ -2,10 +2,10 @@
 
 import React from "react";
 
-interface ReportCardProps {
+type ReportCardProps = {
   title: string;
   value: string | number;
-}
+};
 
 export const ReportCard: React.FC<ReportCardProps> = ({ title, value }) => {
   return (

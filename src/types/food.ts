@@ -1,4 +1,4 @@
-export interface Food {
+export type Food = {
   foodId: string;
   foodName: string;
   category: string;
@@ -12,4 +12,4 @@ export interface Food {
   servingSize?: string;
   allergens?: string;
   notes?: string;
-}
+};

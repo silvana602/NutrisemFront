@@ -23,9 +23,31 @@ export type InterfacePreferences = {
   idioma: IdiomaInterfaz;
 };
 
+export type ClinicianAssetField = "firmaDigitalMedico" | "selloMedico";
+
+export type ClinicianAssetsSettings = {
+  firmaDigitalMedico: string | null;
+  selloMedico: string | null;
+};
+
+export type ClinicianAssetsErrors = Partial<Record<ClinicianAssetField, string>>;
+
+export type TutorLegalData = {
+  nombreTutor: string;
+  cedulaTutor: string;
+  parentescoTutor: string;
+  telefonoTutor: string;
+  direccionTutor: string;
+};
+
+export type TutorLegalDataErrors = Partial<Record<keyof TutorLegalData, string>>;
+
 export type UserSettingsStorage = {
   fotoPerfil: string | null;
   preferencias: InterfacePreferences;
+  firmaDigitalMedico: string | null;
+  selloMedico: string | null;
+  datosTutor: TutorLegalData;
 };
 
 export type RoleSettingsCopy = {

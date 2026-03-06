@@ -10,7 +10,9 @@ import {
   LandingWorkflowSection,
 } from "@/features/landing/components";
 import {
+  LANDING_ANDROID_STORE_URL,
   LANDING_CAPABILITIES,
+  LANDING_IOS_STORE_URL,
   LANDING_PULSE_METRICS,
   LANDING_TREND_SERIES,
   LANDING_TREND_YEARS,
@@ -30,6 +32,19 @@ export default function LandingPage() {
     section.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const openExternalLink = (href: string) => {
+    if (typeof window === "undefined") return;
+    window.open(href, "_blank", "noopener,noreferrer");
+  };
+
+  const handleOpenAndroidStore = () => {
+    openExternalLink(LANDING_ANDROID_STORE_URL);
+  };
+
+  const handleOpenIosStore = () => {
+    openExternalLink(LANDING_IOS_STORE_URL);
+  };
+
   return (
     <div className="min-h-0 bg-nutri-off-white">
       <div className="container mx-auto space-y-8 px-4 py-8 sm:space-y-10 sm:py-12 md:space-y-12 md:py-16">
@@ -37,6 +52,8 @@ export default function LandingPage() {
           pulseMetrics={LANDING_PULSE_METRICS}
           onStartNow={handleStartNow}
           onExplore={handleExplore}
+          onOpenAndroidStore={handleOpenAndroidStore}
+          onOpenIosStore={handleOpenIosStore}
         />
 
         <LandingCapabilitiesSection capabilities={LANDING_CAPABILITIES} />

@@ -1,6 +1,13 @@
 import React from "react";
 import { CircleHelp, FileText, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import {
+  SHARED_LEGAL_TERMS_TEXT,
+  SHARED_LEGAL_TERMS_TITLE,
+  SHARED_SUPPORT_DESCRIPTION,
+  SHARED_SUPPORT_MAILTO,
+  SHARED_SUPPORT_TITLE,
+} from "@/features/support/utils/sharedSupport.utils";
 import { SettingsSectionCard } from "./SettingsSectionCard";
 
 type SupportAndLegalSectionProps = {
@@ -16,24 +23,19 @@ export function SupportAndLegalSection({ onLogout }: SupportAndLegalSectionProps
     >
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         <a
-          href="mailto:soporte@nutrisem.app?subject=Ayuda%20en%20Nutrisem"
+          href={SHARED_SUPPORT_MAILTO}
           className="rounded-xl border border-nutri-light-grey bg-white/80 px-4 py-3 text-sm text-nutri-dark-grey transition-colors hover:bg-nutri-off-white"
         >
-          <p className="font-semibold text-nutri-primary">Ayuda / Centro de soporte</p>
-          <p className="mt-1 text-xs text-nutri-dark-grey/80">
-            Contacta al equipo técnico para dudas funcionales o problemas de acceso.
-          </p>
+          <p className="font-semibold text-nutri-primary">{SHARED_SUPPORT_TITLE}</p>
+          <p className="mt-1 text-xs text-nutri-dark-grey/80">{SHARED_SUPPORT_DESCRIPTION}</p>
         </a>
 
         <div className="rounded-xl border border-nutri-light-grey bg-white/80 px-4 py-3 text-sm text-nutri-dark-grey">
           <p className="flex items-center gap-2 font-semibold text-nutri-primary">
             <FileText size={14} />
-            Términos y condiciones
+            {SHARED_LEGAL_TERMS_TITLE}
           </p>
-          <p className="mt-1 text-xs text-nutri-dark-grey/80">
-            El uso de esta plataforma implica el manejo responsable y confidencial de datos sensibles
-            de menores, conforme a normativa vigente.
-          </p>
+          <p className="mt-1 text-xs text-nutri-dark-grey/80">{SHARED_LEGAL_TERMS_TEXT}</p>
         </div>
       </div>
 

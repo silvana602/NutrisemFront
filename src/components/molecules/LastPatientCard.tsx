@@ -68,18 +68,18 @@ export const LastPatientCard = ({ patient }: { patient: LastPatientCardData }) =
     <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
       <div
         className={cn(
-          "rounded-lg border px-3 py-2",
-          patient.trendDirection === "up" && "border-emerald-200 bg-emerald-50",
-          patient.trendDirection === "down" && "border-rose-200 bg-rose-50",
+          "nutri-trend-card rounded-lg border px-3 py-2",
+          patient.trendDirection === "up" && "nutri-trend-card-up border-emerald-200 bg-emerald-50",
+          patient.trendDirection === "down" && "nutri-trend-card-down border-rose-200 bg-rose-50",
           patient.trendDirection !== "up" &&
             patient.trendDirection !== "down" &&
-            "nutri-clinician-surface-soft border-nutri-light-grey"
+            "nutri-trend-card-neutral nutri-clinician-surface-soft border-nutri-light-grey"
         )}
       >
-        <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
+        <p className="nutri-trend-card-eyebrow text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
           Tendencia de peso
         </p>
-        <p className="mt-1 flex items-center gap-2 text-sm font-semibold text-nutri-dark-grey">
+        <p className="nutri-trend-card-label mt-1 flex items-center gap-2 text-sm font-semibold text-nutri-dark-grey">
           <TrendIcon direction={patient.trendDirection} />
           {patient.trendLabel}
         </p>

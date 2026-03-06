@@ -9,6 +9,10 @@ import { FilterBar } from "../../molecules/FilterBar";
 import { PatientsTable } from "../../molecules/PatientsTable";
 import { Pagination } from "../../atoms/Pagination";
 import { calculateAgeInMonths, formatPediatricAge } from "@/lib/pediatricAge";
+import {
+  buildClinicianConsultationPath,
+  buildClinicianDiagnosisPath,
+} from "@/lib/routes/clinician";
 
 import { seedOnce, db } from "@/mocks/db";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -177,21 +181,18 @@ export const PatientsListContent: React.FC = () => {
   }).length;
 
   const handleOpenDiagnosis = (patient: PatientRow) => {
-    const params = new URLSearchParams({
-      patientId: patient.patientId,
-      tab: "summary",
-      step: "0",
-    });
-
-    if (patient.latestDiagnosisId) {
-      params.set("resultId", patient.latestDiagnosisId);
-    }
-
-    router.push(`/dashboard/clinician/diagnosis?${params.toString()}`);
+    router.push(
+      buildClinicianDiagnosisPath({
+        patientId: patient.patientId,
+        resultId: patient.latestDiagnosisId,
+        tab: "summary",
+        step: 0,
+      })
+    );
   };
 
   const handleStartConsultation = (patient: PatientRow) => {
-    router.push(`/dashboard/clinician/consultation?patientId=${encodeURIComponent(patient.patientId)}`);
+    router.push(buildClinicianConsultationPath(patient.patientId));
   };
 
   return (

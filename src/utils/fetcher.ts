@@ -1,12 +1,12 @@
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
-export interface FetcherOptions {
+export type FetcherOptions = {
   method?: HttpMethod;
   body?: unknown;
   token?: string | null;
   headers?: Record<string, string>;
   noJson?: boolean;
-}
+};
 
 type ErrorPayload = {
   message?: string;

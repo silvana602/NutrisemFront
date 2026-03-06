@@ -4,13 +4,13 @@ import { TextInput } from "../atoms/TextInput";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface SearchBarProps {
+type SearchBarProps = {
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   containerClassName?: string;
   className?: string;
-}
+};
 
 export const SearchBar: React.FC<SearchBarProps> = ({
   value,

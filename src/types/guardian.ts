@@ -1,4 +1,4 @@
-export interface Guardian {
+export type Guardian = {
   guardianId: string;
   patientId: string;
   firstName: string;
@@ -8,4 +8,4 @@ export interface Guardian {
   phone: string;
   relationship: string; // mother, father, legal guardian
   password: string;
-}
+};

@@ -5,6 +5,9 @@ import type {
   LandingWorkflowStep,
 } from "../types";
 
+export const LANDING_ANDROID_STORE_URL = "https://play.google.com/store";
+export const LANDING_IOS_STORE_URL = "https://www.apple.com/app-store/";
+
 export const LANDING_CAPABILITIES: LandingCapability[] = [
   {
     capabilityId: "continuous-monitoring",

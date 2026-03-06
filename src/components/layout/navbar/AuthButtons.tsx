@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { Button } from "../../ui/Button"; // o "@/components/ui/button"
 
-interface AuthButtonsProps {
+type AuthButtonsProps = {
   nextQuery: string;
-}
+};
 
 export default function AuthButtons({ nextQuery }: AuthButtonsProps) {
   return (

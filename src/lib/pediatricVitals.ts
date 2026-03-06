@@ -1,3 +1,8 @@
+import {
+  getConfiguredBloodPressureRanges,
+  resolveBloodPressureRangeByAgeMonths,
+} from "@/features/admin/system-settings/utils";
+
 type Range = {
   min: number;
   max: number;
@@ -138,6 +143,19 @@ export function getPediatricVitalRanges(ageMonths: number | null): PediatricVita
 export function getBloodPressureRangeByAgeMonths(
   ageMonths: number | null
 ): BloodPressureRange {
+  const configuredRanges = getConfiguredBloodPressureRanges([]);
+  if (configuredRanges.length > 0) {
+    const configured = resolveBloodPressureRangeByAgeMonths(
+      configuredRanges,
+      ageMonths
+    );
+    return {
+      ageGroup: configured.ageGroup,
+      systolic: configured.systolic,
+      diastolic: configured.diastolic,
+    };
+  }
+
   if (ageMonths === null) return DEFAULT_BLOOD_PRESSURE_RANGE;
 
   const bucket = BLOOD_PRESSURE_BUCKETS.find(

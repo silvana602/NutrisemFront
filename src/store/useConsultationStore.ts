@@ -91,15 +91,15 @@ export type HistoricalFormState = Omit<
   sleepQuality?: AntecedentSleepQuality;
 };
 
-export interface SavedConsultationSnapshot {
+export type SavedConsultationSnapshot = {
   savedAt: string;
   patientId: string;
   anthropometric: AnthropometricFormState;
   clinical: ClinicalFormState;
   historical: HistoricalFormState;
-}
+};
 
-interface ConsultationStore {
+type ConsultationStore = {
   selectedPatientId: string | null;
   currentStep: ConsultationStep;
   completedSteps: ConsultationStep[];
@@ -129,7 +129,7 @@ interface ConsultationStore {
   clearLastSavedConsultation: () => void;
 
   reset: () => void;
-}
+};
 
 const STEP_ORDER: ConsultationStep[] = ["anthropometric", "clinical", "historical"];
 

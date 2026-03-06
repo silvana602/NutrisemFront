@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-interface Props {
+type Props = {
     label: string;
     placeholder: string;
     suffix: string;
@@ -8,7 +8,7 @@ interface Props {
     error?: string;
     disabled?: boolean;
     onChange: (value: string) => void;
-}
+};
 
 export const ValidatedInput = ({
     label,

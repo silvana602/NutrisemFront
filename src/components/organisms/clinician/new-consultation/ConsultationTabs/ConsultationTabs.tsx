@@ -9,6 +9,7 @@ import { HistoricalForm } from "../forms/HistoricalForm";
 import { Tabs } from "@/components/ui/Tabs";
 import { Button } from "@/components/ui/Button";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { buildClinicianDiagnosisPath } from "@/lib/routes/clinician";
 import { useConsultationStore } from "@/store/useConsultationStore";
 
 export const ConsultationTabs: React.FC = () => {
@@ -98,11 +99,14 @@ export const ConsultationTabs: React.FC = () => {
   };
 
   const handleViewDiagnosis = () => {
-    const query = savedPatientId ? `?patientId=${encodeURIComponent(savedPatientId)}` : "";
     setIsSaveConfirmOpen(false);
     setSaveStage("confirm");
     setSavedPatientId(null);
-    router.push(`/dashboard/clinician/diagnosis${query}`);
+    router.push(
+      buildClinicianDiagnosisPath({
+        patientId: savedPatientId,
+      })
+    );
   };
 
   const dialogTitle =

@@ -1,9 +1,9 @@
 "use client";
 
 import { useAuthStore } from "@/store/useAuthStore";
-import AdminDashboard from "./admin/page";
-import ClinicianDashboardContent from "./clinician/page";
-import PatientDashboard from "./patient/page";
+import AdminDashboard from "./(admin)/admin/page";
+import ClinicianDashboardContent from "./(clinician)/clinician/page";
+import PatientDashboard from "./(patient)/patient/page";
 import { LoadingButton } from "@/components/ui/Spinner";
 
 export default function DashboardPage() {

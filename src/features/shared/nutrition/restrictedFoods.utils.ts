@@ -1,4 +1,4 @@
-import type { RestrictedFoodGroup } from "./types";
+import type { RestrictedFoodGroup, RestrictedFoodItem } from "./types";
 
 function normalizeText(value: string): string {
   return value
@@ -7,28 +7,61 @@ function normalizeText(value: string): string {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function buildUniqueItems(items: Array<{ food: string; healthySubstitute: string }>) {
-  const map = new Map<string, { food: string; healthySubstitute: string }>();
+function buildUniqueItems(items: RestrictedFoodItem[]) {
+  const map = new Map<string, RestrictedFoodItem>();
 
   items.forEach((item) => {
-    const key = item.food.trim().toLowerCase();
+    const food = item.food.trim();
+    const key = normalizeText(food);
     if (!key || map.has(key)) return;
+
     map.set(key, {
-      food: item.food.trim(),
-      healthySubstitute: item.healthySubstitute.trim(),
+      food,
+      healthySubstitute:
+        item.healthySubstitute.trim() || "Sustituir por una opcion natural.",
     });
   });
 
   return Array.from(map.values());
 }
 
+function mergeCustomRestrictedItems(
+  groups: RestrictedFoodGroup[],
+  customRestrictedItems: RestrictedFoodItem[]
+): RestrictedFoodGroup[] {
+  const sanitizedCustomItems = buildUniqueItems(customRestrictedItems);
+  if (!sanitizedCustomItems.length) return groups;
+
+  const redGroupIndex = groups.findIndex((group) => group.tone === "red");
+  if (redGroupIndex === -1) {
+    return [
+      {
+        title: "Zona Roja (Evitar)",
+        subtitle: "Restricciones configuradas desde administracion del sistema.",
+        tone: "red",
+        items: sanitizedCustomItems,
+      },
+      ...groups,
+    ];
+  }
+
+  return groups.map((group, index) => {
+    if (index !== redGroupIndex) return group;
+    return {
+      ...group,
+      items: buildUniqueItems([...group.items, ...sanitizedCustomItems]),
+    };
+  });
+}
+
 export function buildRestrictedFoodGroupsByNutritionalStatus(
-  nutritionalStatus: string
+  nutritionalStatus: string,
+  customRestrictedItems: RestrictedFoodItem[] = []
 ): RestrictedFoodGroup[] {
   const status = normalizeText(nutritionalStatus);
 
   if (status.includes("sobrepeso") || status.includes("obesidad")) {
-    return [
+    const groups: RestrictedFoodGroup[] = [
       {
         title: "Zona Roja (Evitar)",
         subtitle: "Prioridad alta para proteger el plan nutricional.",
@@ -76,10 +109,12 @@ export function buildRestrictedFoodGroupsByNutritionalStatus(
         ]),
       },
     ];
+
+    return mergeCustomRestrictedItems(groups, customRestrictedItems);
   }
 
   if (status.includes("desnutricion") || status.includes("riesgo")) {
-    return [
+    const groups: RestrictedFoodGroup[] = [
       {
         title: "Zona Roja (Evitar)",
         subtitle: "Evitar alimentos que desplazan opciones nutritivas.",
@@ -127,9 +162,11 @@ export function buildRestrictedFoodGroupsByNutritionalStatus(
         ]),
       },
     ];
+
+    return mergeCustomRestrictedItems(groups, customRestrictedItems);
   }
 
-  return [
+  const groups: RestrictedFoodGroup[] = [
     {
       title: "Zona Roja (Evitar)",
       subtitle: "Restricciones base para cuidado preventivo.",
@@ -169,4 +206,6 @@ export function buildRestrictedFoodGroupsByNutritionalStatus(
       ]),
     },
   ];
+
+  return mergeCustomRestrictedItems(groups, customRestrictedItems);
 }

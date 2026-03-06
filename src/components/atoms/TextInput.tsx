@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-interface TextInputProps {
+type TextInputProps = {
   placeholder?: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -9,7 +9,7 @@ interface TextInputProps {
   className?: string; 
   label?: string;
   type?: string;
-}
+};
 
 export const TextInput: React.FC<TextInputProps> = ({
   placeholder,

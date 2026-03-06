@@ -9,6 +9,8 @@ type LandingHeroSectionProps = {
   pulseMetrics: LandingPulseMetric[];
   onStartNow: () => void;
   onExplore: () => void;
+  onOpenAndroidStore: () => void;
+  onOpenIosStore: () => void;
 };
 
 function getPulseToneClassName(tone: LandingPulseMetric["tone"]): string {
@@ -21,6 +23,8 @@ export function LandingHeroSection({
   pulseMetrics,
   onStartNow,
   onExplore,
+  onOpenAndroidStore,
+  onOpenIosStore,
 }: LandingHeroSectionProps) {
   return (
     <section className="relative overflow-hidden rounded-[2rem] border border-nutri-primary/10 bg-gradient-to-br from-nutri-white via-nutri-off-white to-nutri-light-grey/70 px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
@@ -50,6 +54,20 @@ export function LandingHeroSection({
             <Button variant="outline" className="px-5 py-3 text-sm" onClick={onExplore}>
               Ver funcionalidades
             </Button>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-nutri-dark-grey/75">
+              Descarga la app móvil
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button variant="outline" className="px-4 py-2.5 text-sm" onClick={onOpenAndroidStore}>
+                Android (Google Play)
+              </Button>
+              <Button variant="outline" className="px-4 py-2.5 text-sm" onClick={onOpenIosStore}>
+                iOS (App Store)
+              </Button>
+            </div>
           </div>
 
         </div>

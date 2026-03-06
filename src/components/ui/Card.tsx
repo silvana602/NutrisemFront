@@ -1,12 +1,12 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-interface CardProps {
+type CardProps = {
   children: React.ReactNode;
   className?: string;
   title?: string;
   icon?: React.ReactNode;
-}
+};
 
 export const Card: React.FC<CardProps> = ({ children, className = '', title, icon }) => {
   return (

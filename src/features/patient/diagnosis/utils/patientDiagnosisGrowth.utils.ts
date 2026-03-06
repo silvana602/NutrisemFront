@@ -1,5 +1,6 @@
 import type { AnthropometricData, Consultation } from "@/types";
 import { calculateAgeInMonths, formatPediatricAge } from "@/lib/pediatricAge";
+import { getConfiguredOmsPercentileAnchors } from "@/features/admin/system-settings/utils";
 import type {
   AnthropometricPercentileProfile,
   AnthropometricTrendPoint,
@@ -48,13 +49,13 @@ const WEIGHT_FOR_HEIGHT_BUCKETS: readonly WeightForHeightBucket[] = [
   { fromHeightCm: 105, toHeightCm: 115, weightKg: { min: 14.0, max: 22.0 } },
 ];
 
-const WHO_PERCENTILE_ANCHORS: readonly PercentileAnchor[] = [
-  { key: "p3", percentile: 3, zScore: -2 },
-  { key: "p15", percentile: 15, zScore: -1 },
-  { key: "p50", percentile: 50, zScore: 0 },
-  { key: "p85", percentile: 85, zScore: 1 },
-  { key: "p97", percentile: 97, zScore: 2 },
-];
+function getWhoPercentileAnchors(): PercentileAnchor[] {
+  return getConfiguredOmsPercentileAnchors([]).map((anchor) => ({
+    key: anchor.key,
+    percentile: anchor.percentile,
+    zScore: anchor.zScore,
+  }));
+}
 
 function clampNumber(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -136,7 +137,7 @@ function estimateZScoreFromPercentiles(
   value: number,
   profile: AnthropometricPercentileProfile
 ): number {
-  const anchors = WHO_PERCENTILE_ANCHORS.map((anchor) => ({
+  const anchors = getWhoPercentileAnchors().map((anchor) => ({
     value: profile[anchor.key],
     mapped: anchor.zScore,
   }));
@@ -145,7 +146,7 @@ function estimateZScoreFromPercentiles(
 }
 
 function estimatePercentileFromProfile(value: number, profile: AnthropometricPercentileProfile): number {
-  const anchors = WHO_PERCENTILE_ANCHORS.map((anchor) => ({
+  const anchors = getWhoPercentileAnchors().map((anchor) => ({
     value: profile[anchor.key],
     mapped: anchor.percentile,
   }));

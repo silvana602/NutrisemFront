@@ -165,10 +165,10 @@ export function seedOnce() {
     clinicianId: uid("cli"),
     userId: userClinician.userId,
     professionalLicense: "MP-001",
-    profession: "Nutritionist",
-    specialty: "Pediatrics",
+    profession: "Nutricionista",
+    specialty: "Pediatra",
     residence: "La Paz",
-    institution: "Children's Hospital",
+    institution: "Hospital del Niño",
   };
   db.clinicians.push(clinician1);
 

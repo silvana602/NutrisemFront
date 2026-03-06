@@ -4,7 +4,7 @@ export enum UserRole {
   patient = "patient"
 }
 
-export interface User {
+export type User = {
   userId: string;
   firstName: string;
   lastName: string;
@@ -15,4 +15,4 @@ export interface User {
   profilePhoto?: string | null;
   role: UserRole;
   password: string;
-}
+};

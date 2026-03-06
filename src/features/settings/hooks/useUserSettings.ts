@@ -12,10 +12,7 @@ export function useUserSettings(userId: string | null | undefined): UserSettings
   const [settings, setSettings] = useState<UserSettingsStorage>(DEFAULT_USER_SETTINGS);
 
   useEffect(() => {
-    if (!userId) {
-      setSettings(DEFAULT_USER_SETTINGS);
-      return;
-    }
+    if (!userId) return;
 
     const load = () => {
       setSettings(readUserSettings(userId));
@@ -42,5 +39,5 @@ export function useUserSettings(userId: string | null | undefined): UserSettings
     };
   }, [userId]);
 
-  return settings;
+  return userId ? settings : DEFAULT_USER_SETTINGS;
 }

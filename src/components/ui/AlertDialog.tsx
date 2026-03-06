@@ -4,13 +4,13 @@ import React from "react";
 import { createPortal } from "react-dom";
 import { Backdrop } from "@/components/ui/Backdrop";
 
-interface AlertDialogProps {
+type AlertDialogProps = {
     open: boolean;
     title: string;
     message: string;
     onClose: () => void;
     actionLabel?: string;
-}
+};
 
 export default function AlertDialog({
     open,
@@ -33,6 +33,7 @@ export default function AlertDialog({
                     role="dialog"
                     aria-modal="true"
                     className="
+          nutri-alert-dialog
           relative z-10 w-full
 
           max-w-[90%]
@@ -49,6 +50,7 @@ export default function AlertDialog({
                 >
                     <h2
                         className="
+            nutri-alert-dialog-title
             text-base sm:text-lg
             font-semibold
             text-[var(--color-nutri-primary)]
@@ -59,6 +61,7 @@ export default function AlertDialog({
 
                     <p
                         className="
+            nutri-alert-dialog-message
             mt-2 sm:mt-3
             text-xs sm:text-sm
             leading-relaxed
@@ -72,20 +75,21 @@ export default function AlertDialog({
                         <button
                             onClick={onClose}
                             className="
+                nutri-alert-dialog-action
                 rounded-lg
 
                 px-4 py-2
                 sm:px-5 sm:py-2.5
 
                 text-xs sm:text-sm
-                font-medium
+                font-semibold
 
-                bg-[var(--color-nutri-primary)]
-                text-[var(--color-nutri-white)]
+                bg-nutri-primary
+                text-nutri-white
 
                 transition-colors
 
-                hover:bg-[var(--color-nutri-secondary)]
+                hover:bg-nutri-secondary
 
                 focus:outline-none
                 focus:ring-2

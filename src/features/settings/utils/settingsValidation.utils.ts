@@ -3,6 +3,8 @@ import type {
   PasswordFormErrors,
   ProfileFormData,
   ProfileFormErrors,
+  TutorLegalData,
+  TutorLegalDataErrors,
 } from "../types/settings.types";
 
 export function normalizeSpaces(value: string): string {
@@ -63,6 +65,45 @@ export function validatePasswordForm(
     errors.confirmarNuevaContrasena = "Confirma la nueva contraseña.";
   } else if (data.nuevaContrasena !== data.confirmarNuevaContrasena) {
     errors.confirmarNuevaContrasena = "La confirmación no coincide.";
+  }
+
+  return errors;
+}
+
+export function validateTutorLegalData(data: TutorLegalData): TutorLegalDataErrors {
+  const errors: TutorLegalDataErrors = {};
+  const nombreTutor = normalizeSpaces(data.nombreTutor);
+  const cedulaTutor = normalizeSpaces(data.cedulaTutor);
+  const parentescoTutor = normalizeSpaces(data.parentescoTutor);
+  const telefonoTutor = normalizeSpaces(data.telefonoTutor);
+  const direccionTutor = normalizeSpaces(data.direccionTutor);
+
+  if (!nombreTutor) {
+    errors.nombreTutor = "Ingresa el nombre completo del tutor.";
+  } else if (nombreTutor.split(" ").length < 2) {
+    errors.nombreTutor = "Incluye nombre y apellido del tutor.";
+  }
+
+  if (!cedulaTutor) {
+    errors.cedulaTutor = "Ingresa la cédula de identidad del tutor.";
+  } else if (cedulaTutor.length < 5) {
+    errors.cedulaTutor = "La cédula del tutor parece incompleta.";
+  }
+
+  if (!parentescoTutor) {
+    errors.parentescoTutor = "Ingresa el parentesco o vínculo legal.";
+  }
+
+  if (!telefonoTutor) {
+    errors.telefonoTutor = "Ingresa un teléfono de contacto.";
+  } else if (telefonoTutor.replace(/[^\d+]/g, "").length < 7) {
+    errors.telefonoTutor = "Ingresa un teléfono válido.";
+  }
+
+  if (!direccionTutor) {
+    errors.direccionTutor = "Ingresa la dirección del tutor.";
+  } else if (direccionTutor.length < 6) {
+    errors.direccionTutor = "La dirección parece incompleta.";
   }
 
   return errors;

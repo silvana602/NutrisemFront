@@ -6,7 +6,7 @@ export type ClinicalBilateralEdemaGrade = "0" | "+" | "++" | "+++";
 
 type LegacyOrMultiValue = string | string[];
 
-export interface ClinicalData {
+export type ClinicalData = {
   clinicalDataId: string;
   consultationId: string;
 
@@ -50,4 +50,4 @@ export interface ClinicalData {
   bloodPressure?: string;
   bloodPressureObservation?: string;
   observations?: string;
-}
+};

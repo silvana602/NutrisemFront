@@ -1,4 +1,4 @@
-export interface AnthropometricData {
+export type AnthropometricData = {
   anthropometricDataId: string;
   consultationId: string;
   weightKg: number;
@@ -8,4 +8,4 @@ export interface AnthropometricData {
   bmi?: number;
   zScore?: number;
   percentile?: number;
-}
+};

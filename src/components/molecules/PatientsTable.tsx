@@ -3,13 +3,13 @@
 import type { PatientRow } from "../organisms/clinician/PatientsListContent";
 import { Button } from "@/components/ui/Button";
 
-interface Props {
+type Props = {
   data: PatientRow[];
   rowStart?: number;
   highlightedPatientId?: string | null;
   onOpenDiagnosis: (patient: PatientRow) => void;
   onStartConsultation: (patient: PatientRow) => void;
-}
+};
 
 const getSexLabel = (sex: PatientRow["sex"]) =>
   sex === "M" ? "Masculino" : "Femenino";

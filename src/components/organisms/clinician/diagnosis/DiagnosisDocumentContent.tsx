@@ -17,6 +17,11 @@ import {
 } from "./AnthropometricTrendChart";
 import { db, seedOnce } from "@/mocks/db";
 import {
+  getConfiguredOmsPercentileAnchors,
+  getConfiguredRestrictedFoodItems,
+  getConfiguredRecommendedFoods,
+} from "@/features/admin/system-settings/utils";
+import {
   calculateAgeInMonths,
   formatPediatricAge,
   isTargetPediatricAge,
@@ -24,6 +29,8 @@ import {
 import {
   useConsultationStore,
 } from "@/store/useConsultationStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { readUserSettings } from "@/features/settings/utils/settingsStorage.utils";
 import type {
   AntecedentFoodGroupId as HistoricalFoodGroupId,
   AntecedentMealSlotId as HistoricalMealSlotId,
@@ -33,6 +40,13 @@ import type {
 seedOnce();
 
 type DiagnosisTabId = "summary" | "results";
+
+type DiagnosisDocumentContentProps = {
+  highlightedPatientId?: string | null;
+  highlightedResultId?: string | null;
+  highlightedTab?: string | null;
+  highlightedStep?: number | string | null;
+};
 
 type DiagnosisResult = {
   id: string;
@@ -151,13 +165,9 @@ const WEIGHT_FOR_HEIGHT_BUCKETS: readonly WeightForHeightBucket[] = [
   { fromHeightCm: 105, toHeightCm: 115, weightKg: { min: 14.0, max: 22.0 } },
 ];
 
-const WHO_PERCENTILE_ANCHORS = [
-  { key: "p3", percentile: 3, zScore: -2 },
-  { key: "p15", percentile: 15, zScore: -1 },
-  { key: "p50", percentile: 50, zScore: 0 },
-  { key: "p85", percentile: 85, zScore: 1 },
-  { key: "p97", percentile: 97, zScore: 2 },
-] as const;
+function getWhoPercentileAnchors() {
+  return getConfiguredOmsPercentileAnchors([]);
+}
 
 type RecommendationFoodRow = {
   foodId: string;
@@ -485,7 +495,7 @@ function estimateZScoreFromPercentiles(
   value: number,
   profile: AnthropometricPercentileProfile
 ): number {
-  const anchors = WHO_PERCENTILE_ANCHORS.map((anchor) => ({
+  const anchors = getWhoPercentileAnchors().map((anchor) => ({
     value: profile[anchor.key],
     mapped: anchor.zScore,
   }));
@@ -497,7 +507,7 @@ function estimatePercentileFromProfile(
   value: number,
   profile: AnthropometricPercentileProfile
 ): number {
-  const anchors = WHO_PERCENTILE_ANCHORS.map((anchor) => ({
+  const anchors = getWhoPercentileAnchors().map((anchor) => ({
     value: profile[anchor.key],
     mapped: anchor.percentile,
   }));
@@ -775,6 +785,12 @@ type ReportIdentityMetadata = {
   consultationDate: string;
 };
 
+type ReportClinicianAssets = {
+  clinicianName: string;
+  signatureDataUrl: string | null;
+  sealDataUrl: string | null;
+};
+
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -782,6 +798,12 @@ function escapeHtml(value: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function sanitizeImageDataUrl(value: string | null | undefined): string | null {
+  if (!value) return null;
+  if (!value.startsWith("data:image/")) return null;
+  return value;
 }
 
 function toSafeFileToken(value: string): string {
@@ -1018,6 +1040,7 @@ function buildDiagnosisReportHtml(params: {
   documentTitle: string;
   reportTitle: string;
   reportIdentity: ReportIdentityMetadata;
+  clinicianAssets: ReportClinicianAssets;
   reportSections: ReportSectionData[];
   finalDiagnosisRows: ReportFieldRow[];
   recommendationRows: ReportFieldRow[];
@@ -1030,6 +1053,7 @@ function buildDiagnosisReportHtml(params: {
     documentTitle,
     reportTitle,
     reportIdentity,
+    clinicianAssets,
     reportSections,
     finalDiagnosisRows,
     recommendationRows,
@@ -1109,6 +1133,14 @@ function buildDiagnosisReportHtml(params: {
         })
         .join("")
     : `<p class="empty-note">Sin graficos disponibles.</p>`;
+
+  const signatureImageHtml = clinicianAssets.signatureDataUrl
+    ? `<img src="${clinicianAssets.signatureDataUrl}" alt="Firma digital del profesional" class="signature-image" />`
+    : `<p class="empty-note">Sin firma digital registrada.</p>`;
+
+  const sealImageHtml = clinicianAssets.sealDataUrl
+    ? `<img src="${clinicianAssets.sealDataUrl}" alt="Sello médico del profesional" class="signature-image" />`
+    : `<p class="empty-note">Sin sello médico registrado.</p>`;
 
   return `
     <!doctype html>
@@ -1212,6 +1244,33 @@ function buildDiagnosisReportHtml(params: {
             font-size: 11px;
             color: #394652;
           }
+          .signature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 8px;
+          }
+          .signature-box {
+            border: 1px solid #d8dde2;
+            border-radius: 8px;
+            padding: 8px;
+            min-height: 110px;
+            background: #fff;
+          }
+          .signature-box h4 {
+            margin-bottom: 8px;
+          }
+          .signature-image {
+            display: block;
+            width: 100%;
+            max-height: 84px;
+            object-fit: contain;
+          }
+          @media (max-width: 720px) {
+            .signature-grid {
+              grid-template-columns: 1fr;
+            }
+          }
         </style>
       </head>
       <body>
@@ -1253,6 +1312,28 @@ function buildDiagnosisReportHtml(params: {
           ${renderRowsTable(growthRows)}
           <div class="chart-grid">
             ${chartsHtml}
+          </div>
+        </section>
+
+        <section class="report-section">
+          <h2>Validación profesional</h2>
+          <table>
+            <tbody>
+              <tr>
+                <th>Profesional</th>
+                <td>${escapeHtml(clinicianAssets.clinicianName || "Sin dato")}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="signature-grid">
+            <article class="signature-box">
+              <h4>Firma digital</h4>
+              ${signatureImageHtml}
+            </article>
+            <article class="signature-box">
+              <h4>Sello médico</h4>
+              ${sealImageHtml}
+            </article>
           </div>
         </section>
       </body>
@@ -1330,12 +1411,25 @@ async function printReportHtmlFromHiddenFrame(reportHtml: string): Promise<void>
   });
 }
 
-export const DiagnosisDocumentContent: React.FC = () => {
+export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> = ({
+  highlightedPatientId: highlightedPatientIdProp = null,
+  highlightedResultId: highlightedResultIdProp = null,
+  highlightedTab: highlightedTabProp = null,
+  highlightedStep: highlightedStepProp = null,
+}) => {
   const searchParams = useSearchParams();
-  const highlightedPatientId = searchParams.get("patientId");
-  const highlightedResultId = searchParams.get("resultId");
-  const highlightedTab = searchParams.get("tab");
-  const highlightedStep = Number(searchParams.get("step"));
+  const highlightedPatientIdFromQuery = searchParams.get("patientId");
+  const highlightedResultIdFromQuery = searchParams.get("resultId");
+  const highlightedTabFromQuery = searchParams.get("tab");
+  const highlightedStepFromQuery = searchParams.get("step");
+
+  const highlightedPatientId = highlightedPatientIdProp ?? highlightedPatientIdFromQuery;
+  const highlightedResultId = highlightedResultIdProp ?? highlightedResultIdFromQuery;
+  const highlightedTab = highlightedTabProp ?? highlightedTabFromQuery;
+
+  const highlightedStepRaw = highlightedStepProp ?? highlightedStepFromQuery;
+  const highlightedStep =
+    typeof highlightedStepRaw === "number" ? highlightedStepRaw : Number(highlightedStepRaw);
 
   const normalizedHighlightedTab: DiagnosisTabId =
     highlightedTab === "results" ? "results" : "summary";
@@ -1347,6 +1441,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
       : 0;
 
   const snapshot = useConsultationStore((s) => s.lastSavedConsultation);
+  const sessionUser = useAuthStore((state) => state.user);
 
   const [activeTab, setActiveTab] = useState<DiagnosisTabId>(normalizedHighlightedTab);
   const [query, setQuery] = useState("");
@@ -1601,6 +1696,8 @@ export const DiagnosisDocumentContent: React.FC = () => {
 
   const recommendationData = useMemo(() => {
     if (!selectedPatient || !selectedConsultationResult) return null;
+    const availableFoods = getConfiguredRecommendedFoods(db.foods);
+    const customRestrictedItems = getConfiguredRestrictedFoodItems(db.foods);
 
     const referenceHistoricalDiagnosis =
       selectedConsultationResult.source === "history"
@@ -1620,7 +1717,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
               recommendationFood.recommendationId === persistedRecommendation.recommendationId
           )
           .map((recommendationFood) => {
-            const food = db.foods.find((item) => item.foodId === recommendationFood.foodId);
+            const food = availableFoods.find((item) => item.foodId === recommendationFood.foodId);
             if (!food) return null;
 
             return {
@@ -1647,7 +1744,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
         ? formatPediatricAge(selectedPatientAgeMonths)
         : "6-60 meses";
 
-    const fallbackFoods: RecommendationFoodRow[] = db.foods.slice(0, 5).map((food) => ({
+    const fallbackFoods: RecommendationFoodRow[] = availableFoods.slice(0, 5).map((food) => ({
       foodId: food.foodId,
       foodName: translateFoodName(food.foodName),
       category: translateFoodCategory(food.category),
@@ -1672,7 +1769,8 @@ export const DiagnosisDocumentContent: React.FC = () => {
         buildDefaultDietaryRecommendation(selectedConsultationResult.nutritionalStatus),
       foodRows: linkedFoods.length ? linkedFoods : fallbackFoods,
       restrictedFoodGroups: getDiagnosisRestrictedFoodGroups(
-        selectedConsultationResult.nutritionalStatus
+        selectedConsultationResult.nutritionalStatus,
+        customRestrictedItems
       ),
       hasPersistedRecommendation: Boolean(persistedRecommendation),
     };
@@ -1928,6 +2026,23 @@ export const DiagnosisDocumentContent: React.FC = () => {
         consultationNumber,
         patientName: selectedConsultationResult.patientName,
         consultationDate: selectedConsultationResult.dateLabel,
+      };
+
+      const reportClinician = consultationRecordForReport
+        ? db.clinicians.find((item) => item.clinicianId === consultationRecordForReport.clinicianId) ??
+          null
+        : null;
+      const reportClinicianUser = reportClinician
+        ? db.users.find((item) => item.userId === reportClinician.userId) ?? null
+        : null;
+      const clinicianSettingsOwnerId = reportClinicianUser?.userId ?? sessionUser?.userId ?? null;
+      const clinicianSettings = clinicianSettingsOwnerId
+        ? readUserSettings(clinicianSettingsOwnerId)
+        : null;
+      const clinicianAssets: ReportClinicianAssets = {
+        clinicianName: selectedConsultationResult.attendedByName,
+        signatureDataUrl: sanitizeImageDataUrl(clinicianSettings?.firmaDigitalMedico ?? null),
+        sealDataUrl: sanitizeImageDataUrl(clinicianSettings?.selloMedico ?? null),
       };
 
       const reportSections: ReportSectionData[] = [];
@@ -2224,6 +2339,7 @@ export const DiagnosisDocumentContent: React.FC = () => {
         documentTitle,
         reportTitle: "Informe de Diagnóstico Pediátrico",
         reportIdentity,
+        clinicianAssets,
         reportSections,
         finalDiagnosisRows,
         recommendationRows,

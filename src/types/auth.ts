@@ -1,22 +1,22 @@
 import type { Clinician } from "./clinician";
 import type { User } from "./user";
 
-export interface AuthSessionResponse {
+export type AuthSessionResponse = {
   user: User;
   clinician?: Clinician | null;
-}
+};
 
 // Mantiene compatibilidad con codigo legacy que aun usa accessToken.
-export interface AuthResponse extends AuthSessionResponse {
+export type AuthResponse = AuthSessionResponse & {
   accessToken?: string | null;
-}
+};
 
-export interface LoginDto {
+export type LoginDto = {
   identityCard: string;
   password: string;
-}
+};
 
-export interface RegisterClinicianDto {
+export type RegisterClinicianDto = {
   password: string;
   roleId: string;
   firstName: string;
@@ -30,4 +30,4 @@ export interface RegisterClinicianDto {
   residence: string;
   institution: string;
   confirmPassword: string;
-}
+};

@@ -8,21 +8,28 @@ import { ConsultationTabs } from "./ConsultationTabs/ConsultationTabs";
 import { useConsultationStore } from "@/store/useConsultationStore";
 import { db } from "@/mocks/db";
 
-export const NewConsultationContent: React.FC = () => {
+type NewConsultationContentProps = {
+  initialPatientId?: string | null;
+};
+
+export const NewConsultationContent: React.FC<NewConsultationContentProps> = ({
+  initialPatientId = null,
+}) => {
   const searchParams = useSearchParams();
   const patientIdFromQuery = searchParams.get("patientId");
+  const resolvedPatientId = initialPatientId ?? patientIdFromQuery;
   const selectedPatientId = useConsultationStore((state) => state.selectedPatientId);
   const setSelectedPatientId = useConsultationStore((state) => state.setSelectedPatientId);
 
   useEffect(() => {
-    if (!patientIdFromQuery) return;
-    if (selectedPatientId === patientIdFromQuery) return;
+    if (!resolvedPatientId) return;
+    if (selectedPatientId === resolvedPatientId) return;
 
-    const patientExists = db.patients.some((patient) => patient.patientId === patientIdFromQuery);
+    const patientExists = db.patients.some((patient) => patient.patientId === resolvedPatientId);
     if (!patientExists) return;
 
-    setSelectedPatientId(patientIdFromQuery);
-  }, [patientIdFromQuery, selectedPatientId, setSelectedPatientId]);
+    setSelectedPatientId(resolvedPatientId);
+  }, [resolvedPatientId, selectedPatientId, setSelectedPatientId]);
 
   return (
     <div className="nutri-clinician-page w-full min-h-0 px-1 py-1 sm:px-2">

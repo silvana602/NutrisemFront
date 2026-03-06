@@ -53,7 +53,7 @@ export type AntecedentSleepQuality =
 
 type LegacyOrMultiValue = string | string[];
 
-export interface Antecedents {
+export type Antecedents = {
   antecedentsId: string;
   consultationId: string;
 
@@ -105,4 +105,4 @@ export interface Antecedents {
   averageSleepHours?: number;
   sleepRoutine?: string;
   observations?: string;
-}
+};

@@ -39,6 +39,7 @@ export default function UserMenu() {
   const router = useRouter();
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
+  const clinician = useAuthStore((state) => state.clinician);
   const activeRole = useAuthStore((state) => state.activeRole);
   const setActiveRole = useAuthStore((state) => state.setActiveRole);
   const clearSession = useAuthStore((state) => state.clearSession);
@@ -76,15 +77,18 @@ export default function UserMenu() {
     };
   }, [close]);
 
+  const { fotoPerfil: profilePhoto } = useUserSettings(user?.userId ?? null);
+
   if (!user) return null;
 
   const currentRole = activeRole ?? user.role;
-  const { fotoPerfil: profilePhoto } = useUserSettings(user.userId);
 
   const canAccessPatientPanel = () =>
+    user.role === UserRole.admin ||
     db.patients.some((patient) => patient.userId === user.userId);
 
-  const canAccessClinicianPanel = () => Boolean(useAuthStore.getState().clinician);
+  const canAccessClinicianPanel = () =>
+    user.role === UserRole.admin || Boolean(clinician);
 
   const menuEntries: MenuEntry[] =
     user.role === UserRole.admin

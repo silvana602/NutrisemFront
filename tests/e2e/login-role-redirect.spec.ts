@@ -7,7 +7,7 @@ async function loginAs(
   await page.goto("/login");
   await page.fill("#login-ci", credentials.ci);
   await page.fill("#login-password", credentials.password);
-  await page.getByRole("button", { name: "Iniciar sesion" }).click();
+  await page.getByRole("button", { name: /iniciar sesi[oó]n/i }).click();
 }
 
 test("redirecciona a dashboard de admin luego de login", async ({ page }) => {

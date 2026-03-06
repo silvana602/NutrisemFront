@@ -1,4 +1,5 @@
 import type { SavedConsultationSnapshot } from "@/store/useConsultationStore";
+import { buildClinicianDiagnosisPath } from "@/lib/routes/clinician";
 
 import type {
   DashboardConsultationRecord,
@@ -70,17 +71,12 @@ export function getWeightTrend(
 }
 
 export function buildDiagnosisHref(patientId: string, resultId: string | null): string {
-  const params = new URLSearchParams({
+  return buildClinicianDiagnosisPath({
     patientId,
+    resultId,
     tab: "summary",
-    step: "0",
+    step: 0,
   });
-
-  if (resultId) {
-    params.set("resultId", resultId);
-  }
-
-  return `/dashboard/clinician/diagnosis?${params.toString()}`;
 }
 
 export function getCriticalAlertReason(item: DashboardConsultationRecord): string | null {

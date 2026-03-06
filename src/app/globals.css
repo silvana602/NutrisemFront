@@ -344,23 +344,23 @@
 }
 
 :root[data-nutri-modo="oscuro"] [class*="text-nutri-dark-grey/"] {
-  color: rgba(212, 224, 232, 0.84) !important;
+  color: rgba(226, 237, 244, 0.9) !important;
 }
 
 :root[data-nutri-modo="oscuro"] .text-nutri-dark-grey\/70 {
-  color: rgba(212, 224, 232, 0.78) !important;
+  color: rgba(226, 237, 244, 0.84) !important;
 }
 
 :root[data-nutri-modo="oscuro"] .text-nutri-dark-grey\/75 {
-  color: rgba(212, 224, 232, 0.82) !important;
+  color: rgba(226, 237, 244, 0.88) !important;
 }
 
 :root[data-nutri-modo="oscuro"] .text-nutri-dark-grey\/80 {
-  color: rgba(212, 224, 232, 0.86) !important;
+  color: rgba(226, 237, 244, 0.92) !important;
 }
 
 :root[data-nutri-modo="oscuro"] .text-nutri-dark-grey\/85 {
-  color: rgba(212, 224, 232, 0.9) !important;
+  color: rgba(226, 237, 244, 0.95) !important;
 }
 
 :root[data-nutri-modo="oscuro"] [class*="text-nutri-primary/"] {
@@ -442,6 +442,184 @@
 :root[data-nutri-modo="oscuro"] button.border-nutri-primary\/20.bg-nutri-white:hover {
   background-color: rgba(30, 47, 58, 0.95) !important;
   border-color: rgba(142, 176, 194, 0.5) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-alert-dialog {
+  border: 1px solid rgba(158, 193, 210, 0.38);
+  background:
+    linear-gradient(
+      152deg,
+      rgba(16, 24, 31, 0.98) 0%,
+      rgba(24, 38, 47, 0.96) 62%,
+      rgba(33, 52, 64, 0.92) 100%
+    ),
+    rgba(22, 34, 42, 0.96);
+  box-shadow: 0 22px 46px rgba(0, 0, 0, 0.58) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-alert-dialog-title {
+  color: #f3f8fc !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-alert-dialog-message {
+  color: rgba(229, 239, 246, 0.94) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-alert-dialog-action {
+  border: 1px solid rgba(158, 193, 210, 0.36) !important;
+  background: #33566a !important;
+  color: #f8fcff !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-alert-dialog-action:hover {
+  background: #43708a !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-trend-card {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-trend-card-up {
+  border-color: rgba(52, 211, 153, 0.76) !important;
+  background: linear-gradient(
+    150deg,
+    rgba(4, 78, 60, 0.92) 0%,
+    rgba(6, 95, 70, 0.74) 100%
+  ) !important;
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.36),
+    inset 0 0 0 1px rgba(110, 231, 183, 0.22);
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-trend-card-down {
+  border-color: rgba(251, 113, 133, 0.74) !important;
+  background: linear-gradient(
+    150deg,
+    rgba(127, 29, 56, 0.92) 0%,
+    rgba(159, 18, 57, 0.74) 100%
+  ) !important;
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.38),
+    inset 0 0 0 1px rgba(251, 113, 133, 0.2);
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-trend-card-neutral {
+  border-color: rgba(158, 193, 210, 0.42) !important;
+  background: linear-gradient(
+    148deg,
+    rgba(19, 30, 37, 0.96) 0%,
+    rgba(24, 38, 47, 0.94) 100%
+  ) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-trend-card-eyebrow {
+  color: rgba(236, 244, 249, 0.94) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-trend-card-label {
+  color: #fbfdff !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-trend-card-up .nutri-trend-card-eyebrow {
+  color: #bbf7d0 !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-trend-card-down .nutri-trend-card-eyebrow {
+  color: #fecdd3 !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-trend-card-up .text-emerald-700 {
+  color: #86efac !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-trend-card-down .text-rose-700 {
+  color: #fda4af !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-service-status-card {
+  border-color: rgba(158, 193, 210, 0.46) !important;
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-service-status-card-up {
+  border-color: rgba(52, 211, 153, 0.78) !important;
+  background: linear-gradient(
+    150deg,
+    rgba(4, 78, 60, 0.92) 0%,
+    rgba(6, 95, 70, 0.72) 100%
+  ) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-service-status-card-down {
+  border-color: rgba(248, 113, 113, 0.78) !important;
+  background: linear-gradient(
+    150deg,
+    rgba(127, 29, 29, 0.92) 0%,
+    rgba(159, 18, 18, 0.72) 100%
+  ) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-service-status-title {
+  color: #fbfdff !important;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.22);
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-service-status-description {
+  color: rgba(237, 245, 250, 0.96) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-service-status-pill {
+  border: 1px solid transparent;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-service-status-pill-up {
+  border-color: rgba(52, 211, 153, 0.78) !important;
+  background: rgba(16, 185, 129, 0.42) !important;
+  color: #d1fae5 !important;
+}
+
+:root[data-nutri-modo="oscuro"] .nutri-service-status-pill-down {
+  border-color: rgba(248, 113, 113, 0.74) !important;
+  background: rgba(239, 68, 68, 0.42) !important;
+  color: #ffe4e6 !important;
+}
+
+:root[data-nutri-modo="oscuro"] .bg-emerald-50,
+:root[data-nutri-modo="oscuro"] .bg-emerald-50\/70 {
+  background-color: rgba(5, 78, 60, 0.86) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .bg-rose-50,
+:root[data-nutri-modo="oscuro"] .bg-red-50\/70 {
+  background-color: rgba(127, 29, 56, 0.86) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .bg-emerald-100 {
+  background-color: rgba(16, 185, 129, 0.42) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .bg-red-100 {
+  background-color: rgba(239, 68, 68, 0.42) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .border-emerald-200 {
+  border-color: rgba(52, 211, 153, 0.78) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .border-rose-200,
+:root[data-nutri-modo="oscuro"] .border-red-200 {
+  border-color: rgba(251, 113, 133, 0.78) !important;
+}
+
+:root[data-nutri-modo="oscuro"] .text-emerald-700 {
+  color: #a7f3d0 !important;
+}
+
+:root[data-nutri-modo="oscuro"] .text-rose-700,
+:root[data-nutri-modo="oscuro"] .text-red-700 {
+  color: #fecdd3 !important;
 }
 
 :root[data-nutri-modo="oscuro"] .nutri-menu-button-idle {

@@ -1,4 +1,4 @@
-export interface Diagnosis {
+export type Diagnosis = {
   diagnosisId: string;
   consultationId: string;
   medicalHistoryId: string;
@@ -6,4 +6,4 @@ export interface Diagnosis {
   zScorePercentile: number;
   nutritionalDiagnosis: string;
   diagnosisDetails: string;
-}
+};

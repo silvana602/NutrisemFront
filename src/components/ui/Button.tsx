@@ -1,14 +1,14 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-interface ButtonProps {
+type ButtonProps = {
   children: React.ReactNode;
   onClick?: () => void;
   variant?: 'primary' | 'secondary' | 'outline';
   className?: string;
   disabled?: boolean;
   type?: 'button' | 'submit';
-}
+};
 
 export const Button: React.FC<ButtonProps> = ({ 
   children, 

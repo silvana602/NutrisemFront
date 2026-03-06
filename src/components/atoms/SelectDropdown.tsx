@@ -1,11 +1,11 @@
 import React from "react";
 
-interface SelectProps {
+type SelectProps = {
   label?: string;
   options: string[];
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-}
+};
 
 export const SelectDropdown: React.FC<SelectProps> = ({
   label,

@@ -32,6 +32,7 @@ async function fetchCurrentSession() {
 export default function AppSessionBootstrap() {
   const hydrated = useAuthStore((state) => state.hydrated);
   const user = useAuthStore((state) => state.user);
+  const userId = user?.userId ?? null;
   const setHydrated = useAuthStore((state) => state.setHydrated);
   const setSession = useAuthStore((state) => state.setSession);
   const clearSession = useAuthStore((state) => state.clearSession);
@@ -65,7 +66,7 @@ export default function AppSessionBootstrap() {
   useEffect(() => {
     if (!hydrated) return;
 
-    if (!user) {
+    if (!userId) {
       const root = window.document.documentElement;
       root.removeAttribute("data-nutri-modo");
       root.removeAttribute("data-nutri-modo-preferencia");
@@ -73,8 +74,8 @@ export default function AppSessionBootstrap() {
       return;
     }
 
-    applyInterfaceSettings(readUserSettings(user.userId));
-  }, [hydrated, user?.userId]);
+    applyInterfaceSettings(readUserSettings(userId));
+  }, [hydrated, userId]);
 
   return null;
 }

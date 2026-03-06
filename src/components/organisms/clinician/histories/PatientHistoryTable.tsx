@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 import { Pagination } from "@/components/atoms/Pagination";
 import { Button } from "@/components/ui/Button";
 import { calculateAgeInMonths, formatPediatricAge } from "@/lib/pediatricAge";
+import { buildClinicianDiagnosisPath } from "@/lib/routes/clinician";
 import { db } from "@/mocks/db";
 
-interface Props {
+type Props = {
   patientId: string;
-}
+};
 
 type HistoryRow = {
   consultationId: string;
@@ -59,17 +60,12 @@ function getStatusTone(status: string): string {
 }
 
 function buildDiagnosisUrl(patientId: string, diagnosisId: string | null, tab: "summary" | "results" = "summary"): string {
-  const params = new URLSearchParams({
+  return buildClinicianDiagnosisPath({
     patientId,
+    resultId: diagnosisId,
     tab,
-    step: "0",
+    step: 0,
   });
-
-  if (diagnosisId) {
-    params.set("resultId", diagnosisId);
-  }
-
-  return `/dashboard/clinician/diagnosis?${params.toString()}`;
 }
 
 export const PatientsHistoryTable: React.FC<Props> = ({ patientId }) => {

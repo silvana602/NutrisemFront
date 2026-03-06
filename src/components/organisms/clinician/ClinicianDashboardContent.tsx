@@ -8,7 +8,9 @@ import { type LastPatientCardData } from "@/components/molecules/LastPatientCard
 import { db, seedOnce } from "@/mocks/db";
 import { calculateAgeInMonths, formatPediatricAge } from "@/lib/pediatricAge";
 import { useConsultationStore } from "@/store/useConsultationStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import type { User } from "@/types/user";
+import { UserRole } from "@/types/user";
 
 import {
   ClinicianDashboardHero,
@@ -34,18 +36,42 @@ import type {
   HistoricalDashboardConsultationRecord,
 } from "@/features/clinician/dashboard/types";
 
-interface Props {
+type Props = {
   user: User;
-}
+};
 
 seedOnce();
 
 export const ClinicianDashboardContent: React.FC<Props> = ({ user }) => {
   const router = useRouter();
   const snapshot = useConsultationStore((state) => state.lastSavedConsultation);
+  const activeRole = useAuthStore((state) => state.activeRole);
 
-  const clinician = db.clinicians.find((item) => item.userId === user.userId) ?? null;
-  if (!clinician) return null;
+  const clinician = React.useMemo(() => {
+    const ownProfile = db.clinicians.find((item) => item.userId === user.userId) ?? null;
+    if (ownProfile) return ownProfile;
+
+    const isAdminSwitchingToClinician =
+      user.role === UserRole.admin && activeRole === UserRole.clinician;
+
+    if (!isAdminSwitchingToClinician) return null;
+    return db.clinicians[0] ?? null;
+  }, [activeRole, user.role, user.userId]);
+
+  if (!clinician) {
+    return (
+      <div className="nutri-clinician-page px-1 py-1 sm:px-2">
+        <section className="nutri-clinician-surface p-4 sm:p-5">
+          <h2 className="text-lg font-semibold text-nutri-primary">
+            No hay perfil clínico disponible
+          </h2>
+          <p className="mt-2 text-sm text-nutri-dark-grey/85">
+            No se encontró un médico asociado para cargar el panel de inicio clínico.
+          </p>
+        </section>
+      </div>
+    );
+  }
 
   const assignedPatientIds = db.patientClinicians
     .filter((item) => item.clinicianId === clinician.clinicianId)
