@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { Heading } from "@/components/atoms/Heading";
 import { Button } from "@/components/ui/Button";
+import { handleFormArrowNavigation } from "@/lib/forms/arrowFieldNavigation";
 import { db, seedOnce } from "@/mocks/db";
 import { uid } from "@/mocks/utils";
 import { calculateAgeInMonths, formatPediatricAge } from "@/lib/pediatricAge";
@@ -269,7 +270,11 @@ export const NewPatientRegistrationContent: React.FC = () => {
         </Heading>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        onKeyDown={handleFormArrowNavigation}
+        className="space-y-5"
+      >
         <section className="nutri-clinician-surface p-4 sm:p-5">
           <h2 className="mb-4 text-base font-semibold text-nutri-primary">1. Datos del paciente</h2>
 

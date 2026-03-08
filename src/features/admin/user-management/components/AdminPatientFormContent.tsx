@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Heading } from "@/components/atoms/Heading";
 import { Button } from "@/components/ui/Button";
+import { handleFormArrowNavigation } from "@/lib/forms/arrowFieldNavigation";
 import { buildAdminPatientProfilePath } from "@/lib/routes/admin";
 import { db, seedOnce } from "@/mocks/db";
 import { uid } from "@/mocks/utils";
@@ -234,7 +235,11 @@ export function AdminPatientFormContent({
           </div>
         </section>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form
+          onSubmit={handleSubmit}
+          onKeyDown={handleFormArrowNavigation}
+          className="space-y-5"
+        >
           {(errors.submit || fieldErrorMessages.length > 0) && (
             <section className="nutri-platform-surface-soft rounded-lg border border-nutri-light-grey px-4 py-3 text-sm">
               {errors.submit ? <p className="text-rose-700">{errors.submit}</p> : null}

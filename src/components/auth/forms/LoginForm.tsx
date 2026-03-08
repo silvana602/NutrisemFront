@@ -15,6 +15,7 @@ import {
   writeRememberedCredentials,
 } from "@/lib/auth/sessionStorageAdapter";
 import { resolveDashboardPathByRole } from "@/lib/auth/roleRouting";
+import { handleFormArrowNavigation } from "@/lib/forms/arrowFieldNavigation";
 import { useAuthStore } from "@/store/useAuthStore";
 
 export function LoginForm() {
@@ -97,7 +98,12 @@ export function LoginForm() {
   }
 
   return (
-    <form noValidate onSubmit={handleSubmit} className="space-y-6">
+    <form
+      noValidate
+      onSubmit={handleSubmit}
+      onKeyDown={handleFormArrowNavigation}
+      className="space-y-6"
+    >
       <div>
         <label
           htmlFor="login-ci"
