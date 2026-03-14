@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { db, seedOnce } from "@/mocks/db";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -20,6 +20,7 @@ export default function PatientDiagnosisPage() {
   const [selectedDiagnosisId, setSelectedDiagnosisId] = useState<string | null>(null);
   const [expandedDiagnosisId, setExpandedDiagnosisId] = useState<string | null>(null);
   const [downloadingDiagnosisId, setDownloadingDiagnosisId] = useState<string | null>(null);
+  const summaryRef = useRef<HTMLDivElement | null>(null);
 
   const viewModel = useMemo(() => {
     if (!user) return null;
@@ -87,6 +88,13 @@ export default function PatientDiagnosisPage() {
     }
   };
 
+  const handleViewSummary = (diagnosisId: string) => {
+    setSelectedDiagnosisId(diagnosisId);
+    window.requestAnimationFrame(() => {
+      summaryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
+
   return (
     <div className="nutri-platform-page px-1 py-1 sm:px-2">
       <PatientDiagnosisHero firstName={user.firstName} />
@@ -99,17 +107,19 @@ export default function PatientDiagnosisPage() {
             rows={viewModel.rows}
             selectedDiagnosisId={selectedDiagnosisId}
             downloadingDiagnosisId={downloadingDiagnosisId}
-            onViewSummary={setSelectedDiagnosisId}
+            onViewSummary={handleViewSummary}
             onDownloadPdf={handleDownloadReport}
           />
 
           {selectedRow ? (
-            <PatientDiagnosisSummaryCard
-              row={selectedRow}
-              isDownloading={downloadingDiagnosisId === selectedRow.diagnosisId}
-              onDownloadReport={() => handleDownloadReport(selectedRow.diagnosisId)}
-              onExpandChart={() => setExpandedDiagnosisId(selectedRow.diagnosisId)}
-            />
+            <div ref={summaryRef}>
+              <PatientDiagnosisSummaryCard
+                row={selectedRow}
+                isDownloading={downloadingDiagnosisId === selectedRow.diagnosisId}
+                onDownloadReport={() => handleDownloadReport(selectedRow.diagnosisId)}
+                onExpandChart={() => setExpandedDiagnosisId(selectedRow.diagnosisId)}
+              />
+            </div>
           ) : null}
         </>
       )}

@@ -18,6 +18,7 @@ export type PatientDiagnosisHistoryRow = {
   consultationNumber: string;
   dateKey: string;
   dateLabel: string;
+  consultationLocation: string;
   reason: string;
   nutritionalStatus: string;
   statusTone: PatientDiagnosisStatusTone;

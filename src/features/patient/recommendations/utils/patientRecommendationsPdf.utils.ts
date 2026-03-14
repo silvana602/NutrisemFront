@@ -257,7 +257,7 @@ function buildPatientRecommendationsReportHtml(params: {
         <p class="meta">
           Paciente: ${escapeHtml(patient.patientName)} | Fecha de consulta: ${escapeHtml(
             patient.dateLabel
-          )}
+          )} | Lugar de consulta: ${escapeHtml(patient.consultationLocation)}
         </p>
         <p class="meta">Estado nutricional: ${escapeHtml(patient.nutritionalStatus)}</p>
 

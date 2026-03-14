@@ -9,6 +9,7 @@ import type {
   Recommendation,
   User,
 } from "@/types";
+import { formatResidenceLocation } from "@/types";
 
 import type { PatientDiagnosisHistoryRow, PatientDiagnosisViewModel } from "../types";
 import {
@@ -121,6 +122,16 @@ export function buildPatientDiagnosisViewModel(
         consultationNumber,
         dateKey: formatDateKey(consultation.date),
         dateLabel: formatDate(consultation.date),
+        consultationLocation: formatResidenceLocation(
+          consultation.location ??
+            (patient.residenceAddress
+              ? {
+                  department: patient.residenceAddress.department,
+                  province: patient.residenceAddress.province,
+                  municipality: patient.residenceAddress.municipality,
+                }
+              : null)
+        ),
         reason: buildQuickReason(
           clinicalRecord?.observations ?? diagnosis.diagnosisDetails,
           "Control nutricional"

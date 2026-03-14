@@ -245,7 +245,7 @@ function buildPatientDiagnosisReportHtml(params: BuildPatientDiagnosisReportHtml
         <p class="meta">
           Médico: ${escapeHtml(row.clinicianName)} | Fecha de consulta: ${escapeHtml(
             row.dateLabel
-          )}
+          )} | Lugar de consulta: ${escapeHtml(row.consultationLocation)}
         </p>
 
         <section class="report-section">

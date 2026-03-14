@@ -14,6 +14,7 @@ export type RecommendedFoodRow = {
 export type PatientRecommendationViewModel = {
   patientName: string;
   dateLabel: string;
+  consultationLocation: string;
   nutritionalStatus: string;
   medicalRecommendation: string;
   dietaryRecommendation: string;

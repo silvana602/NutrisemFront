@@ -7,6 +7,7 @@ import type {
   RecommendationFood,
   User,
 } from "@/types";
+import { formatResidenceLocation } from "@/types";
 import {
   buildRestrictedFoodGroupsByNutritionalStatus,
   type RestrictedFoodItem,
@@ -91,6 +92,16 @@ export function buildPatientRecommendationViewModel(
       ? `${patientUser.firstName} ${patientUser.lastName}`
       : `${patient.firstName} ${patient.lastName}`,
     dateLabel: formatDate(selectedConsultation?.date ?? null),
+    consultationLocation: formatResidenceLocation(
+      selectedConsultation?.location ??
+        (patient.residenceAddress
+          ? {
+              department: patient.residenceAddress.department,
+              province: patient.residenceAddress.province,
+              municipality: patient.residenceAddress.municipality,
+            }
+          : null)
+    ),
     nutritionalStatus,
     medicalRecommendation:
       selectedRecommendation?.medicalRecommendation ||
