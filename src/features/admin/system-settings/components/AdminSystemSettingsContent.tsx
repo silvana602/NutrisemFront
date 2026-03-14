@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Heading } from "@/components/atoms/Heading";
+import { TextInput } from "@/components/atoms/TextInput";
 import { Button } from "@/components/ui/Button";
 import AlertDialog from "@/components/ui/AlertDialog";
 import { db, seedOnce } from "@/mocks/db";
@@ -177,6 +178,33 @@ export default function AdminSystemSettingsContent() {
         anchors={draft.omsPercentileAnchors}
         onUpdateAnchor={updateOmsAnchor}
       />
+
+      <section className="nutri-platform-surface p-4 sm:p-5">
+        <h2 className="text-lg font-semibold text-nutri-primary">Ubicación y mercado de alimentos</h2>
+        <p className="mt-1 text-sm text-nutri-dark-grey/85">
+          Define provincias grandes donde se asume mayor disponibilidad de alimentos (supermercados).
+          En esas provincias no se filtra el vademécum por ubicación.
+        </p>
+
+        <div className="mt-4 max-w-3xl">
+          <label className="nutri-label" htmlFor="settings-large-provinces">
+            Provincias grandes (separadas por coma)
+          </label>
+          <TextInput
+            id="settings-large-provinces"
+            value={draft.largeMarketProvinces.join(", ")}
+            onChange={(event) => {
+              const raw = event.target.value;
+              const values = raw
+                .split(",")
+                .map((value) => value.trim())
+                .filter(Boolean);
+              setDraft((current) => ({ ...current, largeMarketProvinces: values }));
+            }}
+            placeholder='Ej: Murillo, Cercado, Andrés Ibáñez'
+          />
+        </div>
+      </section>
 
       <FoodCatalogSection
         items={draft.foodCatalog}

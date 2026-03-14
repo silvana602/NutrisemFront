@@ -29,8 +29,17 @@ export default function PatientRecommendationsPage() {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   if (!user) return null;
 
-  const configuredFoods = getConfiguredRecommendedFoods(db.foods);
-  const configuredRestrictedItems = getConfiguredRestrictedFoodItems(db.foods);
+  const patient = db.patients.find((item) => item.userId === user.userId) ?? null;
+  const location = patient?.residenceAddress
+    ? {
+        department: patient.residenceAddress.department,
+        province: patient.residenceAddress.province,
+        municipality: patient.residenceAddress.municipality,
+      }
+    : null;
+
+  const configuredFoods = getConfiguredRecommendedFoods(db.foods, location);
+  const configuredRestrictedItems = getConfiguredRestrictedFoodItems(db.foods, location);
 
   const viewModel = buildPatientRecommendationViewModel({
     userId: user.userId,

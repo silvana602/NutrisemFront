@@ -117,6 +117,14 @@ export function seedOnce() {
     identityNumber: "0000",
     phone: "000000",
     address: "Main Office",
+    residenceAddress: {
+      department: "La Paz",
+      province: "Murillo",
+      municipality: "La Paz",
+      locality: "Centro",
+      streetType: "Av.",
+      doorNumber: "S/N",
+    },
     password: "admin",
   };
 
@@ -128,6 +136,14 @@ export function seedOnce() {
     identityNumber: "1234567",
     phone: "7777777",
     address: "La Paz",
+    residenceAddress: {
+      department: "La Paz",
+      province: "Murillo",
+      municipality: "La Paz",
+      locality: "Miraflores",
+      streetType: "Av.",
+      doorNumber: "456",
+    },
     password: "clinician",
   };
 
@@ -139,6 +155,14 @@ export function seedOnce() {
     identityNumber: "9988776",
     phone: "68000000",
     address: "El Alto",
+    residenceAddress: {
+      department: "La Paz",
+      province: "Murillo",
+      municipality: "El Alto",
+      locality: "Villa Adela",
+      streetType: "Calle",
+      doorNumber: "12",
+    },
     password: "patient",
   };
 
@@ -168,6 +192,7 @@ export function seedOnce() {
     profession: "Nutricionista",
     specialty: "Pediatra",
     residence: "La Paz",
+    residenceAddress: userClinician.residenceAddress,
     institution: "Hospital del Niño",
   };
   db.clinicians.push(clinician1);
@@ -182,6 +207,7 @@ export function seedOnce() {
     birthDate: new Date("2023-05-12"),
     gender: "female",
     address: "El Alto",
+    residenceAddress: userPatient.residenceAddress,
   };
   db.patients.push(patient1);
 
@@ -194,6 +220,14 @@ export function seedOnce() {
     identityNumber: "5554443",
     phone: "69000000",
     address: "El Alto",
+    residenceAddress: {
+      department: "La Paz",
+      province: "Murillo",
+      municipality: "El Alto",
+      locality: "Ciudad Satélite",
+      streetType: "Av.",
+      doorNumber: "S/N",
+    },
     relationship: "mother",
     password: "guardian123",
   };
@@ -213,6 +247,13 @@ export function seedOnce() {
     clinicianId: clinician1.clinicianId,
     date: new Date("2025-01-15"),
     time: "09:00:00",
+    location: patient1.residenceAddress
+      ? {
+          department: patient1.residenceAddress.department,
+          province: patient1.residenceAddress.province,
+          municipality: patient1.residenceAddress.municipality,
+        }
+      : undefined,
   };
   db.consultations.push(consultation1);
 

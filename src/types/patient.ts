@@ -1,3 +1,5 @@
+import type { ResidenceAddress } from "./residence";
+
 export type Gender = "male" | "female";
 
 export type Patient = {
@@ -9,4 +11,5 @@ export type Patient = {
   birthDate: Date;
   gender: Gender;
   address: string;
+  residenceAddress?: ResidenceAddress;
 };

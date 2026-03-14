@@ -1,3 +1,5 @@
+import type { ResidenceAddress } from "./residence";
+
 export enum UserRole {
   admin = "admin",
   clinician = "clinician",
@@ -12,6 +14,7 @@ export type User = {
   email?: string;
   phone: string;
   address: string;
+  residenceAddress?: ResidenceAddress;
   profilePhoto?: string | null;
   role: UserRole;
   password: string;

@@ -8,6 +8,9 @@ import { handleFormArrowNavigation } from "@/lib/forms/arrowFieldNavigation";
 import { db, seedOnce } from "@/mocks/db";
 import { uid } from "@/mocks/utils";
 import { buildAdminDoctorProfilePath } from "@/lib/routes/admin";
+import type { ResidenceAddress } from "@/types";
+import { formatResidenceAddress, normalizeResidenceAddress } from "@/types";
+import { ResidenceAddressFields } from "@/components/molecules/ResidenceAddressFields";
 import type {
   DoctorProfileFormData,
   DoctorProfileFormErrors,
@@ -95,6 +98,12 @@ export function AdminDoctorFormContent({
     }
     return createEmptyDoctorProfileFormData();
   });
+  const [doctorResidenceAddress, setDoctorResidenceAddress] = useState<ResidenceAddress>(() => {
+    if (mode === "edit" && currentDoctor?.clinician.residenceAddress) {
+      return normalizeResidenceAddress(currentDoctor.clinician.residenceAddress);
+    }
+    return normalizeResidenceAddress(null);
+  });
   const [errors, setErrors] = useState<DoctorProfileFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -111,11 +120,6 @@ export function AdminDoctorFormContent({
     const values = [...DEFAULT_SPECIALTY_OPTIONS, ...db.clinicians.map((item) => item.specialty)];
     return Array.from(new Set(values.map((value) => sanitizeDoctorText(value)).filter(Boolean)))
       .sort((first, second) => first.localeCompare(second, "es"));
-  }, []);
-
-  const residenceOptions = useMemo(() => {
-    const values = db.clinicians.map((item) => sanitizeDoctorText(item.residence)).filter(Boolean);
-    return Array.from(new Set(values)).sort((first, second) => first.localeCompare(second, "es"));
   }, []);
 
   const institutionOptions = useMemo(() => {
@@ -147,6 +151,14 @@ export function AdminDoctorFormContent({
   ) => {
     setForm((current) => ({ ...current, [key]: value }));
     setErrors((current) => ({ ...current, [key]: undefined, submit: undefined }));
+  };
+
+  const handleResidenceAddressChange = (next: ResidenceAddress) => {
+    const normalized = normalizeResidenceAddress(next);
+    setDoctorResidenceAddress(normalized);
+    // Mantener compatibilidad con validaciones existentes que trabajan con `residencia` (string).
+    setForm((current) => ({ ...current, residencia: formatResidenceAddress(normalized) }));
+    setErrors((current) => ({ ...current, residencia: undefined, submit: undefined }));
   };
 
   const normalizeField = (key: keyof DoctorProfileFormData) => {
@@ -181,8 +193,13 @@ export function AdminDoctorFormContent({
       return;
     }
 
+    const formWithResidence = {
+      ...form,
+      residencia: formatResidenceAddress(doctorResidenceAddress),
+    } satisfies DoctorProfileFormData;
+
     const nextErrors = validateDoctorProfileForm({
-      form,
+      form: formWithResidence,
       users: db.users,
       clinicians: db.clinicians,
       currentUserId: currentDoctor?.user.userId ?? null,
@@ -203,15 +220,17 @@ export function AdminDoctorFormContent({
         const temporaryPassword = buildDoctorTemporaryPassword(form.ci);
 
         const nextUser = buildDoctorUserFromForm({
-          form,
+          form: formWithResidence,
           userId,
           password: temporaryPassword,
         });
         const nextClinician = buildDoctorClinicianFromForm({
-          form,
+          form: formWithResidence,
           clinicianId: nextClinicianId,
           userId,
         });
+        nextUser.residenceAddress = doctorResidenceAddress;
+        nextClinician.residenceAddress = doctorResidenceAddress;
 
         db.users.push(nextUser);
         db.clinicians.push(nextClinician);
@@ -236,15 +255,17 @@ export function AdminDoctorFormContent({
         buildDoctorTemporaryPassword(form.ci);
 
       const updatedUser = buildDoctorUserFromForm({
-        form,
+        form: formWithResidence,
         userId: currentDoctor.user.userId,
         password: currentPassword,
       });
       const updatedClinician = buildDoctorClinicianFromForm({
-        form,
+        form: formWithResidence,
         clinicianId: currentDoctor.clinician.clinicianId,
         userId: currentDoctor.user.userId,
       });
+      updatedUser.residenceAddress = doctorResidenceAddress;
+      updatedClinician.residenceAddress = doctorResidenceAddress;
 
       Object.assign(currentDoctor.user, updatedUser);
       Object.assign(currentDoctor.clinician, updatedClinician);
@@ -482,26 +503,15 @@ export function AdminDoctorFormContent({
                 )}
               </div>
 
-              <div>
-                <label className="nutri-label" htmlFor="doctor-residence">
-                  Residencia
-                </label>
-                <input
-                  id="doctor-residence"
-                  className="nutri-input"
-                  value={form.residencia}
-                  onChange={(event) => setField("residencia", event.target.value)}
-                  onBlur={() => normalizeField("residencia")}
-                  placeholder="Ciudad o región"
-                  list="doctor-residence-options"
+              <div className="sm:col-span-2">
+                <ResidenceAddressFields
+                  idPrefix="doctor-residence"
+                  label="Vivienda del médico"
+                  value={doctorResidenceAddress}
+                  onChange={handleResidenceAddressChange}
                 />
-                <datalist id="doctor-residence-options">
-                  {residenceOptions.map((option) => (
-                    <option key={option} value={option} />
-                  ))}
-                </datalist>
                 {errors.residencia && (
-                  <p className="mt-1 text-xs text-rose-700">{errors.residencia}</p>
+                  <p className="mt-2 text-xs text-rose-700">{errors.residencia}</p>
                 )}
               </div>
 

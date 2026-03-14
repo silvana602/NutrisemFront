@@ -15,6 +15,13 @@ import type { Gender } from "@/types/patient";
 import type { User } from "@/types/user";
 import type { Patient } from "@/types/patient";
 import type { Guardian } from "@/types/guardian";
+import type { ResidenceAddress } from "@/types";
+import {
+  formatResidenceAddress,
+  normalizeResidenceAddress,
+  normalizeResidenceText,
+} from "@/types";
+import { ResidenceAddressFields } from "@/components/molecules/ResidenceAddressFields";
 
 seedOnce();
 
@@ -24,17 +31,23 @@ type FormData = {
   patientIdentityNumber: string;
   patientBirthDate: string;
   patientGender: "" | Gender;
-  patientAddress: string;
+  patientResidence: ResidenceAddress;
   guardianFirstName: string;
   guardianLastName: string;
   guardianIdentityNumber: string;
   guardianRelationship: string;
   guardianPhone: string;
-  guardianAddress: string;
+  guardianResidence: ResidenceAddress;
   confirmTutorData: boolean;
 };
 
-type FormErrors = Partial<Record<keyof FormData, string>> & {
+type ResidenceErrors = Partial<Record<keyof ResidenceAddress, string>>;
+
+type FormErrors = Partial<
+  Omit<Record<keyof FormData, string>, "patientResidence" | "guardianResidence">
+> & {
+  patientResidence?: ResidenceErrors;
+  guardianResidence?: ResidenceErrors;
   submit?: string;
 };
 
@@ -51,18 +64,18 @@ const INITIAL_FORM: FormData = {
   patientIdentityNumber: "",
   patientBirthDate: "",
   patientGender: "",
-  patientAddress: "",
+  patientResidence: normalizeResidenceAddress(null),
   guardianFirstName: "",
   guardianLastName: "",
   guardianIdentityNumber: "",
   guardianRelationship: "mother",
   guardianPhone: "",
-  guardianAddress: "",
+  guardianResidence: normalizeResidenceAddress(null),
   confirmTutorData: false,
 };
 
 function sanitizeText(value: string): string {
-  return value.trim().replace(/\s+/g, " ");
+  return normalizeResidenceText(value);
 }
 
 function buildTemporaryPassword(source: string): string {
@@ -84,19 +97,32 @@ function validateForm(form: FormData): FormErrors {
   const patientFirstName = sanitizeText(form.patientFirstName);
   const patientLastName = sanitizeText(form.patientLastName);
   const patientIdentityNumber = sanitizeText(form.patientIdentityNumber);
-  const patientAddress = sanitizeText(form.patientAddress);
+  const patientResidence = normalizeResidenceAddress(form.patientResidence);
   const guardianFirstName = sanitizeText(form.guardianFirstName);
   const guardianLastName = sanitizeText(form.guardianLastName);
   const guardianIdentityNumber = sanitizeText(form.guardianIdentityNumber);
   const guardianPhone = sanitizeText(form.guardianPhone);
-  const guardianAddress = sanitizeText(form.guardianAddress);
+  const guardianResidence = normalizeResidenceAddress(form.guardianResidence);
 
   if (!patientFirstName) errors.patientFirstName = "Ingresa el nombre del paciente.";
   if (!patientLastName) errors.patientLastName = "Ingresa el apellido del paciente.";
   if (!patientIdentityNumber) {
     errors.patientIdentityNumber = "Ingresa CI o número de identificación del paciente.";
   }
-  if (!patientAddress) errors.patientAddress = "Ingresa la dirección del paciente.";
+  if (!patientResidence.department || !patientResidence.province || !patientResidence.municipality) {
+    errors.patientResidence = {
+      ...(errors.patientResidence ?? {}),
+      department: patientResidence.department ? undefined : "Ingresa el departamento.",
+      province: patientResidence.province ? undefined : "Ingresa la provincia.",
+      municipality: patientResidence.municipality ? undefined : "Ingresa el municipio.",
+    };
+  }
+  if (!patientResidence.locality) {
+    errors.patientResidence = {
+      ...(errors.patientResidence ?? {}),
+      locality: "Ingresa el lugar de residencia (comunidad/pueblo/ciudad).",
+    };
+  }
   if (!form.patientGender) errors.patientGender = "Selecciona el sexo biológico del paciente.";
 
   const birthDate = parseBirthDate(form.patientBirthDate);
@@ -119,7 +145,20 @@ function validateForm(form: FormData): FormErrors {
   if (guardianPhone && guardianPhone.replace(/\D/g, "").length < 7) {
     errors.guardianPhone = "Ingresa un teléfono valido (mínimo 7 dígitos).";
   }
-  if (!guardianAddress) errors.guardianAddress = "Ingresa la dirección del guardián.";
+  if (!guardianResidence.department || !guardianResidence.province || !guardianResidence.municipality) {
+    errors.guardianResidence = {
+      ...(errors.guardianResidence ?? {}),
+      department: guardianResidence.department ? undefined : "Ingresa el departamento.",
+      province: guardianResidence.province ? undefined : "Ingresa la provincia.",
+      municipality: guardianResidence.municipality ? undefined : "Ingresa el municipio.",
+    };
+  }
+  if (!guardianResidence.locality) {
+    errors.guardianResidence = {
+      ...(errors.guardianResidence ?? {}),
+      locality: "Ingresa el lugar de residencia (comunidad/pueblo/ciudad).",
+    };
+  }
 
   if (!form.confirmTutorData) {
     errors.confirmTutorData =
@@ -210,7 +249,8 @@ export const NewPatientRegistrationContent: React.FC = () => {
         lastName: sanitizeText(form.patientLastName),
         identityNumber: patientIdentity,
         phone: guardianPhone,
-        address: sanitizeText(form.patientAddress),
+        address: formatResidenceAddress(form.patientResidence),
+        residenceAddress: normalizeResidenceAddress(form.patientResidence),
         password: patientPassword,
       };
 
@@ -222,7 +262,8 @@ export const NewPatientRegistrationContent: React.FC = () => {
         identityNumber: patientIdentity,
         birthDate,
         gender: patientGender,
-        address: sanitizeText(form.patientAddress),
+        address: formatResidenceAddress(form.patientResidence),
+        residenceAddress: normalizeResidenceAddress(form.patientResidence),
       };
 
       const guardian: Guardian = {
@@ -232,7 +273,8 @@ export const NewPatientRegistrationContent: React.FC = () => {
         lastName: sanitizeText(form.guardianLastName),
         identityNumber: guardianIdentity,
         phone: guardianPhone,
-        address: sanitizeText(form.guardianAddress),
+        address: formatResidenceAddress(form.guardianResidence),
+        residenceAddress: normalizeResidenceAddress(form.guardianResidence),
         relationship: form.guardianRelationship,
         password: guardianPassword,
       };
@@ -363,20 +405,14 @@ export const NewPatientRegistrationContent: React.FC = () => {
               )}
             </div>
 
-            <div>
-              <label className="nutri-label" htmlFor="patient-address">
-                Dirección del paciente
-              </label>
-              <input
-                id="patient-address"
-                className="nutri-input"
-                value={form.patientAddress}
-                onChange={(event) => setField("patientAddress", event.target.value)}
-                placeholder="Barrio, zona, referencia"
+            <div className="sm:col-span-2">
+              <ResidenceAddressFields
+                idPrefix="patient-residence"
+                label="Vivienda del paciente"
+                value={form.patientResidence}
+                onChange={(next) => setField("patientResidence", next)}
+                errors={errors.patientResidence}
               />
-              {errors.patientAddress && (
-                <p className="mt-1 text-xs text-rose-700">{errors.patientAddress}</p>
-              )}
             </div>
           </div>
         </section>
@@ -467,20 +503,14 @@ export const NewPatientRegistrationContent: React.FC = () => {
               )}
             </div>
 
-            <div>
-              <label className="nutri-label" htmlFor="guardian-address">
-                Dirección del guardián
-              </label>
-              <input
-                id="guardian-address"
-                className="nutri-input"
-                value={form.guardianAddress}
-                onChange={(event) => setField("guardianAddress", event.target.value)}
-                placeholder="Zona, calle y referencia"
+            <div className="sm:col-span-2">
+              <ResidenceAddressFields
+                idPrefix="guardian-residence"
+                label="Vivienda del guardián"
+                value={form.guardianResidence}
+                onChange={(next) => setField("guardianResidence", next)}
+                errors={errors.guardianResidence}
               />
-              {errors.guardianAddress && (
-                <p className="mt-1 text-xs text-rose-700">{errors.guardianAddress}</p>
-              )}
             </div>
           </div>
 

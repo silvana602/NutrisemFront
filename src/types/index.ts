@@ -13,6 +13,7 @@ export * from "./diagnosis";
 export * from "./guardian";
 export * from "./history";
 export * from "./patientProgress";
+export * from "./residence";
 export * from "./recomendation";
 export * from "./report";
 export * from "./food";

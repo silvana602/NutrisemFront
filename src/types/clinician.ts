@@ -1,3 +1,5 @@
+import type { ResidenceAddress } from "./residence";
+
 export type Clinician = {
   clinicianId: string;
   userId: string;
@@ -5,5 +7,6 @@ export type Clinician = {
   profession: string;
   specialty: string;
   residence: string;
+  residenceAddress?: ResidenceAddress;
   institution: string;
 };

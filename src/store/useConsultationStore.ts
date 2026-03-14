@@ -20,6 +20,7 @@ import type {
   ClinicalData,
   ClinicalInformantType,
   ClinicalPrematurityOption,
+  ResidenceLocation,
 } from "@/types";
 
 seedOnce();
@@ -94,6 +95,7 @@ export type HistoricalFormState = Omit<
 export type SavedConsultationSnapshot = {
   savedAt: string;
   patientId: string;
+  location?: ResidenceLocation;
   anthropometric: AnthropometricFormState;
   clinical: ClinicalFormState;
   historical: HistoricalFormState;
@@ -256,9 +258,20 @@ export const useConsultationStore = create<ConsultationStore>()(
 
         if (!state.selectedPatientId) return null;
 
+        const patient =
+          db.patients.find((item) => item.patientId === state.selectedPatientId) ?? null;
+        const location: ResidenceLocation | undefined = patient?.residenceAddress
+          ? {
+              department: patient.residenceAddress.department,
+              province: patient.residenceAddress.province,
+              municipality: patient.residenceAddress.municipality,
+            }
+          : undefined;
+
         const snapshot: SavedConsultationSnapshot = {
           savedAt: new Date().toISOString(),
           patientId: state.selectedPatientId,
+          location,
           anthropometric: { ...state.anthropometric },
           clinical: {
             ...state.clinical,

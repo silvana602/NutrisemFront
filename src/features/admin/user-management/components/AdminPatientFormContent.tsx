@@ -8,6 +8,9 @@ import { handleFormArrowNavigation } from "@/lib/forms/arrowFieldNavigation";
 import { buildAdminPatientProfilePath } from "@/lib/routes/admin";
 import { db, seedOnce } from "@/mocks/db";
 import { uid } from "@/mocks/utils";
+import type { ResidenceAddress } from "@/types";
+import { formatResidenceAddress, normalizeResidenceAddress } from "@/types";
+import { ResidenceAddressFields } from "@/components/molecules/ResidenceAddressFields";
 import type {
   PatientProfileFormData,
   PatientProfileFormErrors,
@@ -86,6 +89,21 @@ export function AdminPatientFormContent({
       currentPatient.guardian
     );
   });
+  const [patientResidenceAddress, setPatientResidenceAddress] = useState<ResidenceAddress>(() => {
+    if (currentPatient?.patient.residenceAddress) {
+      return normalizeResidenceAddress(currentPatient.patient.residenceAddress);
+    }
+    if (currentPatient?.user.residenceAddress) {
+      return normalizeResidenceAddress(currentPatient.user.residenceAddress);
+    }
+    return normalizeResidenceAddress(null);
+  });
+  const [tutorResidenceAddress, setTutorResidenceAddress] = useState<ResidenceAddress>(() => {
+    if (currentPatient?.guardian?.residenceAddress) {
+      return normalizeResidenceAddress(currentPatient.guardian.residenceAddress);
+    }
+    return normalizeResidenceAddress(null);
+  });
   const [errors, setErrors] = useState<PatientProfileFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -108,6 +126,20 @@ export function AdminPatientFormContent({
   ) => {
     setForm((current) => ({ ...current, [key]: value }));
     setErrors((current) => ({ ...current, [key]: undefined, submit: undefined }));
+  };
+
+  const handlePatientResidenceChange = (next: ResidenceAddress) => {
+    const normalized = normalizeResidenceAddress(next);
+    setPatientResidenceAddress(normalized);
+    setForm((current) => ({ ...current, direccion: formatResidenceAddress(normalized) }));
+    setErrors((current) => ({ ...current, direccion: undefined, submit: undefined }));
+  };
+
+  const handleTutorResidenceChange = (next: ResidenceAddress) => {
+    const normalized = normalizeResidenceAddress(next);
+    setTutorResidenceAddress(normalized);
+    setForm((current) => ({ ...current, tutorDireccion: formatResidenceAddress(normalized) }));
+    setErrors((current) => ({ ...current, tutorDireccion: undefined, submit: undefined }));
   };
 
   const normalizeIdentityField = (key: "ci" | "tutorCi") => {
@@ -138,8 +170,14 @@ export function AdminPatientFormContent({
       return;
     }
 
+    const formWithResidence = {
+      ...form,
+      direccion: formatResidenceAddress(patientResidenceAddress),
+      tutorDireccion: formatResidenceAddress(tutorResidenceAddress),
+    } satisfies PatientProfileFormData;
+
     const nextErrors = validatePatientProfileForm({
-      form,
+      form: formWithResidence,
       users: db.users,
       guardians: db.guardians,
       currentUserId: currentPatient.user.userId,
@@ -151,13 +189,13 @@ export function AdminPatientFormContent({
       return;
     }
 
-    const birthDate = parsePatientBirthDate(form.fechaNacimiento);
+      const birthDate = parsePatientBirthDate(formWithResidence.fechaNacimiento);
     if (!birthDate) {
       setErrors({ fechaNacimiento: "Ingresa una fecha de nacimiento válida." });
       return;
     }
 
-    const gender = form.sexoBiologico;
+      const gender = formWithResidence.sexoBiologico;
     if (gender !== "female" && gender !== "male") {
       setErrors({ sexoBiologico: "Selecciona el sexo biológico del paciente." });
       return;
@@ -169,21 +207,23 @@ export function AdminPatientFormContent({
       const currentPassword =
         db.passwords.get(currentPatient.user.userId) ??
         currentPatient.user.password ??
-        buildPatientTemporaryPassword(form.ci);
+        buildPatientTemporaryPassword(formWithResidence.ci);
 
       const updatedUser = buildPatientUserFromForm({
-        form,
+        form: formWithResidence,
         userId: currentPatient.user.userId,
         password: currentPassword,
       });
+      updatedUser.residenceAddress = patientResidenceAddress;
 
       const updatedPatient = buildPatientEntityFromForm({
-        form,
+        form: formWithResidence,
         patientId: currentPatient.patient.patientId,
         userId: currentPatient.user.userId,
         birthDate,
         gender,
       });
+      updatedPatient.residenceAddress = patientResidenceAddress;
 
       Object.assign(currentPatient.user, updatedUser);
       Object.assign(currentPatient.patient, updatedPatient);
@@ -191,14 +231,17 @@ export function AdminPatientFormContent({
 
       const guardianPassword =
         currentPatient.guardian?.password ??
-        buildPatientTemporaryPassword(form.tutorCi || form.tutorTelefono);
+        buildPatientTemporaryPassword(
+          formWithResidence.tutorCi || formWithResidence.tutorTelefono
+        );
 
       const updatedGuardian = buildGuardianEntityFromForm({
-        form,
+        form: formWithResidence,
         guardianId: currentPatient.guardian?.guardianId ?? uid("gua"),
         patientId: currentPatient.patient.patientId,
         password: guardianPassword,
       });
+      updatedGuardian.residenceAddress = tutorResidenceAddress;
 
       if (currentPatient.guardian) {
         Object.assign(currentPatient.guardian, updatedGuardian);
@@ -370,20 +413,14 @@ export function AdminPatientFormContent({
               </div>
 
               <div className="sm:col-span-2">
-                <label className="nutri-label" htmlFor="admin-patient-address">
-                  Dirección del paciente
-                </label>
-                <input
-                  id="admin-patient-address"
-                  className="nutri-input"
-                  value={form.direccion}
-                  onChange={(event) => setField("direccion", event.target.value)}
-                  onBlur={() => normalizeTextField("direccion")}
-                  placeholder="Zona, calle y referencia"
-                  autoComplete="street-address"
+                <ResidenceAddressFields
+                  idPrefix="admin-patient-residence"
+                  label="Vivienda del paciente"
+                  value={patientResidenceAddress}
+                  onChange={handlePatientResidenceChange}
                 />
                 {errors.direccion ? (
-                  <p className="mt-1 text-xs text-rose-700">{errors.direccion}</p>
+                  <p className="mt-2 text-xs text-rose-700">{errors.direccion}</p>
                 ) : null}
               </div>
             </div>
@@ -491,20 +528,14 @@ export function AdminPatientFormContent({
               </div>
 
               <div className="sm:col-span-2">
-                <label className="nutri-label" htmlFor="admin-tutor-address">
-                  Dirección del tutor
-                </label>
-                <input
-                  id="admin-tutor-address"
-                  className="nutri-input"
-                  value={form.tutorDireccion}
-                  onChange={(event) => setField("tutorDireccion", event.target.value)}
-                  onBlur={() => normalizeTextField("tutorDireccion")}
-                  placeholder="Zona, calle y referencia"
-                  autoComplete="street-address"
+                <ResidenceAddressFields
+                  idPrefix="admin-tutor-residence"
+                  label="Vivienda del tutor"
+                  value={tutorResidenceAddress}
+                  onChange={handleTutorResidenceChange}
                 />
                 {errors.tutorDireccion ? (
-                  <p className="mt-1 text-xs text-rose-700">{errors.tutorDireccion}</p>
+                  <p className="mt-2 text-xs text-rose-700">{errors.tutorDireccion}</p>
                 ) : null}
               </div>
             </div>

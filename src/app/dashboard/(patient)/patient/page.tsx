@@ -26,9 +26,15 @@ seedOnce();
 export default function PatientDashboardPage() {
   const user = useAuthStore((state) => state.user);
   if (!user) return null;
-  const configuredFoods = getConfiguredRecommendedFoods(db.foods);
-
   const patient = db.patients.find((item) => item.userId === user.userId) ?? null;
+  const location = patient?.residenceAddress
+    ? {
+        department: patient.residenceAddress.department,
+        province: patient.residenceAddress.province,
+        municipality: patient.residenceAddress.municipality,
+      }
+    : null;
+  const configuredFoods = getConfiguredRecommendedFoods(db.foods, location);
   const snapshots = patient
     ? buildConsultationSnapshots(
         patient.patientId,

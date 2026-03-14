@@ -1,4 +1,4 @@
-import type { Food } from "@/types";
+import type { Food, ResidenceLocation } from "@/types";
 import type {
   MedicalFoodCatalogItem,
   OmsPercentileAnchorSetting,
@@ -16,6 +16,46 @@ import {
 const SYSTEM_MEDICAL_SETTINGS_STORAGE_KEY = "nutrisem_system_medical_settings_v1";
 
 let runtimeSettingsCache: SystemMedicalSettings | null = null;
+
+function normalizeLocationText(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function isLargeMarketProvince(
+  settings: SystemMedicalSettings,
+  province: string | null | undefined
+) {
+  const normalized = normalizeLocationText(province ?? "");
+  if (!normalized) return false;
+  return settings.largeMarketProvinces.some(
+    (item) => normalizeLocationText(item) === normalized
+  );
+}
+
+function matchesLocation(
+  itemLocation: MedicalFoodCatalogItem["location"] | undefined,
+  location: Partial<ResidenceLocation> | null | undefined
+) {
+  if (!itemLocation) return true; // nacional
+  if (!location) return false;
+
+  const dep = normalizeLocationText(itemLocation.department ?? "");
+  const prov = normalizeLocationText(itemLocation.province ?? "");
+  const mun = normalizeLocationText(itemLocation.municipality ?? "");
+
+  const lDep = normalizeLocationText(location.department ?? "");
+  const lProv = normalizeLocationText(location.province ?? "");
+  const lMun = normalizeLocationText(location.municipality ?? "");
+
+  if (dep && dep !== lDep) return false;
+  if (prov && prov !== lProv) return false;
+  if (mun && mun !== lMun) return false;
+  return true;
+}
 
 function readStoredSettingsRaw(): Partial<SystemMedicalSettings> | null {
   if (typeof window === "undefined") return null;
@@ -98,16 +138,24 @@ export function getConfiguredFoodCatalog(
 }
 
 export function getConfiguredRestrictedFoodItems(
-  fallbackFoods: Food[]
+  fallbackFoods: Food[],
+  location?: Partial<ResidenceLocation> | null
 ): RestrictionItem[] {
-  const catalog = getConfiguredFoodCatalog(fallbackFoods);
+  const settings = readSystemMedicalSettings(fallbackFoods);
+  const catalog = isLargeMarketProvince(settings, location?.province)
+    ? settings.foodCatalog
+    : settings.foodCatalog.filter((item) => matchesLocation(item.location, location));
   return getRestrictedItemsFromCatalog(catalog);
 }
 
 export function getConfiguredRecommendedFoods(
-  fallbackFoods: Food[]
+  fallbackFoods: Food[],
+  location?: Partial<ResidenceLocation> | null
 ): Food[] {
-  const catalog = getConfiguredFoodCatalog(fallbackFoods);
+  const settings = readSystemMedicalSettings(fallbackFoods);
+  const catalog = isLargeMarketProvince(settings, location?.province)
+    ? settings.foodCatalog
+    : settings.foodCatalog.filter((item) => matchesLocation(item.location, location));
   return getRecommendedFoodsFromCatalog(catalog, fallbackFoods);
 }
 

@@ -35,6 +35,7 @@ import type {
   AntecedentFoodGroupId as HistoricalFoodGroupId,
   AntecedentMealSlotId as HistoricalMealSlotId,
   AntecedentRecallSlotId as HistoricalRecallSlotId,
+  ResidenceLocation,
 } from "@/types";
 
 seedOnce();
@@ -60,6 +61,7 @@ type DiagnosisResult = {
   dateValue: number;
   dateKey: string;
   dateLabel: string;
+  location?: ResidenceLocation;
   diagnosisDetails?: string;
   bmi?: number;
   zScore?: number;
@@ -185,6 +187,38 @@ type RecommendationFoodRow = {
   minerals: string;
 };
 
+type DiagnosisResultEdits = {
+  nutritionalStatus?: string;
+  diagnosisDetails?: string;
+  medicalText?: string;
+  dietaryText?: string;
+  foodRows?: RecommendationFoodRow[];
+  updatedAt: string;
+};
+
+const DIAGNOSIS_EDITS_STORAGE_KEY = "nutrisem_clinician_diagnosis_edits_v1";
+
+function readDiagnosisEditsFromStorage(): Record<string, DiagnosisResultEdits> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(DIAGNOSIS_EDITS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as Record<string, DiagnosisResultEdits>;
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function persistDiagnosisEditsToStorage(next: Record<string, DiagnosisResultEdits>) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(DIAGNOSIS_EDITS_STORAGE_KEY, JSON.stringify(next));
+  } catch (error) {
+    console.warn("No se pudo guardar la edición del diagnóstico:", error);
+  }
+}
+
 type AnthropometricMetricKey =
   | "weightKg"
   | "heightCm"
@@ -266,6 +300,14 @@ function formatValue(value: unknown): string {
   if (value === undefined || value === null || value === "") return "Sin dato";
   if (Array.isArray(value)) return value.length ? value.join(", ") : "Sin dato";
   return String(value);
+}
+
+function formatLocationLabel(location: ResidenceLocation | undefined) {
+  if (!location) return "Sin dato";
+  const parts = [location.department, location.province, location.municipality]
+    .map((part) => String(part ?? "").trim())
+    .filter(Boolean);
+  return parts.length ? parts.join(" / ") : "Sin dato";
 }
 
 function formatDateTime(isoDate?: string): string {
@@ -1456,6 +1498,43 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
     null
   );
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [diagnosisEditsByResultId, setDiagnosisEditsByResultId] = useState<
+    Record<string, DiagnosisResultEdits>
+  >(() => readDiagnosisEditsFromStorage());
+
+  const upsertDiagnosisEdit = (resultId: string, patch: Partial<DiagnosisResultEdits>) => {
+    setDiagnosisEditsByResultId((current) => {
+      const currentEdit = current[resultId];
+      const nextEdit: DiagnosisResultEdits = {
+        nutritionalStatus: patch.nutritionalStatus ?? currentEdit?.nutritionalStatus,
+        diagnosisDetails: patch.diagnosisDetails ?? currentEdit?.diagnosisDetails,
+        medicalText: patch.medicalText ?? currentEdit?.medicalText,
+        dietaryText: patch.dietaryText ?? currentEdit?.dietaryText,
+        foodRows: patch.foodRows ?? currentEdit?.foodRows,
+        updatedAt: new Date().toISOString(),
+      };
+
+      const next = { ...current, [resultId]: nextEdit };
+      persistDiagnosisEditsToStorage(next);
+      return next;
+    });
+  };
+
+  const [isEditingDiagnosis, setIsEditingDiagnosis] = useState(false);
+  const [diagnosisStatusDraft, setDiagnosisStatusDraft] = useState("");
+  const [diagnosisDetailsDraft, setDiagnosisDetailsDraft] = useState("");
+
+  const [isEditingRecommendations, setIsEditingRecommendations] = useState(false);
+  const [medicalTextDraft, setMedicalTextDraft] = useState("");
+  const [dietaryTextDraft, setDietaryTextDraft] = useState("");
+  const [foodRowsDraft, setFoodRowsDraft] = useState<RecommendationFoodRow[]>([]);
+  const [foodToAddId, setFoodToAddId] = useState("");
+
+  useEffect(() => {
+    setIsEditingDiagnosis(false);
+    setIsEditingRecommendations(false);
+    setFoodToAddId("");
+  }, [selectedResultId]);
 
   const diagnosisResults = useMemo(() => {
     const historicalRecords: DiagnosisResult[] = [];
@@ -1481,7 +1560,7 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
 
       const ageMonths = calculateAgeInMonths(resultPatient.birthDate, consultation.date);
 
-      historicalRecords.push({
+      const baseRecord: DiagnosisResult = {
         id: diagnosis.diagnosisId,
         source: "history",
         patientId: resultPatient.patientId,
@@ -1495,9 +1574,25 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
         dateValue: consultation.date.getTime(),
         dateKey: formatDateKey(consultation.date),
         dateLabel: consultation.date.toLocaleDateString("es-BO"),
+        location:
+          consultation.location ??
+          (resultPatient.residenceAddress
+            ? {
+                department: resultPatient.residenceAddress.department,
+                province: resultPatient.residenceAddress.province,
+                municipality: resultPatient.residenceAddress.municipality,
+              }
+            : undefined),
         diagnosisDetails: diagnosis.diagnosisDetails,
         bmi: diagnosis.bmi,
         zScore: diagnosis.zScorePercentile,
+      };
+
+      const recordEdit = diagnosisEditsByResultId[baseRecord.id];
+      historicalRecords.push({
+        ...baseRecord,
+        nutritionalStatus: recordEdit?.nutritionalStatus ?? baseRecord.nutritionalStatus,
+        diagnosisDetails: recordEdit?.diagnosisDetails ?? baseRecord.diagnosisDetails,
       });
     }
 
@@ -1519,7 +1614,7 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
       ? db.users.find((item) => item.userId === snapshotClinician.userId) ?? null
       : null;
 
-    const snapshotRecord: DiagnosisResult = {
+    const snapshotBase: DiagnosisResult = {
       id: `snapshot-${snapshot.savedAt}`,
       source: "last_consultation",
       patientId: snapshot.patientId,
@@ -1539,14 +1634,30 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
       dateValue: new Date(snapshot.savedAt).getTime(),
       dateKey: formatDateKey(snapshot.savedAt),
       dateLabel: formatDateTime(snapshot.savedAt),
+      location:
+        snapshot.location ??
+        (snapshotPatient?.residenceAddress
+          ? {
+              department: snapshotPatient.residenceAddress.department,
+              province: snapshotPatient.residenceAddress.province,
+              municipality: snapshotPatient.residenceAddress.municipality,
+            }
+          : undefined),
       diagnosisDetails:
         "Registro generado desde la nueva consulta, pendiente de analisis final.",
       bmi: snapshot.anthropometric.bmi,
       zScore: snapshot.anthropometric.zScore,
     };
 
+    const snapshotEdit = diagnosisEditsByResultId[snapshotBase.id];
+    const snapshotRecord: DiagnosisResult = {
+      ...snapshotBase,
+      nutritionalStatus: snapshotEdit?.nutritionalStatus ?? snapshotBase.nutritionalStatus,
+      diagnosisDetails: snapshotEdit?.diagnosisDetails ?? snapshotBase.diagnosisDetails,
+    };
+
     return [snapshotRecord, ...historicalRecords].sort((a, b) => b.dateValue - a.dateValue);
-  }, [snapshot]);
+  }, [snapshot, diagnosisEditsByResultId]);
 
   const selectablePatients = useMemo(() => {
     return db.patients
@@ -1667,6 +1778,11 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
       return "No hay informacion disponible para la consulta seleccionada.";
     }
 
+    const overridden = diagnosisEditsByResultId[selectedConsultationResult.id]?.diagnosisDetails;
+    if (overridden && overridden.trim().length > 0) {
+      return overridden;
+    }
+
     if (selectedConsultationResult.source === "last_consultation" && snapshotForSummary) {
       const findings = [
         `Paciente ${selectedConsultationResult.patientName}.`,
@@ -1692,12 +1808,21 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
       selectedConsultationResult.diagnosisDetails ||
       "No se registró un diagnóstico detallado para esta consulta."
     );
-  }, [selectedConsultationResult, snapshotForSummary]);
+  }, [selectedConsultationResult, snapshotForSummary, diagnosisEditsByResultId]);
 
   const recommendationData = useMemo(() => {
     if (!selectedPatient || !selectedConsultationResult) return null;
-    const availableFoods = getConfiguredRecommendedFoods(db.foods);
-    const customRestrictedItems = getConfiguredRestrictedFoodItems(db.foods);
+    const locationForFoods =
+      selectedConsultationResult.location ??
+      (selectedPatient.residenceAddress
+        ? {
+            department: selectedPatient.residenceAddress.department,
+            province: selectedPatient.residenceAddress.province,
+            municipality: selectedPatient.residenceAddress.municipality,
+          }
+        : null);
+    const availableFoods = getConfiguredRecommendedFoods(db.foods, locationForFoods);
+    const customRestrictedItems = getConfiguredRestrictedFoodItems(db.foods, locationForFoods);
 
     const referenceHistoricalDiagnosis =
       selectedConsultationResult.source === "history"
@@ -1760,14 +1885,20 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
       minerals: food.minerals,
     }));
 
+    const baseMedicalText =
+      persistedRecommendation?.medicalRecommendation ??
+      buildDefaultMedicalRecommendation(selectedConsultationResult.nutritionalStatus);
+    const baseDietaryText =
+      persistedRecommendation?.dietaryRecommendation ??
+      buildDefaultDietaryRecommendation(selectedConsultationResult.nutritionalStatus);
+    const baseFoodRows = linkedFoods.length ? linkedFoods : fallbackFoods;
+
+    const edit = diagnosisEditsByResultId[selectedConsultationResult.id];
+
     return {
-      medicalText:
-        persistedRecommendation?.medicalRecommendation ??
-        buildDefaultMedicalRecommendation(selectedConsultationResult.nutritionalStatus),
-      dietaryText:
-        persistedRecommendation?.dietaryRecommendation ??
-        buildDefaultDietaryRecommendation(selectedConsultationResult.nutritionalStatus),
-      foodRows: linkedFoods.length ? linkedFoods : fallbackFoods,
+      medicalText: edit?.medicalText ?? baseMedicalText,
+      dietaryText: edit?.dietaryText ?? baseDietaryText,
+      foodRows: edit?.foodRows ?? baseFoodRows,
       restrictedFoodGroups: getDiagnosisRestrictedFoodGroups(
         selectedConsultationResult.nutritionalStatus,
         customRestrictedItems
@@ -1779,7 +1910,39 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
     selectedPatient,
     selectedPatientAgeMonths,
     selectedPatientResults,
+    diagnosisEditsByResultId,
   ]);
+
+  const availableFoodsForEditing = useMemo(() => {
+    if (!selectedPatient || !selectedConsultationResult) return [];
+    const locationForFoods =
+      selectedConsultationResult.location ??
+      (selectedPatient.residenceAddress
+        ? {
+            department: selectedPatient.residenceAddress.department,
+            province: selectedPatient.residenceAddress.province,
+            municipality: selectedPatient.residenceAddress.municipality,
+          }
+        : null);
+    return getConfiguredRecommendedFoods(db.foods, locationForFoods).slice().sort((a, b) => {
+      return a.foodName.localeCompare(b.foodName, "es");
+    });
+  }, [selectedPatient, selectedConsultationResult]);
+
+  const beginDiagnosisEdit = () => {
+    if (!selectedConsultationResult) return;
+    setDiagnosisStatusDraft(selectedConsultationResult.nutritionalStatus ?? "");
+    setDiagnosisDetailsDraft(selectedConsultationDetail ?? "");
+    setIsEditingDiagnosis(true);
+  };
+
+  const beginRecommendationsEdit = () => {
+    if (!recommendationData || !selectedConsultationResult) return;
+    setMedicalTextDraft(recommendationData.medicalText ?? "");
+    setDietaryTextDraft(recommendationData.dietaryText ?? "");
+    setFoodRowsDraft(recommendationData.foodRows ? [...recommendationData.foodRows] : []);
+    setIsEditingRecommendations(true);
+  };
 
   const anthropometricTrendRows = useMemo(() => {
     if (!selectedPatient) return [];
@@ -2463,6 +2626,7 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
               className="nutri-input w-full sm:min-w-[220px]"
             />
           </div>
+
         </div>
 
         <p className="mt-3 text-xs text-nutri-dark-grey/80">
@@ -2566,7 +2730,7 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
                         : "border-nutri-light-grey bg-nutri-white hover:bg-nutri-off-white/70"
                     }`}
                   >
-                    <div className="grid grid-cols-1 gap-2 text-sm text-nutri-dark-grey md:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-2 text-sm text-nutri-dark-grey md:grid-cols-3">
                       <p>
                         <span className="font-semibold">Paciente:</span> {resultItem.patientName}
                       </p>
@@ -2578,6 +2742,10 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
                       </p>
                       <p>
                         <span className="font-semibold">Fecha:</span> {resultItem.dateLabel}
+                      </p>
+                      <p className="md:col-span-3">
+                        <span className="font-semibold">Ubicación:</span>{" "}
+                        {formatLocationLabel(resultItem.location)}
                       </p>
                     </div>
                   </button>
@@ -2986,31 +3154,82 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
                 </p>
               ) : (
                 <>
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
-                      Diagnóstico final
-                    </p>
-                    <p className="text-lg font-semibold text-nutri-primary">
-                      {selectedConsultationResult.nutritionalStatus}
-                    </p>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
+                        Diagnóstico final
+                      </p>
+                      {isEditingDiagnosis ? (
+                        <input
+                          className="nutri-input w-full sm:min-w-[360px]"
+                          value={diagnosisStatusDraft}
+                          onChange={(event) => {
+                            const next = event.target.value;
+                            setDiagnosisStatusDraft(next);
+                            upsertDiagnosisEdit(selectedConsultationResult.id, {
+                              nutritionalStatus: next,
+                            });
+                          }}
+                          placeholder="Estado nutricional"
+                        />
+                      ) : (
+                        <p className="text-lg font-semibold text-nutri-primary">
+                          {selectedConsultationResult.nutritionalStatus}
+                        </p>
+                      )}
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="px-3 py-1.5 text-xs"
+                      onClick={() => {
+                        if (isEditingDiagnosis) {
+                          setIsEditingDiagnosis(false);
+                          return;
+                        }
+                        beginDiagnosisEdit();
+                      }}
+                    >
+                      {isEditingDiagnosis ? "Cerrar edición" : "Editar diagnóstico"}
+                    </Button>
                   </div>
 
                   <div className="space-y-1">
                     <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
                       Diagnóstico detallado
                     </p>
-                    <p className="text-sm leading-relaxed text-nutri-dark-grey">
-                      {selectedConsultationDetail}
-                    </p>
+                    {isEditingDiagnosis ? (
+                      <textarea
+                        className="nutri-input min-h-[120px] w-full"
+                        value={diagnosisDetailsDraft}
+                        onChange={(event) => {
+                          const next = event.target.value;
+                          setDiagnosisDetailsDraft(next);
+                          upsertDiagnosisEdit(selectedConsultationResult.id, {
+                            diagnosisDetails: next,
+                          });
+                        }}
+                        placeholder="Describe el diagnóstico, hallazgos y conclusión clínica..."
+                      />
+                    ) : (
+                      <p className="text-sm leading-relaxed text-nutri-dark-grey">
+                        {selectedConsultationDetail}
+                      </p>
+                    )}
                   </div>
 
-                  <div className="grid grid-cols-1 gap-2 text-sm text-nutri-dark-grey sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-2 text-sm text-nutri-dark-grey sm:grid-cols-3">
                     <p>
                       <span className="font-semibold">Paciente:</span>{" "}
                       {selectedConsultationResult.patientName}
                     </p>
                     <p>
                       <span className="font-semibold">Fecha:</span> {selectedConsultationResult.dateLabel}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Ubicación:</span>{" "}
+                      {formatLocationLabel(selectedConsultationResult.location)}
                     </p>
                   </div>
                 </>
@@ -3035,22 +3254,75 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
                 </p>
               ) : (
                 <>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
+                        Recomendaciones
+                      </p>
+                      <p className="text-sm text-nutri-dark-grey/80">
+                        Puedes ajustar el texto y los alimentos sugeridos; se guarda automáticamente.
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="px-3 py-1.5 text-xs"
+                      onClick={() => {
+                        if (isEditingRecommendations) {
+                          setIsEditingRecommendations(false);
+                          return;
+                        }
+                        beginRecommendationsEdit();
+                      }}
+                    >
+                      {isEditingRecommendations ? "Cerrar edición" : "Editar recomendaciones"}
+                    </Button>
+                  </div>
+
                   <div className="space-y-1">
                     <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
                       Recomendaciones médicas generales
                     </p>
-                    <p className="text-sm leading-relaxed text-nutri-dark-grey">
-                      {recommendationData.medicalText}
-                    </p>
+                    {isEditingRecommendations ? (
+                      <textarea
+                        className="nutri-input min-h-[96px] w-full"
+                        value={medicalTextDraft}
+                        onChange={(event) => {
+                          const next = event.target.value;
+                          setMedicalTextDraft(next);
+                          if (selectedConsultationResult) {
+                            upsertDiagnosisEdit(selectedConsultationResult.id, { medicalText: next });
+                          }
+                        }}
+                      />
+                    ) : (
+                      <p className="text-sm leading-relaxed text-nutri-dark-grey">
+                        {recommendationData.medicalText}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1">
                     <p className="text-xs font-semibold uppercase tracking-wide text-nutri-dark-grey/70">
                       Recomendaciones alimentarias
                     </p>
-                    <p className="text-sm leading-relaxed text-nutri-dark-grey">
-                      {recommendationData.dietaryText}
-                    </p>
+                    {isEditingRecommendations ? (
+                      <textarea
+                        className="nutri-input min-h-[96px] w-full"
+                        value={dietaryTextDraft}
+                        onChange={(event) => {
+                          const next = event.target.value;
+                          setDietaryTextDraft(next);
+                          if (selectedConsultationResult) {
+                            upsertDiagnosisEdit(selectedConsultationResult.id, { dietaryText: next });
+                          }
+                        }}
+                      />
+                    ) : (
+                      <p className="text-sm leading-relaxed text-nutri-dark-grey">
+                        {recommendationData.dietaryText}
+                      </p>
+                    )}
                   </div>
 
                   {automatedFollowUpRecommendations.length > 0 && (
@@ -3071,6 +3343,69 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
                       Alimentos sugeridos y composicion nutricional
                     </p>
 
+                    {isEditingRecommendations && (
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+                        <div className="flex-1">
+                          <label className="nutri-label" htmlFor="add-food-select">
+                            Agregar alimento
+                          </label>
+                          <select
+                            id="add-food-select"
+                            className="nutri-input w-full"
+                            value={foodToAddId}
+                            onChange={(event) => setFoodToAddId(event.target.value)}
+                          >
+                            <option value="">Selecciona un alimento...</option>
+                            {availableFoodsForEditing.map((food) => (
+                              <option key={food.foodId} value={food.foodId}>
+                                {translateFoodName(food.foodName)} ({translateFoodCategory(food.category)})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            if (!selectedConsultationResult) return;
+                            if (!foodToAddId) return;
+                            const food = availableFoodsForEditing.find((item) => item.foodId === foodToAddId);
+                            if (!food) return;
+                            setFoodRowsDraft((current) => {
+                              if (current.some((row) => row.foodId === food.foodId)) return current;
+                              const fallbackReferenceAge =
+                                selectedPatientAgeMonths !== null
+                                  ? formatPediatricAge(selectedPatientAgeMonths)
+                                  : "6-60 meses";
+                              const nextRows = [
+                                ...current,
+                                {
+                                  foodId: food.foodId,
+                                  foodName: translateFoodName(food.foodName),
+                                  category: translateFoodCategory(food.category),
+                                  portion: "Porción sugerida según tolerancia y edad",
+                                  timesPerDay: "1 vez/día",
+                                  referenceAge: fallbackReferenceAge,
+                                  energyKcal: food.energyKcal,
+                                  proteinG: food.proteinG,
+                                  fatG: food.fatG,
+                                  carbohydratesG: food.carbohydratesG,
+                                  fiberG: food.fiberG,
+                                  vitamins: food.vitamins,
+                                  minerals: food.minerals,
+                                } satisfies RecommendationFoodRow,
+                              ];
+                              upsertDiagnosisEdit(selectedConsultationResult.id, { foodRows: nextRows });
+                              return nextRows;
+                            });
+                            setFoodToAddId("");
+                          }}
+                          disabled={!foodToAddId}
+                        >
+                          Agregar
+                        </Button>
+                      </div>
+                    )}
+
                     <div className="overflow-x-auto rounded-lg border border-nutri-light-grey bg-nutri-white">
                       <table className="min-w-[980px] table-auto text-sm">
                         <thead className="bg-nutri-off-white">
@@ -3087,18 +3422,83 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
                             <th className="px-3 py-2">Fibra (g)</th>
                             <th className="px-3 py-2">Vitaminas</th>
                             <th className="px-3 py-2">Minerales</th>
+                            {isEditingRecommendations && <th className="px-3 py-2">Acciones</th>}
                           </tr>
                         </thead>
                         <tbody>
-                          {recommendationData.foodRows.map((foodRow) => (
+                          {(isEditingRecommendations ? foodRowsDraft : recommendationData.foodRows).map(
+                            (foodRow) => (
                             <tr key={foodRow.foodId} className="border-t border-nutri-light-grey">
                               <td className="px-3 py-2 font-medium text-nutri-dark-grey">
                                 {foodRow.foodName}
                               </td>
                               <td className="px-3 py-2 text-nutri-dark-grey">{foodRow.category}</td>
-                              <td className="px-3 py-2 text-nutri-dark-grey">{foodRow.portion}</td>
-                              <td className="px-3 py-2 text-nutri-dark-grey">{foodRow.timesPerDay}</td>
-                              <td className="px-3 py-2 text-nutri-dark-grey">{foodRow.referenceAge}</td>
+                              <td className="px-3 py-2 text-nutri-dark-grey">
+                                {isEditingRecommendations ? (
+                                  <input
+                                    className="nutri-input w-[260px]"
+                                    value={foodRow.portion}
+                                    onChange={(event) => {
+                                      const next = event.target.value;
+                                      setFoodRowsDraft((current) => {
+                                        const nextRows = current.map((row) =>
+                                          row.foodId === foodRow.foodId ? { ...row, portion: next } : row
+                                        );
+                                        if (selectedConsultationResult) {
+                                          upsertDiagnosisEdit(selectedConsultationResult.id, { foodRows: nextRows });
+                                        }
+                                        return nextRows;
+                                      });
+                                    }}
+                                  />
+                                ) : (
+                                  foodRow.portion
+                                )}
+                              </td>
+                              <td className="px-3 py-2 text-nutri-dark-grey">
+                                {isEditingRecommendations ? (
+                                  <input
+                                    className="nutri-input w-[140px]"
+                                    value={foodRow.timesPerDay}
+                                    onChange={(event) => {
+                                      const next = event.target.value;
+                                      setFoodRowsDraft((current) => {
+                                        const nextRows = current.map((row) =>
+                                          row.foodId === foodRow.foodId ? { ...row, timesPerDay: next } : row
+                                        );
+                                        if (selectedConsultationResult) {
+                                          upsertDiagnosisEdit(selectedConsultationResult.id, { foodRows: nextRows });
+                                        }
+                                        return nextRows;
+                                      });
+                                    }}
+                                  />
+                                ) : (
+                                  foodRow.timesPerDay
+                                )}
+                              </td>
+                              <td className="px-3 py-2 text-nutri-dark-grey">
+                                {isEditingRecommendations ? (
+                                  <input
+                                    className="nutri-input w-[140px]"
+                                    value={foodRow.referenceAge}
+                                    onChange={(event) => {
+                                      const next = event.target.value;
+                                      setFoodRowsDraft((current) => {
+                                        const nextRows = current.map((row) =>
+                                          row.foodId === foodRow.foodId ? { ...row, referenceAge: next } : row
+                                        );
+                                        if (selectedConsultationResult) {
+                                          upsertDiagnosisEdit(selectedConsultationResult.id, { foodRows: nextRows });
+                                        }
+                                        return nextRows;
+                                      });
+                                    }}
+                                  />
+                                ) : (
+                                  foodRow.referenceAge
+                                )}
+                              </td>
                               <td className="px-3 py-2 text-nutri-dark-grey">{foodRow.energyKcal}</td>
                               <td className="px-3 py-2 text-nutri-dark-grey">{foodRow.proteinG}</td>
                               <td className="px-3 py-2 text-nutri-dark-grey">{foodRow.fatG}</td>
@@ -3106,8 +3506,28 @@ export const DiagnosisDocumentContent: React.FC<DiagnosisDocumentContentProps> =
                               <td className="px-3 py-2 text-nutri-dark-grey">{foodRow.fiberG}</td>
                               <td className="px-3 py-2 text-nutri-dark-grey">{foodRow.vitamins}</td>
                               <td className="px-3 py-2 text-nutri-dark-grey">{foodRow.minerals}</td>
+                              {isEditingRecommendations && (
+                                <td className="px-3 py-2">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="px-2 py-1 text-xs"
+                                    onClick={() => {
+                                      if (!selectedConsultationResult) return;
+                                      setFoodRowsDraft((current) => {
+                                        const nextRows = current.filter((row) => row.foodId !== foodRow.foodId);
+                                        upsertDiagnosisEdit(selectedConsultationResult.id, { foodRows: nextRows });
+                                        return nextRows;
+                                      });
+                                    }}
+                                  >
+                                    Eliminar
+                                  </Button>
+                                </td>
+                              )}
                             </tr>
-                          ))}
+                          )
+                          )}
                         </tbody>
                       </table>
                     </div>

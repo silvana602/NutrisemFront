@@ -1,23 +1,19 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-type TextInputProps = {
-  placeholder?: string;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+type TextInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "className"> & {
   icon?: React.ReactNode;
-  className?: string; 
-  label?: string;
-  type?: string;
+  // Clase para el contenedor (mantiene compatibilidad con usos existentes).
+  className?: string;
+  // Clase opcional para el input.
+  inputClassName?: string;
 };
 
 export const TextInput: React.FC<TextInputProps> = ({
-  placeholder,
-  value,
-  onChange,
   icon,
   className = "",
-  type = "text",
+  inputClassName = "",
+  ...inputProps
 }) => {
   return (
     <div
@@ -29,11 +25,11 @@ export const TextInput: React.FC<TextInputProps> = ({
         </div>
       )}
       <input
-        className="w-full min-w-0 bg-transparent text-sm text-nutri-dark-grey outline-none placeholder:text-nutri-secondary/70"
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
+        className={cn(
+          "w-full min-w-0 bg-transparent text-sm text-nutri-dark-grey outline-none placeholder:text-nutri-secondary/70",
+          inputClassName
+        )}
+        {...inputProps}
       />
     </div>
   );

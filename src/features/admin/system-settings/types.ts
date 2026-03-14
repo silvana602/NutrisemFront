@@ -1,4 +1,5 @@
 import type { Food } from "@/types";
+import type { ResidenceLocation } from "@/types";
 
 export type NumericRange = {
   min: number;
@@ -32,12 +33,17 @@ export type MedicalFoodCatalogItem = {
   type: MedicalFoodType;
   healthySubstitute: string;
   active: boolean;
+  // Si se define, el alimento se considera disponible solo para esa ubicación.
+  // Si no se define, se asume disponible a nivel nacional.
+  location?: Partial<ResidenceLocation>;
 };
 
 export type SystemMedicalSettings = {
   bloodPressureRanges: BloodPressureRangeSetting[];
   omsPercentileAnchors: OmsPercentileAnchorSetting[];
   foodCatalog: MedicalFoodCatalogItem[];
+  // Provincias "grandes" donde se asume mayor variedad de alimentos (supermercados).
+  largeMarketProvinces: string[];
   updatedAt: string;
 };
 

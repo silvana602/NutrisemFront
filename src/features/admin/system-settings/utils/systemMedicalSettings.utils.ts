@@ -159,6 +159,7 @@ export function createDefaultSystemMedicalSettings(
     bloodPressureRanges: DEFAULT_BLOOD_PRESSURE_RANGES.map((item) => ({ ...item })),
     omsPercentileAnchors: DEFAULT_OMS_PERCENTILE_ANCHORS.map((item) => ({ ...item })),
     foodCatalog: buildFoodCatalogFromFoods(foods),
+    largeMarketProvinces: ["Murillo", "Cercado", "Andrés Ibáñez"],
     updatedAt: new Date().toISOString(),
   };
 }
@@ -230,6 +231,18 @@ function sanitizeFoodCatalog(
     if (!name) return;
 
     const id = normalizeId(item?.id ?? `${item?.type ?? "item"}-${index + 1}-${name}`);
+    const locationCandidate = item?.location
+      ? {
+          department: normalizeText(item.location.department ?? ""),
+          province: normalizeText(item.location.province ?? ""),
+          municipality: normalizeText(item.location.municipality ?? ""),
+        }
+      : null;
+    const location =
+      locationCandidate &&
+      (locationCandidate.department || locationCandidate.province || locationCandidate.municipality)
+        ? locationCandidate
+        : undefined;
     map.set(id, {
       id,
       name,
@@ -237,6 +250,7 @@ function sanitizeFoodCatalog(
       type: item?.type === "restringido" ? "restringido" : "recomendado",
       healthySubstitute: normalizeText(item?.healthySubstitute ?? ""),
       active: item?.active !== false,
+      location,
     });
   });
 
@@ -257,6 +271,11 @@ export function sanitizeSystemMedicalSettings(
     bloodPressureRanges: sanitizeBloodPressureRanges(input?.bloodPressureRanges),
     omsPercentileAnchors: sanitizeOmsAnchors(input?.omsPercentileAnchors),
     foodCatalog: mergedFoodCatalog,
+    largeMarketProvinces: Array.isArray(input?.largeMarketProvinces)
+      ? input!.largeMarketProvinces
+          .map((value) => normalizeText(String(value)))
+          .filter(Boolean)
+      : defaults.largeMarketProvinces,
     updatedAt: input?.updatedAt ?? defaults.updatedAt,
   };
 }
@@ -338,5 +357,6 @@ export function toSystemMedicalSettingsDraft(
     })),
     omsPercentileAnchors: settings.omsPercentileAnchors.map((anchor) => ({ ...anchor })),
     foodCatalog: settings.foodCatalog.map((item) => ({ ...item })),
+    largeMarketProvinces: [...settings.largeMarketProvinces],
   };
 }
