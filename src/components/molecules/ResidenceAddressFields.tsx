@@ -89,28 +89,38 @@ export function ResidenceAddressFields({
         </div>
 
         <div className="sm:col-span-2">
-          <label className="nutri-label" htmlFor={`${idPrefix}-door`}>
-            Nro de puerta
-          </label>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-[180px_minmax(0,1fr)]">
-            <TextInput
-              id={`${idPrefix}-street-type`}
-              value={value.streetType}
-              onChange={(event) => setField("streetType", event.target.value)}
-              placeholder="Av. / Calle"
-              autoComplete="address-line2"
-            />
-            <TextInput
-              id={`${idPrefix}-door`}
-              value={value.doorNumber}
-              onChange={(event) => setField("doorNumber", event.target.value)}
-              placeholder="Ej: 12, S/N, Mz 3 Lt 5"
-              autoComplete="address-line2"
-            />
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+            <div>
+              <label className="nutri-label" htmlFor={`${idPrefix}-street-type`}>
+                Av. / Calle
+              </label>
+              <TextInput
+                id={`${idPrefix}-street-type`}
+                value={value.streetType}
+                onChange={(event) => setField("streetType", event.target.value)}
+                placeholder="Ej: Av. / Calle"
+                autoComplete="address-line2"
+              />
+              {errors?.streetType && (
+                <p className="mt-1 text-xs text-rose-700">{errors.streetType}</p>
+              )}
+            </div>
+            <div>
+              <label className="nutri-label" htmlFor={`${idPrefix}-door`}>
+                Nro de puerta
+              </label>
+              <TextInput
+                id={`${idPrefix}-door`}
+                value={value.doorNumber}
+                onChange={(event) => setField("doorNumber", event.target.value)}
+                placeholder="Ej: 12, S/N"
+                autoComplete="address-line2"
+              />
+              {errors?.doorNumber && (
+                <p className="mt-1 text-xs text-rose-700">{errors.doorNumber}</p>
+              )}
+            </div>
           </div>
-          {errors?.doorNumber && (
-            <p className="mt-1 text-xs text-rose-700">{errors.doorNumber}</p>
-          )}
         </div>
       </div>
     </section>
